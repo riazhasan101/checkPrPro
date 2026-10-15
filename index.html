@@ -33,11 +33,11 @@ td,th{padding:10px 11px;border-bottom:1px solid #edf0f5}tbody tr:hover{backgroun
 .preview-stage{background:#edf1f6;border:1px dashed #c5d0df;border-radius:9px;padding:18px;min-height:220px;display:flex;align-items:center;justify-content:center}
 .cheque{position:relative;width:100%;aspect-ratio:190.5/88.9;background:#fffdf8;border:1px solid #d9d3c4;border-radius:2px;overflow:hidden;color:#1a1a1a;font-family:Arial,sans-serif;box-shadow:0 3px 10px #24344912;container-type:inline-size}
 .cheque .mark{position:absolute;color:#c4bba8;pointer-events:none;line-height:1}
-.cheque .logo{left:2%;top:5%;color:#c8102e;font:700 13px Arial;letter-spacing:-.3px}
+.cheque .logo{left:2%;top:5%;color:#c8102e;font:700 11px Arial;letter-spacing:-.2px;max-width:48%}
 .cheque .branch{left:2%;top:18%;font:8px Arial}
 .cheque .date-label{left:60%;top:16%;font:700 8px Arial;letter-spacing:.4px}
 .cheque .date-boxes{left:69.8%;top:18%;width:25.2%;height:8%;display:flex;justify-content:space-between}
-.cheque .date-boxes i{display:block;width:11%;height:100%;border:1px solid #e4dcc8;font-style:normal}
+.cheque .date-boxes i{flex:1;height:100%;border:1px solid #e4dcc8;margin:0 1px;font-style:normal}
 .cheque .pay-label{left:2%;top:33%;font:700 9px Arial}
 .cheque .or-bearer{right:3%;top:33%;font:8px Arial}
 .cheque .rule{left:11%;right:16%;top:37.8%;border-top:1px solid #e6dfd0}
@@ -61,7 +61,7 @@ footer{max-width:1500px;margin:0 auto;padding:0 22px 20px;color:#718096;font-siz
  .print-page{width:190.5mm;height:88.9mm;page-break-after:always;break-after:page;position:relative;overflow:hidden}
  .print-cheque{position:relative;width:190.5mm;height:88.9mm;background:#fff;color:#000;font-family:Arial,sans-serif}
  .print-cheque .p{position:absolute;white-space:nowrap;overflow:hidden;line-height:1}
- .print-cheque .digit{position:absolute;top:17.5mm;width:6mm;text-align:center;font:700 12pt "Courier New",monospace}
+ .print-cheque .digit{position:absolute;text-align:center;font:700 12pt "Courier New",monospace}
  @page{size:190.5mm 88.9mm;margin:0}
 }
 #printRoot{display:none}
@@ -116,22 +116,22 @@ footer{max-width:1500px;margin:0 auto;padding:0 22px 20px;color:#718096;font-siz
    <div class="side-title">Print defaults</div>
    <div class="field"><label>Default cheque date</label><input type="date" id="defaultDate"></div>
    <div class="field"><label>Print bank</label><select id="printBank"><option value="">Select bank...</option></select></div>
-   <div class="field"><label>Paper / cheque stock</label><select id="paperSize"><option value="city">City Bank cheque (190.5 × 88.9 mm)</option></select></div>
+   <div class="field"><label>Paper / cheque stock</label><select id="paperSize"><option value="standard">Standard cheque (190.5 × 88.9 mm)</option></select></div>
    <div class="field"><label>Cheque template label</label><input id="templateName" value="City Bank PLC"></div>
-   <div class="small">Positions follow the supplied City Bank leaf: date in the eight boxes, payee on the Pay To line, words on the two Taka lines, and figures inside the Tk box. Print at 100% / Actual size, with no fit-to-page scaling.</div>
+   <div class="small">City Bank, Dutch-Bangla, UCB, BRAC, Eastern, Islami Bank, and IFIC each use positions measured from the supplied leaf. Print at 100% / Actual size.</div>
   </div>
   <div class="side-section">
    <div class="side-title">Preview</div>
    <div class="preview-stage"><div class="cheque" id="previewCheque">
-    <div class="mark logo">city bank</div>
+    <div class="mark logo" id="pvLogo">City Bank</div>
     <div class="mark branch">Payable at any branch in Bangladesh</div>
-    <div class="mark date-label">DATE</div>
-    <div class="mark date-boxes"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="mark date-label" id="pvDateLabel">DATE</div>
+    <div class="mark date-boxes" id="pvBoxes"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="mark pay-label">Pay To</div>
     <div class="mark or-bearer">Or Bearer</div>
-    <div class="mark rule"></div>
-    <div class="mark sum-label">The Sum of Taka</div>
-    <div class="mark amt-box">Tk</div>
+    <div class="mark rule" id="pvRule"></div>
+    <div class="mark sum-label" id="pvSum">The Sum of Taka</div>
+    <div class="mark amt-box" id="pvAmt">Tk</div>
     <div class="mark sign">Please sign above</div>
     <div class="mark micr">MICR band — not printed</div>
     <div class="date" id="pvDate"></div>
@@ -209,31 +209,62 @@ function renderTable(){
 }
 function setPreviewList(ids){previewIds=ids.filter(id=>records.some(r=>r.id===id));previewIndex=0;updatePreview()}
 function currentPreview(){return previewIds.length?records.find(r=>r.id===previewIds[previewIndex]):null}
+const STOCK={w:190.5,h:88.9};
+const TEMPLATES=[
+ {id:'city-bank',match:/city\s*bank/i,name:'City Bank PLC',short:'City Bank',date:[133,17.5,6],payee:[20,29.5,118],words:[32,41.5,82],words2:[12,50.5,108],amount:[128,41.5,55]},
+ {id:'dbbl',match:/dutch[-\s]?bangla|\bdbbl\b/i,name:'Dutch-Bangla Bank',short:'Dutch-Bangla',date:[118,21,6.2],payee:[22,33,120],words:[32,41,88],words2:[14,50,110],amount:[128,41,52]},
+ {id:'ucb',match:/united commercial|\bucb\b/i,name:'United Commercial Bank',short:'UCB',date:[122,18.5,6.2],payee:[22,33,115],words:[34,42,96],words2:[14,51,110],amount:[140,42,45]},
+ {id:'brac',match:/brac\s*bank/i,name:'BRAC Bank',short:'BRAC Bank',date:[130,17,6.2],payee:[26,32,120],words:[32,39,96],words2:[14,49,110],amount:[138,39,48]},
+ {id:'ebl',match:/eastern\s*bank|\bebl\b/i,name:'Eastern Bank',short:'Eastern Bank',date:[128,17,6],payee:[20,31,125],words:[34,39,88],words2:[12,48,120],amount:[130,39,52]},
+ {id:'ibbl',match:/islami\s*bank/i,name:'Islami Bank',short:'Islami Bank',date:[128,16,5.8],payee:[22,32,140],words:[36,41,86],words2:[12,50,145],amount:[136,41,50]},
+ {id:'ific',match:/\bific\b/i,name:'IFIC Bank',short:'IFIC Bank',date:[130,16,6],payee:[20,32,140],words:[36,41,88],words2:[10,50,145],amount:[136,41,50]}
+];
+function field(arr,font){return {x:arr[0],y:arr[1],w:arr[2],pitch:arr[2],font}}
+function asTemplate(t){return {id:t.id,name:t.name,short:t.short,date:{x:t.date[0],y:t.date[1],pitch:t.date[2],font:12},payee:field(t.payee,12),words:field(t.words,11),words2:field(t.words2,11),amount:field(t.amount,12)}}
+function templateFor(bank){const hit=TEMPLATES.find(t=>t.match.test(String(bank||'')));return hit?asTemplate(hit):null}
+function pct(mm,total){return (mm/total*100).toFixed(2)+'%'}
+function place(el,f){el.style.left=pct(f.x,STOCK.w);el.style.top=pct(f.y,STOCK.h);if(f.w)el.style.maxWidth=pct(f.w,STOCK.w)}
+function layoutGuides(t){
+ $('pvLogo').textContent=t.short;
+ $('pvDateLabel').style.left=pct(Math.max(2,t.date.x-18),STOCK.w);$('pvDateLabel').style.top=pct(t.date.y,STOCK.h);
+ const boxes=$('pvBoxes');boxes.style.left=pct(t.date.x,STOCK.w);boxes.style.top=pct(Math.max(0,t.date.y-1.2),STOCK.h);boxes.style.width=pct(t.date.pitch*8,STOCK.w);
+ $('pvRule').style.top=pct(t.payee.y+4.6,STOCK.h);
+ $('pvSum').style.top=pct(t.words.y,STOCK.h);
+ $('pvAmt').style.left=pct(t.amount.x-8,STOCK.w);$('pvAmt').style.top=pct(t.amount.y-1.6,STOCK.h);$('pvAmt').style.width=pct(t.amount.w+14,STOCK.w);
+ $('templateName').value=t.name;
+}
 function updatePreview(){
  const r=currentPreview();$('prevBtn').disabled=!r||previewIndex<=0;$('nextBtn').disabled=!r||previewIndex>=previewIds.length-1;
  $('previewCounter').textContent=r?`Record ${previewIndex+1} of ${previewIds.length}`:'No record selected';
- $('previewStatus').textContent=r?(r.issues.length?'Needs review':'Ready'):'Draft preview';$('previewStatus').className='status '+(r?(r.issues.length?'bad':'ok'):'warn');
+ const t=templateFor(r?.bank)||templateFor('City Bank PLC');
+ layoutGuides(t);
  const digits=r?.date?dateDigits(r.date):'';
- $('pvDate').innerHTML=[...Array(8)].map((_,i)=>`<span style="left:${((CITY.dateX+i*CITY.datePitch)/CITY.widthMm*100).toFixed(2)}%;width:${(CITY.datePitch/CITY.widthMm*100).toFixed(2)}%">${esc(digits[i]||'')}</span>`).join('');
+ $('pvDate').style.top=pct(t.date.y,STOCK.h);
+ $('pvDate').innerHTML=[...Array(8)].map((_,i)=>`<span style="left:${pct(t.date.x+i*t.date.pitch,STOCK.w)};width:${pct(t.date.pitch,STOCK.w)}">${esc(digits[i]||'')}</span>`).join('');
+ place($('pvPayee'),t.payee);place($('pvWords'),t.words);place($('pvWords2'),t.words2);place($('pvAmount'),t.amount);
  $('pvPayee').textContent=r?.payee||'';
- const parts=splitWords(r?.words||'');
+ const parts=splitWords(r?.words||'',t.words.w);
  $('pvWords').textContent=parts[0];$('pvWords2').textContent=parts[1];
  $('pvAmount').textContent=r&&Number.isFinite(r.amount)?formatChequeAmount(r.amount):'';
- if(r&&!isCityBank(r.bank)){$('previewStatus').textContent='Not a City Bank cheque';$('previewStatus').className='status warn';}
+ if(!r){$('previewStatus').textContent='Draft preview';$('previewStatus').className='status warn'}
+ else if(r.issues.length){$('previewStatus').textContent='Needs review';$('previewStatus').className='status bad'}
+ else if(!templateFor(r.bank)){$('previewStatus').textContent='No layout for this bank';$('previewStatus').className='status warn'}
+ else {$('previewStatus').textContent=t.short+' layout';$('previewStatus').className='status ok'}
 }
-const CITY={widthMm:190.5,heightMm:88.9,dateX:133,dateY:17.5,datePitch:6};
 function formatDate(s){if(!s)return '';let [y,m,d]=s.split('-');return `${d}-${m}-${y}`}
 function dateDigits(s){if(!s||!/^\d{4}-\d{2}-\d{2}$/.test(s))return '';let [y,m,d]=s.split('-');return d+m+y}
 function formatChequeAmount(amount){const whole=Math.floor(amount),paisa=Math.round((amount-whole)*100);const body=whole.toLocaleString('en-BD');return paisa?`${body}.${String(paisa).padStart(2,'0')}/=`:`${body}/=`}
-function splitWords(text){const max=36;const s=String(text||'').trim();if(s.length<=max)return [s,''];let cut=s.lastIndexOf(' ',max);if(cut<10)cut=max;return [s.slice(0,cut).trim(),s.slice(cut).trim()]}
-function isCityBank(bank){return /city\s*bank/i.test(String(bank||''))}
+function splitWords(text,maxMm){const max=Math.max(18,Math.floor((maxMm||80)/1.85));const s=String(text||'').trim();if(s.length<=max)return [s,''];let cut=s.lastIndexOf(' ',max);if(cut<10)cut=max;return [s.slice(0,cut).trim(),s.slice(cut).trim()]}
 function loadSample(){
  headers=['Bank Name','Vendor Name','Amount','Cheque Date','Amount in Words','Cheque No'];
  rawRows=[
- ['City Bank PLC','Delta Office Supplies',42500.00,'2026-10-20','', 'CB-1001'],
- ['City Bank PLC','Rahman Trading',18750.50,'2026-10-20','', 'CB-1002'],
- ['Dutch-Bangla Bank','Nahar Technologies',96300,'2026-10-21','', 'DBBL-305'],
- ['City Bank PLC','Missing Amount Vendor','', '2026-10-22','', 'CB-1003']
+ ['City Bank PLC','Delta Office Supplies',42500,'2026-10-20','','CB-1001'],
+ ['Dutch-Bangla Bank','Nahar Technologies',96300,'2026-10-21','','DBBL-305'],
+ ['United Commercial Bank','Karim Traders',15000,'2026-10-21','','UCB-220'],
+ ['BRAC Bank','North Star Ltd',250000,'2026-10-22','','BRAC-18'],
+ ['Eastern Bank','Harbor Desk',18000,'2026-10-22','','EBL-30'],
+ ['Islami Bank Bangladesh','Sample Payee',123456.78,'2026-10-23','','IBBL-25'],
+ ['IFIC Bank','Sample Payee',123456.78,'2026-10-23','','IFIC-25']
  ];
  detectMap();fillMappings();buildRecords();
 }
@@ -265,15 +296,16 @@ $('previewBtn').onclick=()=>{if(!selected.size)return;setPreviewList([...selecte
 function printRecords(list){
  if(!list.length){alert('No records selected for printing.');return}
  const bad=list.filter(r=>r.issues.length);if(bad.length){alert(`${bad.length} selected row(s) have validation issues. Fix them or deselect them before printing.`);return}
- const other=list.filter(r=>!isCityBank(r.bank));if(other.length){alert('This alignment is for City Bank cheques only. Deselect other banks before printing.');return}
+ const missing=[...new Set(list.filter(r=>!templateFor(r.bank)).map(r=>r.bank||'Unknown'))];
+ if(missing.length){alert('No cheque layout for: '+missing.join(', ')+'.');return}
  const root=$('printRoot');root.innerHTML=list.map(r=>{
-  const digits=dateDigits(r.date),[w1,w2]=splitWords(r.words);
-  const boxes=[...digits].map((ch,i)=>`<span class="digit" style="left:${CITY.dateX+i*CITY.datePitch}mm">${esc(ch)}</span>`).join('');
+  const t=templateFor(r.bank),digits=dateDigits(r.date),[w1,w2]=splitWords(r.words,t.words.w);
+  const boxes=[...digits].map((ch,i)=>`<span class="digit" style="left:${t.date.x+i*t.date.pitch}mm;top:${t.date.y}mm;width:${t.date.pitch}mm">${esc(ch)}</span>`).join('');
   return `<div class="print-page"><div class="print-cheque">${boxes}
- <div class="p" style="left:20mm;top:29.5mm;font-size:12pt;max-width:118mm">${esc(r.payee)}</div>
- <div class="p" style="left:32mm;top:41.5mm;font-size:11pt;max-width:82mm">${esc(w1)}</div>
- <div class="p" style="left:12mm;top:50.5mm;font-size:11pt;max-width:108mm">${esc(w2)}</div>
- <div class="p" style="left:128mm;top:41.5mm;font-size:12pt;font-weight:700;max-width:55mm">${esc(formatChequeAmount(r.amount))}</div>
+ <div class="p" style="left:${t.payee.x}mm;top:${t.payee.y}mm;font-size:${t.payee.font}pt;max-width:${t.payee.w}mm">${esc(r.payee)}</div>
+ <div class="p" style="left:${t.words.x}mm;top:${t.words.y}mm;font-size:${t.words.font}pt;max-width:${t.words.w}mm">${esc(w1)}</div>
+ <div class="p" style="left:${t.words2.x}mm;top:${t.words2.y}mm;font-size:${t.words2.font}pt;max-width:${t.words2.w}mm">${esc(w2)}</div>
+ <div class="p" style="left:${t.amount.x}mm;top:${t.amount.y}mm;font-size:${t.amount.font}pt;font-weight:700;max-width:${t.amount.w}mm">${esc(formatChequeAmount(r.amount))}</div>
  </div></div>`;
  }).join('');
  window.print();
