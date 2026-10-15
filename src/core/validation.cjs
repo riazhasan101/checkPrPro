@@ -1,0 +1,5 @@
+'use strict';
+function validatePayment(record){const errors=[];if(!String(record.bank||'').trim())errors.push('Bank required');if(!String(record.payee||'').trim())errors.push('Payee required');const amount=Number(record.amount);if(!Number.isFinite(amount)||amount<=0||amount>999999999999.99)errors.push('Amount must be positive and within range');if(!/^\d{4}-\d{2}-\d{2}$/.test(String(record.date||'')))errors.push('Date must be YYYY-MM-DD');else{const [y,m,d]=record.date.split('-').map(Number);const dt=new Date(Date.UTC(y,m-1,d));if(dt.getUTCFullYear()!==y||dt.getUTCMonth()!==m-1||dt.getUTCDate()!==d)errors.push('Invalid calendar date');}return errors;}
+function duplicateKey(r){return [r.bank,r.payee,Number(r.amount).toFixed(2),r.date,r.cheque||''].map(x=>String(x||'').trim().toLowerCase()).join('|');}
+function findDuplicates(records){const seen=new Map(),result=[];records.forEach((r,i)=>{const key=duplicateKey(r);if(seen.has(key))result.push({first:seen.get(key),second:i});else seen.set(key,i);});return result;}
+module.exports={validatePayment,findDuplicates};

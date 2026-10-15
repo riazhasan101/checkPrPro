@@ -1,0 +1,7 @@
+services:
+  ci:
+    build: .
+    command: sh -c "npm run lint && npm test"
+    read_only: true
+    tmpfs:
+      - /tmp

@@ -1,0 +1,13 @@
+const {test}=require('node:test');const assert=require('node:assert/strict');
+const {words}=require('../src/core/words.cjs');const {validatePayment,findDuplicates}=require('../src/core/validation.cjs');const {prepareBatch,defaultTemplate}=require('../src/core/cheque.cjs');const {createStore}=require('../src/core/store.cjs');const fs=require('node:fs'),os=require('node:os'),path=require('node:path');
+const good={bank:'Bank A',payee:'Vendor',amount:1250.50,date:'2026-10-20'};
+test('amount words',()=>assert.equal(words(1250.50),'One Thousand Two Hundred Fifty Taka and Fifty Paisa Only'));
+test('zero amount words',()=>assert.equal(words(0),'Zero Taka Only'));
+test('reject invalid amount words',()=>assert.throws(()=>words(-1)));
+test('valid payment',()=>assert.deepEqual(validatePayment(good),[]));
+test('invalid calendar date',()=>assert.ok(validatePayment({...good,date:'2026-02-30'}).length));
+test('invalid amount',()=>assert.ok(validatePayment({...good,amount:0}).length));
+test('duplicate detection',()=>assert.equal(findDuplicates([good,{...good}]).length,1));
+test('bank batch',()=>assert.equal(prepareBatch([good],'Bank A',defaultTemplate).count,1));
+test('mixed bank blocked',()=>assert.throws(()=>prepareBatch([good,{...good,bank:'Bank B'}],'Bank A',defaultTemplate)));
+test('settings and audit persist',()=>{const dir=fs.mkdtempSync(path.join(os.tmpdir(),'checkprint-'));try{const store=createStore(dir);store.saveSettings({templates:[{id:'one'}]});assert.equal(store.getSettings().templates[0].id,'one');store.appendAudit({type:'print-request',count:1});assert.equal(store.getAudit().length,1);}finally{fs.rmSync(dir,{recursive:true,force:true})}});

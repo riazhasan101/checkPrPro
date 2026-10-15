@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CheckPrint</title>
+<style>
+:root{--navy:#142b4a;--blue:#2457a7;--bg:#f3f6fb;--line:#dbe3ee;--text:#1e293b;--muted:#66758b;--green:#16794b;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;font:14px "Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text)}
+header{height:72px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 26px}
+.brand{font-size:23px;font-weight:750;letter-spacing:.2px}.brand small{display:block;font-size:11px;font-weight:400;color:#c5d4e8;margin-top:2px}
+.header-right{font-size:12px;color:#d6e1f0}
+main{max-width:1500px;margin:0 auto;padding:22px;display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:18px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 2px 8px #182b4610;overflow:hidden}
+.panel-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}
+h2{font-size:16px;margin:0}.sub{color:var(--muted);font-size:12px;margin-top:4px}
+.panel-body{padding:18px}.toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+button,.file-button{border:1px solid #cbd5e1;border-radius:7px;background:#fff;color:#243449;padding:9px 12px;font:600 12px "Segoe UI",sans-serif;cursor:pointer}
+button:hover,.file-button:hover{background:#f0f5fc}button.primary{background:var(--blue);border-color:var(--blue);color:#fff}button.primary:hover{background:#1b478c}button.danger{color:var(--red)}
+button:disabled{opacity:.45;cursor:not-allowed}
+input,select{border:1px solid #cbd5e1;border-radius:7px;padding:9px 10px;font:13px "Segoe UI",sans-serif;background:#fff;color:var(--text);max-width:100%}
+input[type=file]{display:none}.field{display:flex;flex-direction:column;gap:5px;min-width:0}.field label{font-size:11px;font-weight:700;color:#516178}.field input,.field select{width:100%}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:15px}.metric{border:1px solid var(--line);border-radius:9px;padding:12px;background:#fbfcfe}.metric span{font-size:11px;color:var(--muted)}.metric strong{display:block;font-size:22px;margin-top:4px}
+.notice{border-radius:8px;background:#f1f6ff;color:#274c84;padding:10px 12px;font-size:12px;line-height:1.5;margin-bottom:14px}
+.status{font-size:11px;padding:4px 7px;border-radius:5px;font-weight:700}.ok{background:#e5f6ec;color:#176b42}.bad{background:#fff0ef;color:#a52b23}.warn{background:#fff6df;color:#815b08}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:8px;margin-top:14px;max-height:440px}
+table{border-collapse:collapse;width:100%;font-size:12px;white-space:nowrap}th{position:sticky;top:0;background:#f7f9fc;color:#59677b;text-align:left;font-size:11px;z-index:1}
+td,th{padding:10px 11px;border-bottom:1px solid #edf0f5}tbody tr:hover{background:#f8fbff}tbody tr.invalid{background:#fff8f7}
+.empty{text-align:center;color:var(--muted);padding:44px 15px;line-height:1.7}
+.side-section{padding:16px 18px;border-bottom:1px solid var(--line)}.side-section:last-child{border-bottom:0}
+.side-title{font-weight:750;margin-bottom:12px}.side-section .field{margin-bottom:11px}
+.preview-stage{background:#edf1f6;border:1px dashed #c5d0df;border-radius:9px;padding:18px;min-height:220px;display:flex;align-items:center;justify-content:center}
+.cheque{position:relative;width:100%;aspect-ratio:2.05/1;background:#fffdf6;border:1px solid #b7ad8c;border-radius:4px;overflow:hidden;color:#18243a;font-family:Georgia,serif;box-shadow:0 3px 10px #24344912}
+.cheque:before{content:"";position:absolute;inset:6px;border:1px solid #e4dcc2;pointer-events:none}
+.cheque .bank{position:absolute;left:4%;top:7%;font:700 12px Arial,sans-serif;letter-spacing:.4px}.cheque .branch{position:absolute;left:4%;top:15%;font:9px Arial,sans-serif;color:#6a6a61}
+.cheque .date{position:absolute;right:5%;top:9%;font:12px monospace;letter-spacing:2px}.cheque .payee{position:absolute;left:14%;top:34%;font:italic 13px Georgia;max-width:72%;overflow:hidden;white-space:nowrap}
+.cheque .amount{position:absolute;right:5%;top:48%;font:700 13px monospace}.cheque .words{position:absolute;left:8%;top:52%;font:italic 11px Georgia;width:75%;line-height:1.35;max-height:30%;overflow:hidden}
+.cheque .signature{position:absolute;right:7%;bottom:9%;border-top:1px solid #8b8b7d;width:24%;text-align:center;padding-top:3px;font:9px Arial;color:#6b6b61}
+.cheque .micr{position:absolute;left:5%;bottom:5%;font:13px monospace;letter-spacing:2px;color:#525252}
+.preview-meta{display:flex;justify-content:space-between;align-items:center;margin:12px 0;font-size:12px;color:var(--muted)}
+.small{font-size:11px;color:var(--muted);line-height:1.5}.mapping{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+footer{max-width:1500px;margin:0 auto;padding:0 22px 20px;color:#718096;font-size:11px}
+@media(max-width:1100px){main{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(4,1fr)}}
+@media print{
+ body{background:#fff}.no-print,header,main,footer{display:none!important}
+ #printRoot{display:block!important}.print-page{width:100%;height:100vh;page-break-after:always;break-after:page;display:flex;align-items:flex-start;justify-content:flex-start;padding:0}
+ .print-cheque{position:relative;width:100%;height:48%;border:0;background:#fff;color:#000;font-family:Arial,sans-serif}
+ .print-cheque .p{position:absolute;white-space:nowrap;overflow:hidden}
+ .print-cheque .p-words{white-space:normal;line-height:1.2}
+ @page{size:auto;margin:5mm}
+}
+#printRoot{display:none}
+</style>
+</head>
+<body>
+<header class="no-print">
+ <div class="brand">CheckPrint <small>Excel-to-cheque printing workspace</small></div>
+ <div class="header-right">Windows Desktop · Local-first prototype</div>
+</header>
+<main class="no-print">
+ <section class="panel">
+  <div class="panel-head"><div><h2>Payment records</h2><div class="sub">Import an Excel sheet, validate the rows, then preview or print.</div></div>
+   <div class="toolbar"><label class="file-button" for="excelFile">＋ Import Excel</label><input id="excelFile" type="file" accept=".xlsx,.xls,.csv"><button id="sampleBtn">Load sample</button></div>
+  </div>
+  <div class="panel-body">
+   <div class="notice"><b>Before printing:</b> confirm the correct bank, cheque stock size, printer scaling (100% / Actual size), and alignment. Always test on plain paper first. This prototype does not connect to a bank or create authorized signatures.</div>
+   <div class="metrics">
+    <div class="metric"><span>Total rows</span><strong id="totalMetric">0</strong></div>
+    <div class="metric"><span>Valid rows</span><strong id="validMetric">0</strong></div>
+    <div class="metric"><span>Needs review</span><strong id="invalidMetric">0</strong></div>
+    <div class="metric"><span>Selected</span><strong id="selectedMetric">0</strong></div>
+   </div>
+   <div class="toolbar">
+    <div class="field" style="min-width:160px"><label>Filter by bank</label><select id="bankFilter"><option value="">All banks</option></select></div>
+    <div class="field" style="min-width:190px;flex:1"><label>Search vendor / cheque / bank</label><input id="searchInput" placeholder="Type to search..."></div>
+    <button id="selectValidBtn">Select valid</button><button id="selectAllBtn">Select all shown</button><button id="clearBtn">Clear selection</button>
+   </div>
+   <div class="table-wrap"><table><thead><tr><th><input type="checkbox" id="selectShown"></th><th>Row</th><th>Bank</th><th>Vendor / Payee</th><th>Amount</th><th>Date</th><th>Validation</th></tr></thead><tbody id="recordsBody"><tr><td colspan="7" class="empty">No Excel data loaded yet.<br>Choose <b>Import Excel</b> or load sample data to explore the workflow.</td></tr></tbody></table></div>
+   <div class="toolbar" style="justify-content:space-between;margin-top:14px">
+    <span id="tableStatus" class="small">Import a spreadsheet to begin.</span>
+    <div class="toolbar"><button id="previewBtn" disabled>Preview selected</button><button id="printBtn" class="primary" disabled>Print selected</button><button id="printBankBtn" disabled>Print all for bank</button></div>
+   </div>
+  </div>
+ </section>
+ <aside class="panel">
+  <div class="panel-head"><div><h2>Cheque setup</h2><div class="sub">Map spreadsheet columns and preview layout.</div></div></div>
+  <div class="side-section">
+   <div class="side-title">Column mapping</div>
+   <div class="small" style="margin-bottom:10px">Headers are auto-detected where possible. Change any mapping if your Excel columns use different names.</div>
+   <div class="mapping">
+    <div class="field"><label>Bank</label><select id="mapBank"></select></div>
+    <div class="field"><label>Vendor / Payee</label><select id="mapPayee"></select></div>
+    <div class="field"><label>Amount</label><select id="mapAmount"></select></div>
+    <div class="field"><label>Cheque date</label><select id="mapDate"></select></div>
+    <div class="field"><label>Amount in words (optional)</label><select id="mapWords"></select></div>
+    <div class="field"><label>Cheque no. (optional)</label><select id="mapCheque"></select></div>
+   </div>
+   <button id="applyMapBtn" style="margin-top:12px;width:100%">Apply mapping & validate</button>
+  </div>
+  <div class="side-section">
+   <div class="side-title">Print defaults</div>
+   <div class="field"><label>Default cheque date</label><input type="date" id="defaultDate"></div>
+   <div class="field"><label>Print bank</label><select id="printBank"><option value="">Select bank...</option></select></div>
+   <div class="field"><label>Paper / cheque stock</label><select id="paperSize"><option value="custom">Custom cheque (recommended)</option><option value="a4">A4 sheet</option><option value="letter">Letter</option></select></div>
+   <div class="field"><label>Cheque template label</label><input id="templateName" value="Default cheque template"></div>
+   <div class="small">Template positioning in this prototype is a starter layout. Bank-specific coordinates and cheque dimensions should be calibrated against your physical cheque.</div>
+  </div>
+  <div class="side-section">
+   <div class="side-title">Preview</div>
+   <div class="preview-stage"><div class="cheque" id="previewCheque">
+    <div class="bank" id="pvBank">BANK NAME</div><div class="branch">CHEQUE / PAYMENT</div><div class="date" id="pvDate">DD-MM-YYYY</div>
+    <div class="payee" id="pvPayee">Pay to the order of...</div><div class="amount" id="pvAmount">0.00</div><div class="words" id="pvWords">Amount in words</div><div class="signature">Authorized signature</div><div class="micr">⑆ 000000 000000 ⑈</div>
+   </div></div>
+   <div class="preview-meta"><span id="previewCounter">No record selected</span><span class="status warn" id="previewStatus">Draft preview</span></div>
+   <div class="toolbar"><button id="prevBtn" disabled>← Previous</button><button id="nextBtn" disabled>Next →</button></div>
+  </div>
+ </aside>
+</main>
+<footer class="no-print">CheckPrint prototype · Data is processed in this app session. Keep sensitive payment spreadsheets on trusted devices only.</footer>
+<div id="printRoot"></div>
+<script>
+const $=id=>document.getElementById(id);
+let headers=[], rawRows=[], records=[], selected=new Set(), previewIds=[], previewIndex=0;
+let mapping={bank:-1,payee:-1,amount:-1,date:-1,words:-1,cheque:-1};
+const aliases={
+ bank:['bank','bank name','bank_name','bankname','branch bank'],
+ payee:['vendor','vendor name','payee','payee name','beneficiary','beneficiary name','supplier','supplier name','party name','name'],
+ amount:['amount','cheque amount','check amount','payment amount','amount (bdt)','amount bdt','net amount','total'],
+ date:['date','cheque date','check date','payment date','issue date'],
+ words:['amount in words','amount words','in words','amount in word','words'],
+ cheque:['cheque no','cheque number','check no','check number','cheque #','check #']
+};
+function norm(s){return String(s??'').toLowerCase().trim().replace(/[_\-]+/g,' ').replace(/\s+/g,' ')}
+function detectMap(){Object.keys(mapping).forEach(k=>{mapping[k]=-1;let idx=headers.findIndex(h=>aliases[k].includes(norm(h)));if(idx<0)idx=headers.findIndex(h=>aliases[k].some(a=>norm(h).includes(a)));mapping[k]=idx;});}
+function fillMappings(){
+ const fields=['bank','payee','amount','date','words','cheque'];
+ fields.forEach(k=>{const sel=$('map'+k[0].toUpperCase()+k.slice(1));sel.innerHTML='<option value="-1">— Not mapped —</option>'+headers.map((h,i)=>`<option value="${i}">${esc(h)}</option>`).join('');sel.value=String(mapping[k]);});
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function parseDate(v){
+ if(v===null||v===undefined||v==='')return '';
+ if(v instanceof Date&&!isNaN(v))return v.toISOString().slice(0,10);
+ if(typeof v==='number'&&v>20000&&v<80000){const d=new Date(Date.UTC(1899,11,30)+v*86400000);return d.toISOString().slice(0,10)}
+ const s=String(v).trim(); if(!s)return '';
+ let m=s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/);
+ if(m){let a=+m[1],b=+m[2],y=+m[3];if(y<100)y+=2000;let d,mo;if(a>12){d=a;mo=b}else{mo=a;d=b}return `${y}-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`}
+ const dt=new Date(s);return isNaN(dt)?'':dt.toISOString().slice(0,10);
+}
+function numberAmount(v){if(typeof v==='number')return v;let s=String(v??'').replace(/[,\s৳$]/g,'').replace(/BDT/ig,'');return s?Number(s):NaN}
+const ones=['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+const tens=['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+function under1000(n){let s='';if(n>=100){s+=ones[Math.floor(n/100)]+' Hundred';n%=100;if(n)s+=' ';}if(n>=20){s+=tens[Math.floor(n/10)];if(n%10)s+=' '+ones[n%10]}else if(n)s+=ones[n];return s}
+function integerWords(n){if(!n)return 'Zero';let out=[];for(const [v,label] of [[1e9,'Billion'],[1e6,'Million'],[1e3,'Thousand'],[1,'']]){let q=Math.floor(n/v);if(q){out.push(under1000(q)+(label?' '+label:''));n%=v}}return out.join(' ')}
+function amountWords(amount){if(!Number.isFinite(amount)||amount<0)return '';let whole=Math.floor(amount),cents=Math.round((amount-whole)*100);if(cents===100){whole++;cents=0}return integerWords(whole)+' Taka'+(cents?' and '+integerWords(cents)+' Paisa':' Only')}
+function val(row,k){let idx=mapping[k];return idx>=0?row[idx]:''}
+function buildRecords(){
+ records=rawRows.map((row,i)=>{
+  const bank=String(val(row,'bank')||'').trim(),payee=String(val(row,'payee')||'').trim(),amount=numberAmount(val(row,'amount')),date=parseDate(val(row,'date'))||$('defaultDate').value,words=String(val(row,'words')||'').trim(),cheque=String(val(row,'cheque')||'').trim();
+  const issues=[];if(!bank)issues.push('Missing bank');if(!payee)issues.push('Missing payee');if(!Number.isFinite(amount)||amount<=0)issues.push('Invalid amount');if(!date)issues.push('Missing date');
+  return {id:i,row:i+2,bank,payee,amount,date,words:words||(Number.isFinite(amount)&&amount>=0?amountWords(amount):''),cheque,issues,source:row};
+ });
+ selected=new Set(records.filter(r=>!r.issues.length).map(r=>r.id));
+ refreshBankLists();renderTable();setPreviewList(Array.from(selected));
+}
+function refreshBankLists(){
+ const banks=[...new Set(records.map(r=>r.bank).filter(Boolean))].sort();
+ const oldFilter=$('bankFilter').value,oldPrint=$('printBank').value;
+ $('bankFilter').innerHTML='<option value="">All banks</option>'+banks.map(b=>`<option>${esc(b)}</option>`).join('');
+ $('printBank').innerHTML='<option value="">Select bank...</option>'+banks.map(b=>`<option>${esc(b)}</option>`).join('');
+ if(banks.includes(oldFilter))$('bankFilter').value=oldFilter;if(banks.includes(oldPrint))$('printBank').value=oldPrint;
+}
+function shownRecords(){const bank=$('bankFilter').value,q=norm($('searchInput').value);return records.filter(r=>(!bank||r.bank===bank)&&(!q||norm([r.bank,r.payee,r.cheque,r.amount].join(' ')).includes(q)))}
+function renderTable(){
+ const shown=shownRecords();$('totalMetric').textContent=records.length;$('validMetric').textContent=records.filter(r=>!r.issues.length).length;$('invalidMetric').textContent=records.filter(r=>r.issues.length).length;$('selectedMetric').textContent=selected.size;
+ if(!shown.length){$('recordsBody').innerHTML='<tr><td colspan="7" class="empty">No matching records.</td></tr>'}
+ else $('recordsBody').innerHTML=shown.map(r=>`<tr class="${r.issues.length?'invalid':''}"><td><input type="checkbox" data-select="${r.id}" ${selected.has(r.id)?'checked':''}></td><td>${r.row}</td><td>${esc(r.bank||'—')}</td><td>${esc(r.payee||'—')}${r.cheque?`<div class="small">Cheque: ${esc(r.cheque)}</div>`:''}</td><td>${Number.isFinite(r.amount)?r.amount.toLocaleString('en-BD',{minimumFractionDigits:2,maximumFractionDigits:2}):'—'}</td><td>${esc(r.date||'—')}</td><td><span class="status ${r.issues.length?'bad':'ok'}">${r.issues.length?esc(r.issues.join(', ')):'Ready'}</span></td></tr>`).join('');
+ $('tableStatus').textContent=`Showing ${shown.length} of ${records.length} rows · ${selected.size} selected`;
+ $('previewBtn').disabled=!selected.size;$('printBtn').disabled=!selected.size;$('printBankBtn').disabled=!records.length||!$('printBank').value;
+ $('selectShown').checked=shown.length>0&&shown.every(r=>selected.has(r.id));
+}
+function setPreviewList(ids){previewIds=ids.filter(id=>records.some(r=>r.id===id));previewIndex=0;updatePreview()}
+function currentPreview(){return previewIds.length?records.find(r=>r.id===previewIds[previewIndex]):null}
+function updatePreview(){
+ const r=currentPreview();$('prevBtn').disabled=!r||previewIndex<=0;$('nextBtn').disabled=!r||previewIndex>=previewIds.length-1;
+ $('previewCounter').textContent=r?`Record ${previewIndex+1} of ${previewIds.length}`:'No record selected';
+ $('previewStatus').textContent=r?(r.issues.length?'Needs review':'Ready'):'Draft preview';$('previewStatus').className='status '+(r?(r.issues.length?'bad':'ok'):'warn');
+ $('pvBank').textContent=r?.bank||'BANK NAME';$('pvDate').textContent=r?.date?formatDate(r.date):'DD-MM-YYYY';$('pvPayee').textContent=r?.payee||'Pay to the order of...';$('pvAmount').textContent=r&&Number.isFinite(r.amount)?r.amount.toLocaleString('en-BD',{minimumFractionDigits:2,maximumFractionDigits:2}):'0.00';$('pvWords').textContent=r?.words||'Amount in words';
+}
+function formatDate(s){if(!s)return '';let [y,m,d]=s.split('-');return `${d}-${m}-${y}`}
+function loadSample(){
+ headers=['Bank Name','Vendor Name','Amount','Cheque Date','Amount in Words','Cheque No'];
+ rawRows=[
+ ['City Bank PLC','Delta Office Supplies',42500.00,'2026-10-20','', 'CB-1001'],
+ ['City Bank PLC','Rahman Trading',18750.50,'2026-10-20','', 'CB-1002'],
+ ['Dutch-Bangla Bank','Nahar Technologies',96300,'2026-10-21','', 'DBBL-305'],
+ ['City Bank PLC','Missing Amount Vendor','', '2026-10-22','', 'CB-1003']
+ ];
+ detectMap();fillMappings();buildRecords();
+}
+$('excelFile').addEventListener('change',async e=>{
+ const file=e.target.files[0];if(!file)return;
+ try{
+  if(!window.XLSX){alert('Excel reader library did not load. Run npm install in the app folder and restart.');return}
+  const data=await file.arrayBuffer(),wb=XLSX.read(data,{type:'array',cellDates:true});
+  const sheetName=wb.SheetNames[0],ws=wb.Sheets[sheetName],json=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+  if(json.length<2){alert('The first worksheet has no data rows.');return}
+  headers=json[0].map((h,i)=>String(h||`Column ${i+1}`));rawRows=json.slice(1).filter(row=>row.some(v=>String(v??'').trim()!==''));
+  detectMap();fillMappings();buildRecords();$('tableStatus').textContent=`Imported ${rawRows.length} rows from ${file.name} · Sheet: ${sheetName}`;
+ }catch(err){console.error(err);alert('Could not read this workbook. Please try .xlsx, .xls or .csv.')}
+ e.target.value='';
+});
+$('sampleBtn').onclick=loadSample;
+$('applyMapBtn').onclick=()=>{['bank','payee','amount','date','words','cheque'].forEach(k=>mapping[k]=Number($('map'+k[0].toUpperCase()+k.slice(1)).value));buildRecords()};
+$('defaultDate').value=new Date().toISOString().slice(0,10);
+$('defaultDate').addEventListener('change',()=>{if(records.length)buildRecords()});
+$('bankFilter').onchange=renderTable;$('searchInput').oninput=renderTable;$('printBank').onchange=renderTable;
+$('recordsBody').addEventListener('change',e=>{const id=Number(e.target.dataset.select);if(e.target.dataset.select===undefined)return;if(e.target.checked)selected.add(id);else selected.delete(id);renderTable();if(selected.size)setPreviewList([...selected])});
+$('selectShown').onchange=e=>{shownRecords().forEach(r=>e.target.checked?selected.add(r.id):selected.delete(r.id));renderTable();setPreviewList([...selected])};
+$('selectValidBtn').onclick=()=>{shownRecords().filter(r=>!r.issues.length).forEach(r=>selected.add(r.id));renderTable();setPreviewList([...selected])};
+$('selectAllBtn').onclick=()=>{shownRecords().forEach(r=>selected.add(r.id));renderTable();setPreviewList([...selected])};
+$('clearBtn').onclick=()=>{selected.clear();renderTable();setPreviewList([])};
+$('prevBtn').onclick=()=>{if(previewIndex>0){previewIndex--;updatePreview()}};
+$('nextBtn').onclick=()=>{if(previewIndex<previewIds.length-1){previewIndex++;updatePreview()}};
+$('previewBtn').onclick=()=>{if(!selected.size)return;setPreviewList([...selected]);$('previewCheque').scrollIntoView({behavior:'smooth',block:'center'})};
+function printRecords(list){
+ if(!list.length){alert('No records selected for printing.');return}
+ const bad=list.filter(r=>r.issues.length);if(bad.length){alert(`${bad.length} selected row(s) have validation issues. Fix them or deselect them before printing.`);return}
+ const root=$('printRoot');root.innerHTML=list.map(r=>`<div class="print-page"><div class="print-cheque">
+ <div class="p" style="left:4%;top:7%;font-size:12pt;font-weight:bold">${esc(r.bank)}</div>
+ <div class="p" style="right:5%;top:9%;font-size:11pt;letter-spacing:2px">${esc(formatDate(r.date))}</div>
+ <div class="p" style="left:14%;top:34%;font-size:12pt;max-width:75%">${esc(r.payee)}</div>
+ <div class="p" style="right:5%;top:48%;font-size:12pt;font-weight:bold">${esc(r.amount.toLocaleString('en-BD',{minimumFractionDigits:2,maximumFractionDigits:2}))}</div>
+ <div class="p p-words" style="left:8%;top:52%;font-size:10pt;width:78%">${esc(r.words)}</div>
+ ${r.cheque?`<div class="p" style="left:4%;top:20%;font-size:8pt">Cheque No: ${esc(r.cheque)}</div>`:''}
+ </div></div>`).join('');
+ window.print();
+}
+$('printBtn').onclick=()=>printRecords([...selected].map(id=>records.find(r=>r.id===id)).filter(Boolean));
+$('printBankBtn').onclick=()=>{const bank=$('printBank').value;if(!bank){alert('Select a bank first.');return}const list=records.filter(r=>r.bank===bank);if(!list.length){alert('No records for this bank.');return}if(!confirm(`Print ${list.length} cheque(s) for ${bank}, in spreadsheet order?`))return;printRecords(list)};
+window.addEventListener('afterprint',()=>{$('printRoot').innerHTML=''});
+</script>
+<script src="./node_modules/xlsx/dist/xlsx.full.min.js"></script>
+</body></html>

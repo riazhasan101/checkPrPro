@@ -1,0 +1,6 @@
+'use strict';
+const {validatePayment}=require('./validation.cjs');
+const defaultTemplate={id:'default',name:'Generic sample — calibration required',bank:'',widthMm:202,heightMm:98,fields:{bank:{x:8,y:7,font:11},date:{x:157,y:9,font:11},payee:{x:28,y:33,font:12},amount:{x:162,y:49,font:12},words:{x:16,y:53,font:10}}};
+function validateTemplate(t){if(!t||typeof t!=='object')throw new Error('Missing template');if(!Number.isFinite(Number(t.widthMm))||t.widthMm<80||t.widthMm>300||!Number.isFinite(Number(t.heightMm))||t.heightMm<40||t.heightMm>180)throw new Error('Invalid cheque dimensions');for(const k of ['date','payee','amount','words']){const f=t.fields?.[k];if(!f||!Number.isFinite(Number(f.x))||!Number.isFinite(Number(f.y))||!Number.isFinite(Number(f.font)))throw new Error('Invalid template field: '+k);}return true;}
+function prepareBatch(records,bank,template){validateTemplate(template);if(!bank||!records.length)throw new Error('Select bank and records');for(const r of records){if(r.bank!==bank)throw new Error('Mixed-bank batch is not allowed');const errors=validatePayment(r);if(errors.length)throw new Error('Invalid cheque: '+errors.join(', '));}return {bank,count:records.length,records,template};}
+module.exports={defaultTemplate,validateTemplate,prepareBatch};
