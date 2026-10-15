@@ -1,5 +1,5 @@
 const {test}=require('node:test');const assert=require('node:assert/strict');
-const {words}=require('../src/core/words.cjs');const {validatePayment,findDuplicates}=require('../src/core/validation.cjs');const {prepareBatch,defaultTemplate}=require('../src/core/cheque.cjs');const {createStore}=require('../src/core/store.cjs');const fs=require('node:fs'),os=require('node:os'),path=require('node:path');
+const {words}=require('../src/core/words.cjs');const {validatePayment,findDuplicates}=require('../src/core/validation.cjs');const {prepareBatch,defaultTemplate,cityBankTemplate,validateTemplate}=require('../src/core/cheque.cjs');const {createStore}=require('../src/core/store.cjs');const fs=require('node:fs'),os=require('node:os'),path=require('node:path');
 const good={bank:'Bank A',payee:'Vendor',amount:1250.50,date:'2026-10-20'};
 test('amount words',()=>assert.equal(words(1250.50),'One Thousand Two Hundred Fifty Taka and Fifty Paisa Only'));
 test('zero amount words',()=>assert.equal(words(0),'Zero Taka Only'));
@@ -10,4 +10,5 @@ test('invalid amount',()=>assert.ok(validatePayment({...good,amount:0}).length))
 test('duplicate detection',()=>assert.equal(findDuplicates([good,{...good}]).length,1));
 test('bank batch',()=>assert.equal(prepareBatch([good],'Bank A',defaultTemplate).count,1));
 test('mixed bank blocked',()=>assert.throws(()=>prepareBatch([good,{...good,bank:'Bank B'}],'Bank A',defaultTemplate)));
+test('city bank cheque stock',()=>{assert.equal(cityBankTemplate.widthMm,190.5);assert.equal(cityBankTemplate.heightMm,88.9);assert.equal(defaultTemplate,cityBankTemplate);validateTemplate(cityBankTemplate);for(const k of ['date','payee','amount','words']){const f=cityBankTemplate.fields[k];assert.ok(f.x>=0&&f.x<cityBankTemplate.widthMm&&f.y>=0&&f.y<cityBankTemplate.heightMm);}});
 test('settings and audit persist',()=>{const dir=fs.mkdtempSync(path.join(os.tmpdir(),'checkprint-'));try{const store=createStore(dir);store.saveSettings({templates:[{id:'one'}]});assert.equal(store.getSettings().templates[0].id,'one');store.appendAudit({type:'print-request',count:1});assert.equal(store.getAudit().length,1);}finally{fs.rmSync(dir,{recursive:true,force:true})}});

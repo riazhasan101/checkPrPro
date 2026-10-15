@@ -31,24 +31,38 @@ td,th{padding:10px 11px;border-bottom:1px solid #edf0f5}tbody tr:hover{backgroun
 .side-section{padding:16px 18px;border-bottom:1px solid var(--line)}.side-section:last-child{border-bottom:0}
 .side-title{font-weight:750;margin-bottom:12px}.side-section .field{margin-bottom:11px}
 .preview-stage{background:#edf1f6;border:1px dashed #c5d0df;border-radius:9px;padding:18px;min-height:220px;display:flex;align-items:center;justify-content:center}
-.cheque{position:relative;width:100%;aspect-ratio:2.05/1;background:#fffdf6;border:1px solid #b7ad8c;border-radius:4px;overflow:hidden;color:#18243a;font-family:Georgia,serif;box-shadow:0 3px 10px #24344912}
-.cheque:before{content:"";position:absolute;inset:6px;border:1px solid #e4dcc2;pointer-events:none}
-.cheque .bank{position:absolute;left:4%;top:7%;font:700 12px Arial,sans-serif;letter-spacing:.4px}.cheque .branch{position:absolute;left:4%;top:15%;font:9px Arial,sans-serif;color:#6a6a61}
-.cheque .date{position:absolute;right:5%;top:9%;font:12px monospace;letter-spacing:2px}.cheque .payee{position:absolute;left:14%;top:34%;font:italic 13px Georgia;max-width:72%;overflow:hidden;white-space:nowrap}
-.cheque .amount{position:absolute;right:5%;top:48%;font:700 13px monospace}.cheque .words{position:absolute;left:8%;top:52%;font:italic 11px Georgia;width:75%;line-height:1.35;max-height:30%;overflow:hidden}
-.cheque .signature{position:absolute;right:7%;bottom:9%;border-top:1px solid #8b8b7d;width:24%;text-align:center;padding-top:3px;font:9px Arial;color:#6b6b61}
-.cheque .micr{position:absolute;left:5%;bottom:5%;font:13px monospace;letter-spacing:2px;color:#525252}
+.cheque{position:relative;width:100%;aspect-ratio:190.5/88.9;background:#fffdf8;border:1px solid #d9d3c4;border-radius:2px;overflow:hidden;color:#1a1a1a;font-family:Arial,sans-serif;box-shadow:0 3px 10px #24344912;container-type:inline-size}
+.cheque .mark{position:absolute;color:#c4bba8;pointer-events:none;line-height:1}
+.cheque .logo{left:2%;top:5%;color:#c8102e;font:700 13px Arial;letter-spacing:-.3px}
+.cheque .branch{left:2%;top:18%;font:8px Arial}
+.cheque .date-label{left:60%;top:16%;font:700 8px Arial;letter-spacing:.4px}
+.cheque .date-boxes{left:69.8%;top:18%;width:25.2%;height:8%;display:flex;justify-content:space-between}
+.cheque .date-boxes i{display:block;width:11%;height:100%;border:1px solid #e4dcc8;font-style:normal}
+.cheque .pay-label{left:2%;top:33%;font:700 9px Arial}
+.cheque .or-bearer{right:3%;top:33%;font:8px Arial}
+.cheque .rule{left:11%;right:16%;top:37.8%;border-top:1px solid #e6dfd0}
+.cheque .sum-label{left:2%;top:46%;font:8px Arial}
+.cheque .amt-box{left:62%;top:43%;width:33%;height:13%;border:1px solid #d9d0bc;display:flex;align-items:center;gap:4px;padding:0 4px;font:700 9px Arial;color:#c4bba8}
+.cheque .sign{right:4%;bottom:16%;width:28%;border-top:1px solid #e6dfd0;text-align:center;font:7px Arial;padding-top:2px}
+.cheque .micr{left:4%;bottom:4%;font:8px Arial;letter-spacing:1px}
+.cheque .date{position:absolute;left:0;top:19.7%;width:100%;height:8%;font:700 2.22cqw "Courier New",monospace}
+.cheque .date span{position:absolute;top:0;text-align:center;font-weight:700}
+.cheque .payee{position:absolute;left:10.5%;top:33.2%;font:2.22cqw Arial;max-width:62%;overflow:hidden;white-space:nowrap}
+.cheque .words{position:absolute;left:16.8%;top:46.7%;font:2.03cqw Arial;max-width:43%;overflow:hidden;white-space:nowrap}
+.cheque .words2{position:absolute;left:6.3%;top:56.8%;font:2.03cqw Arial;max-width:56%;overflow:hidden;white-space:nowrap}
+.cheque .amount{position:absolute;left:67.2%;top:46.7%;font:700 2.22cqw Arial;max-width:28%;overflow:hidden;white-space:nowrap}
 .preview-meta{display:flex;justify-content:space-between;align-items:center;margin:12px 0;font-size:12px;color:var(--muted)}
 .small{font-size:11px;color:var(--muted);line-height:1.5}.mapping{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 footer{max-width:1500px;margin:0 auto;padding:0 22px 20px;color:#718096;font-size:11px}
 @media(max-width:1100px){main{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(4,1fr)}}
 @media print{
  body{background:#fff}.no-print,header,main,footer{display:none!important}
- #printRoot{display:block!important}.print-page{width:100%;height:100vh;page-break-after:always;break-after:page;display:flex;align-items:flex-start;justify-content:flex-start;padding:0}
- .print-cheque{position:relative;width:100%;height:48%;border:0;background:#fff;color:#000;font-family:Arial,sans-serif}
- .print-cheque .p{position:absolute;white-space:nowrap;overflow:hidden}
- .print-cheque .p-words{white-space:normal;line-height:1.2}
- @page{size:auto;margin:5mm}
+ #printRoot{display:block!important}
+ .print-page{width:190.5mm;height:88.9mm;page-break-after:always;break-after:page;position:relative;overflow:hidden}
+ .print-cheque{position:relative;width:190.5mm;height:88.9mm;background:#fff;color:#000;font-family:Arial,sans-serif}
+ .print-cheque .p{position:absolute;white-space:nowrap;overflow:hidden;line-height:1}
+ .print-cheque .digit{position:absolute;top:17.5mm;width:6mm;text-align:center;font:700 12pt "Courier New",monospace}
+ @page{size:190.5mm 88.9mm;margin:0}
 }
 #printRoot{display:none}
 </style>
@@ -102,15 +116,29 @@ footer{max-width:1500px;margin:0 auto;padding:0 22px 20px;color:#718096;font-siz
    <div class="side-title">Print defaults</div>
    <div class="field"><label>Default cheque date</label><input type="date" id="defaultDate"></div>
    <div class="field"><label>Print bank</label><select id="printBank"><option value="">Select bank...</option></select></div>
-   <div class="field"><label>Paper / cheque stock</label><select id="paperSize"><option value="custom">Custom cheque (recommended)</option><option value="a4">A4 sheet</option><option value="letter">Letter</option></select></div>
-   <div class="field"><label>Cheque template label</label><input id="templateName" value="Default cheque template"></div>
-   <div class="small">Template positioning in this prototype is a starter layout. Bank-specific coordinates and cheque dimensions should be calibrated against your physical cheque.</div>
+   <div class="field"><label>Paper / cheque stock</label><select id="paperSize"><option value="city">City Bank cheque (190.5 × 88.9 mm)</option></select></div>
+   <div class="field"><label>Cheque template label</label><input id="templateName" value="City Bank PLC"></div>
+   <div class="small">Positions follow the supplied City Bank leaf: date in the eight boxes, payee on the Pay To line, words on the two Taka lines, and figures inside the Tk box. Print at 100% / Actual size, with no fit-to-page scaling.</div>
   </div>
   <div class="side-section">
    <div class="side-title">Preview</div>
    <div class="preview-stage"><div class="cheque" id="previewCheque">
-    <div class="bank" id="pvBank">BANK NAME</div><div class="branch">CHEQUE / PAYMENT</div><div class="date" id="pvDate">DD-MM-YYYY</div>
-    <div class="payee" id="pvPayee">Pay to the order of...</div><div class="amount" id="pvAmount">0.00</div><div class="words" id="pvWords">Amount in words</div><div class="signature">Authorized signature</div><div class="micr">⑆ 000000 000000 ⑈</div>
+    <div class="mark logo">city bank</div>
+    <div class="mark branch">Payable at any branch in Bangladesh</div>
+    <div class="mark date-label">DATE</div>
+    <div class="mark date-boxes"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="mark pay-label">Pay To</div>
+    <div class="mark or-bearer">Or Bearer</div>
+    <div class="mark rule"></div>
+    <div class="mark sum-label">The Sum of Taka</div>
+    <div class="mark amt-box">Tk</div>
+    <div class="mark sign">Please sign above</div>
+    <div class="mark micr">MICR band — not printed</div>
+    <div class="date" id="pvDate"></div>
+    <div class="payee" id="pvPayee"></div>
+    <div class="words" id="pvWords"></div>
+    <div class="words2" id="pvWords2"></div>
+    <div class="amount" id="pvAmount"></div>
    </div></div>
    <div class="preview-meta"><span id="previewCounter">No record selected</span><span class="status warn" id="previewStatus">Draft preview</span></div>
    <div class="toolbar"><button id="prevBtn" disabled>← Previous</button><button id="nextBtn" disabled>Next →</button></div>
@@ -185,9 +213,20 @@ function updatePreview(){
  const r=currentPreview();$('prevBtn').disabled=!r||previewIndex<=0;$('nextBtn').disabled=!r||previewIndex>=previewIds.length-1;
  $('previewCounter').textContent=r?`Record ${previewIndex+1} of ${previewIds.length}`:'No record selected';
  $('previewStatus').textContent=r?(r.issues.length?'Needs review':'Ready'):'Draft preview';$('previewStatus').className='status '+(r?(r.issues.length?'bad':'ok'):'warn');
- $('pvBank').textContent=r?.bank||'BANK NAME';$('pvDate').textContent=r?.date?formatDate(r.date):'DD-MM-YYYY';$('pvPayee').textContent=r?.payee||'Pay to the order of...';$('pvAmount').textContent=r&&Number.isFinite(r.amount)?r.amount.toLocaleString('en-BD',{minimumFractionDigits:2,maximumFractionDigits:2}):'0.00';$('pvWords').textContent=r?.words||'Amount in words';
+ const digits=r?.date?dateDigits(r.date):'';
+ $('pvDate').innerHTML=[...Array(8)].map((_,i)=>`<span style="left:${((CITY.dateX+i*CITY.datePitch)/CITY.widthMm*100).toFixed(2)}%;width:${(CITY.datePitch/CITY.widthMm*100).toFixed(2)}%">${esc(digits[i]||'')}</span>`).join('');
+ $('pvPayee').textContent=r?.payee||'';
+ const parts=splitWords(r?.words||'');
+ $('pvWords').textContent=parts[0];$('pvWords2').textContent=parts[1];
+ $('pvAmount').textContent=r&&Number.isFinite(r.amount)?formatChequeAmount(r.amount):'';
+ if(r&&!isCityBank(r.bank)){$('previewStatus').textContent='Not a City Bank cheque';$('previewStatus').className='status warn';}
 }
+const CITY={widthMm:190.5,heightMm:88.9,dateX:133,dateY:17.5,datePitch:6};
 function formatDate(s){if(!s)return '';let [y,m,d]=s.split('-');return `${d}-${m}-${y}`}
+function dateDigits(s){if(!s||!/^\d{4}-\d{2}-\d{2}$/.test(s))return '';let [y,m,d]=s.split('-');return d+m+y}
+function formatChequeAmount(amount){const whole=Math.floor(amount),paisa=Math.round((amount-whole)*100);const body=whole.toLocaleString('en-BD');return paisa?`${body}.${String(paisa).padStart(2,'0')}/=`:`${body}/=`}
+function splitWords(text){const max=36;const s=String(text||'').trim();if(s.length<=max)return [s,''];let cut=s.lastIndexOf(' ',max);if(cut<10)cut=max;return [s.slice(0,cut).trim(),s.slice(cut).trim()]}
+function isCityBank(bank){return /city\s*bank/i.test(String(bank||''))}
 function loadSample(){
  headers=['Bank Name','Vendor Name','Amount','Cheque Date','Amount in Words','Cheque No'];
  rawRows=[
@@ -226,14 +265,17 @@ $('previewBtn').onclick=()=>{if(!selected.size)return;setPreviewList([...selecte
 function printRecords(list){
  if(!list.length){alert('No records selected for printing.');return}
  const bad=list.filter(r=>r.issues.length);if(bad.length){alert(`${bad.length} selected row(s) have validation issues. Fix them or deselect them before printing.`);return}
- const root=$('printRoot');root.innerHTML=list.map(r=>`<div class="print-page"><div class="print-cheque">
- <div class="p" style="left:4%;top:7%;font-size:12pt;font-weight:bold">${esc(r.bank)}</div>
- <div class="p" style="right:5%;top:9%;font-size:11pt;letter-spacing:2px">${esc(formatDate(r.date))}</div>
- <div class="p" style="left:14%;top:34%;font-size:12pt;max-width:75%">${esc(r.payee)}</div>
- <div class="p" style="right:5%;top:48%;font-size:12pt;font-weight:bold">${esc(r.amount.toLocaleString('en-BD',{minimumFractionDigits:2,maximumFractionDigits:2}))}</div>
- <div class="p p-words" style="left:8%;top:52%;font-size:10pt;width:78%">${esc(r.words)}</div>
- ${r.cheque?`<div class="p" style="left:4%;top:20%;font-size:8pt">Cheque No: ${esc(r.cheque)}</div>`:''}
- </div></div>`).join('');
+ const other=list.filter(r=>!isCityBank(r.bank));if(other.length){alert('This alignment is for City Bank cheques only. Deselect other banks before printing.');return}
+ const root=$('printRoot');root.innerHTML=list.map(r=>{
+  const digits=dateDigits(r.date),[w1,w2]=splitWords(r.words);
+  const boxes=[...digits].map((ch,i)=>`<span class="digit" style="left:${CITY.dateX+i*CITY.datePitch}mm">${esc(ch)}</span>`).join('');
+  return `<div class="print-page"><div class="print-cheque">${boxes}
+ <div class="p" style="left:20mm;top:29.5mm;font-size:12pt;max-width:118mm">${esc(r.payee)}</div>
+ <div class="p" style="left:32mm;top:41.5mm;font-size:11pt;max-width:82mm">${esc(w1)}</div>
+ <div class="p" style="left:12mm;top:50.5mm;font-size:11pt;max-width:108mm">${esc(w2)}</div>
+ <div class="p" style="left:128mm;top:41.5mm;font-size:12pt;font-weight:700;max-width:55mm">${esc(formatChequeAmount(r.amount))}</div>
+ </div></div>`;
+ }).join('');
  window.print();
 }
 $('printBtn').onclick=()=>printRecords([...selected].map(id=>records.find(r=>r.id===id)).filter(Boolean));
