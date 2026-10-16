@@ -24,7 +24,20 @@ git tag v1.0.0
 git push origin v1.0.0
 ```
 
-This triggers an unsigned GitHub release installer. For production distribution, configure Windows Authenticode code signing, protected environments, branch protections, reviewed dependency updates, and signed artifacts. Add `npm audit` and dependency/license review as required release gates.
+A tag build signs the installer when both GitHub Actions secrets are set:
+
+- `WIN_CSC_LINK`: base64 text of the Authenticode `.pfx`, or a path the runner can read. Prefer base64 so the file is not stored in the repository.
+- `WIN_CSC_KEY_PASSWORD`: password for that certificate.
+
+Do not commit the `.pfx` or the password. Without those secrets the tag build still produces an unsigned installer and says so in the log. A local signed build uses the same variables:
+
+```powershell
+$env:CSC_LINK = 'C:\secrets\checkprint.pfx'
+$env:CSC_KEY_PASSWORD = 'the-certificate-password'
+npm run build:win:signed
+```
+
+For production distribution, also configure protected environments, branch protections, reviewed dependency updates, and signed artifacts. Add `npm audit` and dependency/license review as required release gates. The certificate must come from a trusted Windows code-signing authority. A self-signed file does not make the installer trusted.
 
 ## Docker
 

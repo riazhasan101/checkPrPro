@@ -7,10 +7,12 @@
 <style>
 :root{--navy:#142b4a;--blue:#2457a7;--bg:#f3f6fb;--line:#dbe3ee;--text:#1e293b;--muted:#66758b;--green:#16794b;--red:#b42318}
 *{box-sizing:border-box}body{margin:0;font:14px "Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text)}
-header{height:72px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 26px}
-.brand{font-size:23px;font-weight:750;letter-spacing:.2px}.brand small{display:block;font-size:11px;font-weight:400;color:#c5d4e8;margin-top:2px}
-.header-right{font-size:12px;color:#d6e1f0}
-main{max-width:1500px;margin:0 auto;padding:22px;display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:18px}
+header{height:64px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 22px;gap:16px}
+.brand{font-size:22px;font-weight:750;letter-spacing:.2px}.brand small{display:block;font-size:11px;font-weight:400;color:#c5d4e8;margin-top:2px}
+.header-actions{display:flex;align-items:center;gap:8px}
+header button{background:transparent;color:#fff;border-color:#3e628c}
+header button:hover{background:#1e3d66}
+main{max-width:1680px;margin:0 auto;padding:18px;display:grid;grid-template-columns:minmax(420px,.9fr) minmax(520px,1.2fr);gap:16px;align-items:start}
 .panel{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 2px 8px #182b4610;overflow:hidden}
 .panel-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}
 h2{font-size:16px;margin:0}.sub{color:var(--muted);font-size:12px;margin-top:4px}
@@ -30,31 +32,32 @@ td,th{padding:10px 11px;border-bottom:1px solid #edf0f5}tbody tr:hover{backgroun
 .empty{text-align:center;color:var(--muted);padding:44px 15px;line-height:1.7}
 .side-section{padding:16px 18px;border-bottom:1px solid var(--line)}.side-section:last-child{border-bottom:0}
 .side-title{font-weight:750;margin-bottom:12px}.side-section .field{margin-bottom:11px}
-.preview-stage{background:#edf1f6;border:1px dashed #c5d0df;border-radius:9px;padding:18px;min-height:220px;display:flex;align-items:center;justify-content:center}
-.cheque{position:relative;width:100%;aspect-ratio:190.5/88.9;background:#fffdf8;border:1px solid #d9d3c4;border-radius:2px;overflow:hidden;color:#1a1a1a;font-family:Arial,sans-serif;box-shadow:0 3px 10px #24344912;container-type:inline-size}
-.cheque .mark{position:absolute;color:#c4bba8;pointer-events:none;line-height:1}
-.cheque .logo{left:2%;top:5%;color:#c8102e;font:700 11px Arial;letter-spacing:-.2px;max-width:48%}
-.cheque .branch{left:2%;top:18%;font:8px Arial}
-.cheque .date-label{left:60%;top:16%;font:700 8px Arial;letter-spacing:.4px}
-.cheque .date-boxes{left:69.8%;top:18%;width:25.2%;height:8%;display:flex;justify-content:space-between}
-.cheque .date-boxes i{flex:1;height:100%;border:1px solid #e4dcc8;margin:0 1px;font-style:normal}
-.cheque .pay-label{left:2%;top:33%;font:700 9px Arial}
-.cheque .or-bearer{right:3%;top:33%;font:8px Arial}
-.cheque .rule{left:11%;right:16%;top:37.8%;border-top:1px solid #e6dfd0}
-.cheque .sum-label{left:2%;top:46%;font:8px Arial}
-.cheque .amt-box{left:62%;top:43%;width:33%;height:13%;border:1px solid #d9d0bc;display:flex;align-items:center;gap:4px;padding:0 4px;font:700 9px Arial;color:#c4bba8}
-.cheque .sign{right:4%;bottom:16%;width:28%;border-top:1px solid #e6dfd0;text-align:center;font:7px Arial;padding-top:2px}
-.cheque .micr{left:4%;bottom:4%;font:8px Arial;letter-spacing:1px}
-.cheque .date{position:absolute;left:0;top:19.7%;width:100%;height:8%;font:700 2.22cqw "Courier New",monospace}
+.preview-stage{background:#e7edf5;border:1px solid #d5deea;border-radius:12px;padding:28px 26px 18px;min-height:380px;display:flex;align-items:center;justify-content:center}
+.cheque{position:relative;width:100%;aspect-ratio:190.5/88.9;background:#fffdf8;border:1px solid #d9d3c4;border-radius:3px;overflow:hidden;color:#1a1a1a;font-family:Arial,sans-serif;box-shadow:0 8px 24px #24344918;container-type:inline-size}
+.cheque .mark{position:absolute;color:#c9c0ae;pointer-events:none;line-height:1;font-size:1.45cqw;white-space:nowrap;overflow:hidden}
+.cheque .logo{left:2%;top:3.5%;color:#c8102e;font:700 2.5cqw Arial;letter-spacing:-.2px;max-width:46%}
+.cheque .branch{left:2%;top:10%;max-width:48%}
+.cheque .date-label{font-weight:700;letter-spacing:.3px}
+.cheque .date-boxes{height:5.6%;display:flex;justify-content:space-between}
+.cheque .date-boxes i{flex:1;height:100%;border:1px solid #e4dcc8;margin:0 .4px;font-style:normal}
+.cheque .rule{border-top:1px solid #e4dcc8}
+.cheque .amt-box{border:1px solid #e0d6c4;display:flex;align-items:flex-start;padding:.4cqw 0 0 .6cqw;font-weight:700}
+.cheque .sign{right:3%;bottom:14%;width:26%;border-top:1px solid #e6dfd0;text-align:center;padding-top:.4cqw}
+.cheque .micr{left:3%;bottom:3.5%;letter-spacing:.4px}
+.cheque .date{position:absolute;left:0;width:100%;height:auto;font:700 2.05cqw "Courier New",monospace;pointer-events:none}
 .cheque .date span{position:absolute;top:0;text-align:center;font-weight:700}
-.cheque .payee{position:absolute;left:10.5%;top:33.2%;font:2.22cqw Arial;max-width:62%;overflow:hidden;white-space:nowrap}
-.cheque .words{position:absolute;left:16.8%;top:46.7%;font:2.03cqw Arial;max-width:43%;overflow:hidden;white-space:nowrap}
-.cheque .words2{position:absolute;left:6.3%;top:56.8%;font:2.03cqw Arial;max-width:56%;overflow:hidden;white-space:nowrap}
-.cheque .amount{position:absolute;left:67.2%;top:46.7%;font:700 2.22cqw Arial;max-width:28%;overflow:hidden;white-space:nowrap}
+.cheque .payee,.cheque .words,.cheque .words2{position:absolute;font:2.05cqw Arial;overflow:hidden;white-space:nowrap;line-height:1;pointer-events:none}
+.cheque .amount{position:absolute;font:700 2.15cqw Arial;overflow:hidden;white-space:nowrap;line-height:1;pointer-events:none}
+tbody tr[data-row]{cursor:pointer}tbody tr.active{background:#e7f0ff}tbody tr.active:hover{background:#e7f0ff}
+.setup-backdrop{position:fixed;inset:0;background:#142b4a66;z-index:28}
+.setup-backdrop[hidden]{display:none!important}
+.setup-drawer{position:fixed;top:0;left:0;bottom:0;width:min(440px,94vw);background:#fff;z-index:30;overflow:auto;box-shadow:8px 0 28px #142b4a2e;border-right:1px solid var(--line)}
+.setup-drawer[hidden]{display:none!important}
+.setup-head{position:sticky;top:0;background:#fff;z-index:1;display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}
 .preview-meta{display:flex;justify-content:space-between;align-items:center;margin:12px 0;font-size:12px;color:var(--muted)}
 .small{font-size:11px;color:var(--muted);line-height:1.5}.mapping{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 footer{max-width:1500px;margin:0 auto;padding:0 22px 20px;color:#718096;font-size:11px}
-@media(max-width:1100px){main{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:1100px){main{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}.preview-stage{min-height:240px;padding:16px}}
 @media print{
  body{background:#fff}.no-print,header,main,footer{display:none!important}
  #printRoot{display:block!important}
@@ -65,12 +68,22 @@ footer{max-width:1500px;margin:0 auto;padding:0 22px 20px;color:#718096;font-siz
  @page{size:190.5mm 88.9mm;margin:0}
 }
 #printRoot{display:none}
+.modal{position:fixed;inset:0;background:#142b4acc;display:flex;align-items:center;justify-content:center;z-index:20;padding:20px}
+.modal[hidden]{display:none!important}
+.modal-card{background:#fff;border-radius:12px;max-width:480px;width:100%;padding:18px;box-shadow:0 12px 40px #142b4a44}
+.modal-card h3{margin:0 0 8px;font-size:16px}
+.modal-card ul{margin:8px 0 12px;padding-left:18px}
+.modal-card li{margin:4px 0}
+body.dragging{user-select:none}
+.cheque .date,.cheque .payee,.cheque .words,.cheque .words2,.cheque .amount{z-index:3}
+body.adjusting .cheque .date,body.adjusting .cheque .payee,body.adjusting .cheque .words,body.adjusting .cheque .words2,body.adjusting .cheque .amount{pointer-events:auto;cursor:grab;touch-action:none}
+.cheque .hot{outline:1px dashed #2457a7;outline-offset:1px}
 </style>
 </head>
 <body>
 <header class="no-print">
- <div class="brand">CheckPrint <small>Excel-to-cheque printing workspace</small></div>
- <div class="header-right">Windows Desktop · Local-first prototype</div>
+ <div class="brand">CheckPrint <small>Upload Excel, preview the cheque, then print</small></div>
+ <div class="header-actions"><button type="button" id="setupBtn">Setup</button></div>
 </header>
 <main class="no-print">
  <section class="panel">
@@ -78,7 +91,7 @@ footer{max-width:1500px;margin:0 auto;padding:0 22px 20px;color:#718096;font-siz
    <div class="toolbar"><label class="file-button" for="excelFile">＋ Import Excel</label><input id="excelFile" type="file" accept=".xlsx,.xls,.csv"><button id="sampleBtn">Load sample</button></div>
   </div>
   <div class="panel-body">
-   <div class="notice"><b>Before printing:</b> confirm the correct bank, cheque stock size, printer scaling (100% / Actual size), and alignment. Always test on plain paper first. This prototype does not connect to a bank or create authorized signatures.</div>
+   <div class="notice">Click a row to preview that cheque. Choose a bank on the right to see only that bank. Print at 100% / Actual size, and test on plain paper first.</div>
    <div class="metrics">
     <div class="metric"><span>Total rows</span><strong id="totalMetric">0</strong></div>
     <div class="metric"><span>Valid rows</span><strong id="validMetric">0</strong></div>
@@ -90,15 +103,47 @@ footer{max-width:1500px;margin:0 auto;padding:0 22px 20px;color:#718096;font-siz
     <div class="field" style="min-width:190px;flex:1"><label>Search vendor / cheque / bank</label><input id="searchInput" placeholder="Type to search..."></div>
     <button id="selectValidBtn">Select valid</button><button id="selectAllBtn">Select all shown</button><button id="clearBtn">Clear selection</button>
    </div>
-   <div class="table-wrap"><table><thead><tr><th><input type="checkbox" id="selectShown"></th><th>Row</th><th>Bank</th><th>Vendor / Payee</th><th>Amount</th><th>Date</th><th>Validation</th></tr></thead><tbody id="recordsBody"><tr><td colspan="7" class="empty">No Excel data loaded yet.<br>Choose <b>Import Excel</b> or load sample data to explore the workflow.</td></tr></tbody></table></div>
+   <div class="table-wrap"><table><thead><tr><th><input type="checkbox" id="selectShown"></th><th>Row</th><th>Bank</th><th>Vendor / Payee</th><th>Amount</th><th>Date</th><th>Validation</th><th>Print</th></tr></thead><tbody id="recordsBody"><tr><td colspan="8" class="empty">No Excel data loaded yet.<br>Choose <b>Import Excel</b> or load sample data to explore the workflow.</td></tr></tbody></table></div>
    <div class="toolbar" style="justify-content:space-between;margin-top:14px">
     <span id="tableStatus" class="small">Import a spreadsheet to begin.</span>
-    <div class="toolbar"><button id="previewBtn" disabled>Preview selected</button><button id="printBtn" class="primary" disabled>Print selected</button><button id="printBankBtn" disabled>Print all for bank</button></div>
    </div>
   </div>
  </section>
- <aside class="panel">
-  <div class="panel-head"><div><h2>Cheque setup</h2><div class="sub">Map spreadsheet columns and preview layout.</div></div></div>
+ <section class="panel" id="previewPanel">
+  <div class="panel-head">
+   <div><h2 id="previewTitle">Cheque preview</h2><div class="sub" id="previewHint">The cheque for the selected row appears here.</div></div>
+   <div class="field" style="min-width:210px"><label for="previewBank">Bank</label><select id="previewBank"><option value="">All loaded cheques</option></select></div>
+  </div>
+  <div class="panel-body">
+   <div class="preview-stage"><div class="cheque" id="previewCheque">
+    <div class="mark logo" id="pvLogo"></div>
+    <div class="mark branch">Payable at any branch in Bangladesh</div>
+    <div class="mark date-label" id="pvDateLabel">DATE</div>
+    <div class="mark date-boxes" id="pvBoxes"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="mark pay-label" id="pvPay">Pay</div>
+    <div class="mark or-bearer" id="pvBearer">Or Bearer</div>
+    <div class="mark rule" id="pvRule"></div>
+    <div class="mark sum-label" id="pvSum">Sum of Taka</div>
+    <div class="mark amt-box" id="pvAmt">Tk</div>
+    <div class="mark sign">Please sign above</div>
+    <div class="mark micr">MICR band — not printed</div>
+    <div class="date" id="pvDate"></div>
+    <div class="payee" id="pvPayee"></div>
+    <div class="words" id="pvWords"></div>
+    <div class="words2" id="pvWords2"></div>
+    <div class="amount" id="pvAmount"></div>
+   </div></div>
+   <div class="preview-meta"><span id="previewCounter">No cheque loaded</span><span class="status warn" id="previewStatus">Waiting for Excel</span></div>
+   <div class="toolbar" style="justify-content:space-between">
+    <div class="toolbar"><button id="prevBtn" disabled>← Previous</button><button id="nextBtn" disabled>Next →</button></div>
+    <button id="printBtn" class="primary" disabled>Print</button>
+   </div>
+  </div>
+ </section>
+</main>
+<div id="setupBackdrop" class="setup-backdrop no-print" hidden></div>
+<aside id="setupDrawer" class="setup-drawer no-print" hidden>
+ <div class="setup-head"><div><h2>Setup</h2><div class="sub">Column mapping, bank positions, and the print record.</div></div><button type="button" id="setupClose">Close</button></div>
   <div class="side-section">
    <div class="side-title">Column mapping</div>
    <div class="small" style="margin-bottom:10px">Headers are auto-detected where possible. Change any mapping if your Excel columns use different names.</div>
@@ -116,41 +161,55 @@ footer{max-width:1500px;margin:0 auto;padding:0 22px 20px;color:#718096;font-siz
    <div class="side-title">Print defaults</div>
    <div class="field"><label>Default cheque date</label><input type="date" id="defaultDate"></div>
    <div class="field"><label>Print bank</label><select id="printBank"><option value="">Select bank...</option></select></div>
+   <button type="button" id="printBankBtn" disabled style="width:100%">Print all for this bank</button>
    <div class="field"><label>Paper / cheque stock</label><select id="paperSize"><option value="standard">Standard cheque (190.5 × 88.9 mm)</option></select></div>
-   <div class="field"><label>Cheque template label</label><input id="templateName" value="City Bank PLC"></div>
-   <div class="small">City Bank, Dutch-Bangla, UCB, BRAC, Eastern, Islami Bank, and IFIC each use positions measured from the supplied leaf. Print at 100% / Actual size.</div>
+   <div class="field"><label>Cheque template label</label><input id="templateName" value="" readonly></div>
+   <div class="small">Open Setup, then drag the writing on the large preview if a field needs a nudge. Print at 100% / Actual size.</div>
+  </div>
+  <div class="side-section" id="layoutSection">
+   <div class="side-title">Adjust print positions</div>
+   <div class="small" style="margin-bottom:10px">Drag the date, payee, words, or amount on the preview. X and Y are millimetres from the top-left of the cheque. Changes are saved on this computer.</div>
+   <div class="field"><label>Bank layout</label><select id="editorBank"></select></div>
+   <div class="field"><label>Field</label><select id="editorField"><option value="date">Date digits</option><option value="payee">Payee</option><option value="words">Amount in words, line 1</option><option value="words2">Amount in words, line 2</option><option value="amount">Amount figures</option></select></div>
+   <div class="grid3">
+    <div class="field"><label>X mm</label><input id="editorX" type="number" step="0.1" min="0" max="188.5"></div>
+    <div class="field"><label>Y mm</label><input id="editorY" type="number" step="0.1" min="0" max="86.9"></div>
+    <div class="field"><label id="editorThirdLabel">Pitch mm</label><input id="editorThird" type="number" step="0.1"></div>
+   </div>
+   <div class="toolbar" style="margin-top:8px">
+    <button type="button" id="nudgeLeft">Left 0.5</button>
+    <button type="button" id="nudgeRight">Right 0.5</button>
+    <button type="button" id="nudgeUp">Up 0.5</button>
+    <button type="button" id="nudgeDown">Down 0.5</button>
+    <button type="button" id="resetLayoutBtn" class="danger">Reset bank</button>
+   </div>
+   <div id="editorNote" class="small" style="margin-top:8px"></div>
+   <div id="editorStatus" class="small"></div>
   </div>
   <div class="side-section">
-   <div class="side-title">Preview</div>
-   <div class="preview-stage"><div class="cheque" id="previewCheque">
-    <div class="mark logo" id="pvLogo">City Bank</div>
-    <div class="mark branch">Payable at any branch in Bangladesh</div>
-    <div class="mark date-label" id="pvDateLabel">DATE</div>
-    <div class="mark date-boxes" id="pvBoxes"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-    <div class="mark pay-label">Pay To</div>
-    <div class="mark or-bearer">Or Bearer</div>
-    <div class="mark rule" id="pvRule"></div>
-    <div class="mark sum-label" id="pvSum">The Sum of Taka</div>
-    <div class="mark amt-box" id="pvAmt">Tk</div>
-    <div class="mark sign">Please sign above</div>
-    <div class="mark micr">MICR band — not printed</div>
-    <div class="date" id="pvDate"></div>
-    <div class="payee" id="pvPayee"></div>
-    <div class="words" id="pvWords"></div>
-    <div class="words2" id="pvWords2"></div>
-    <div class="amount" id="pvAmount"></div>
-   </div></div>
-   <div class="preview-meta"><span id="previewCounter">No record selected</span><span class="status warn" id="previewStatus">Draft preview</span></div>
-   <div class="toolbar"><button id="prevBtn" disabled>← Previous</button><button id="nextBtn" disabled>Next →</button></div>
+   <div class="side-title">Print record</div>
+   <div class="small" style="margin-bottom:8px">Each printed cheque is stored on this computer. Printing it again asks for a reason, and both records are kept.</div>
+   <div id="printLog" class="small">No cheques printed from this app yet.</div>
   </div>
  </aside>
-</main>
-<footer class="no-print">CheckPrint prototype · Data is processed in this app session. Keep sensitive payment spreadsheets on trusted devices only.</footer>
+<footer class="no-print">CheckPrint · Layout adjustments and the print record stay on this computer. Keep sensitive payment spreadsheets on trusted devices only.</footer>
+<div id="reprintDialog" class="modal" hidden>
+ <div class="modal-card" role="dialog" aria-labelledby="reprintTitle">
+  <h3 id="reprintTitle">These cheques were already printed</h3>
+  <p class="small">Printing again does not delete the earlier record. Enter why this copy is needed, for example a paper jam or a wrong alignment.</p>
+  <ul id="reprintItems"></ul>
+  <div class="field"><label for="reprintReason">Reason for reprint</label><input id="reprintReason" maxlength="200" placeholder="Printer jammed"></div>
+  <div id="reprintError" class="small" style="color:var(--red);min-height:16px;margin-top:6px"></div>
+  <div class="toolbar" style="margin-top:12px;justify-content:flex-end"><button type="button" id="reprintCancel">Cancel</button><button type="button" id="reprintConfirm" class="primary">Reprint</button></div>
+ </div>
+</div>
 <div id="printRoot"></div>
 <script>
 const $=id=>document.getElementById(id);
 let headers=[], rawRows=[], records=[], selected=new Set(), previewIds=[], previewIndex=0;
 let mapping={bank:-1,payee:-1,amount:-1,date:-1,words:-1,cheque:-1};
+const LAYOUT_STORE='checkprint.layouts.v1',PRINT_STORE='checkprint.prints.v1';
+let layouts={},printLog=[],editorId='city-bank',editorWriting=false,printing=false,pendingPrintList=null;
 const aliases={
  bank:['bank','bank name','bank_name','bankname','branch bank'],
  payee:['vendor','vendor name','payee','payee name','beneficiary','beneficiary name','supplier','supplier name','party name','name'],
@@ -189,23 +248,38 @@ function buildRecords(){
   return {id:i,row:i+2,bank,payee,amount,date,words:words||(Number.isFinite(amount)&&amount>=0?amountWords(amount):''),cheque,issues,source:row};
  });
  selected=new Set(records.filter(r=>!r.issues.length).map(r=>r.id));
- refreshBankLists();renderTable();setPreviewList(Array.from(selected));
+ refreshBankLists();$('previewBank').value='';renderTable();setPreviewList(records.map(r=>r.id));
 }
 function refreshBankLists(){
  const banks=[...new Set(records.map(r=>r.bank).filter(Boolean))].sort();
- const oldFilter=$('bankFilter').value,oldPrint=$('printBank').value;
+ const oldFilter=$('bankFilter').value,oldPrint=$('printBank').value,oldPreview=$('previewBank').value;
  $('bankFilter').innerHTML='<option value="">All banks</option>'+banks.map(b=>`<option>${esc(b)}</option>`).join('');
  $('printBank').innerHTML='<option value="">Select bank...</option>'+banks.map(b=>`<option>${esc(b)}</option>`).join('');
- if(banks.includes(oldFilter))$('bankFilter').value=oldFilter;if(banks.includes(oldPrint))$('printBank').value=oldPrint;
+ $('previewBank').innerHTML='<option value="">All loaded cheques</option>'+banks.map(b=>`<option>${esc(b)}</option>`).join('');
+ if(banks.includes(oldFilter))$('bankFilter').value=oldFilter;
+ if(banks.includes(oldPrint))$('printBank').value=oldPrint;
+ if(banks.includes(oldPreview))$('previewBank').value=oldPreview;
 }
 function shownRecords(){const bank=$('bankFilter').value,q=norm($('searchInput').value);return records.filter(r=>(!bank||r.bank===bank)&&(!q||norm([r.bank,r.payee,r.cheque,r.amount].join(' ')).includes(q)))}
 function renderTable(){
- const shown=shownRecords();$('totalMetric').textContent=records.length;$('validMetric').textContent=records.filter(r=>!r.issues.length).length;$('invalidMetric').textContent=records.filter(r=>r.issues.length).length;$('selectedMetric').textContent=selected.size;
- if(!shown.length){$('recordsBody').innerHTML='<tr><td colspan="7" class="empty">No matching records.</td></tr>'}
- else $('recordsBody').innerHTML=shown.map(r=>`<tr class="${r.issues.length?'invalid':''}"><td><input type="checkbox" data-select="${r.id}" ${selected.has(r.id)?'checked':''}></td><td>${r.row}</td><td>${esc(r.bank||'—')}</td><td>${esc(r.payee||'—')}${r.cheque?`<div class="small">Cheque: ${esc(r.cheque)}</div>`:''}</td><td>${Number.isFinite(r.amount)?r.amount.toLocaleString('en-BD',{minimumFractionDigits:2,maximumFractionDigits:2}):'—'}</td><td>${esc(r.date||'—')}</td><td><span class="status ${r.issues.length?'bad':'ok'}">${r.issues.length?esc(r.issues.join(', ')):'Ready'}</span></td></tr>`).join('');
+ const shown=shownRecords(),printed=latestPrints(),current=currentPreview();$('totalMetric').textContent=records.length;$('validMetric').textContent=records.filter(r=>!r.issues.length).length;$('invalidMetric').textContent=records.filter(r=>r.issues.length).length;$('selectedMetric').textContent=selected.size;
+ const printCell=r=>{const prior=printed.get(printKey(r));return prior?`<span class="status ok">Printed</span><div class="small">${esc(shortTime(prior.timestamp))}${prior.reprint?' · reprint':''}</div>`:`<span class="status warn">Not printed</span>`};
+ if(!shown.length){$('recordsBody').innerHTML='<tr><td colspan="8" class="empty">No matching records.</td></tr>'}
+ else $('recordsBody').innerHTML=shown.map(r=>`<tr data-row="${r.id}" class="${r.issues.length?'invalid':''}${current&&current.id===r.id?' active':''}"><td><input type="checkbox" data-select="${r.id}" ${selected.has(r.id)?'checked':''}></td><td>${r.row}</td><td>${esc(r.bank||'—')}</td><td>${esc(r.payee||'—')}${r.cheque?`<div class="small">Cheque: ${esc(r.cheque)}</div>`:''}</td><td>${Number.isFinite(r.amount)?r.amount.toLocaleString('en-BD',{minimumFractionDigits:2,maximumFractionDigits:2}):'—'}</td><td>${esc(r.date||'—')}</td><td><span class="status ${r.issues.length?'bad':'ok'}">${r.issues.length?esc(r.issues.join(', ')):'Ready'}</span></td><td>${printCell(r)}</td></tr>`).join('');
  $('tableStatus').textContent=`Showing ${shown.length} of ${records.length} rows · ${selected.size} selected`;
- $('previewBtn').disabled=!selected.size;$('printBtn').disabled=!selected.size;$('printBankBtn').disabled=!records.length||!$('printBank').value;
+ $('printBtn').disabled=!records.length;
+ $('printBtn').textContent=selected.size?`Print ${selected.size} selected`:'Print this cheque';
+ $('printBankBtn').disabled=!records.length||!$('printBank').value;
  $('selectShown').checked=shown.length>0&&shown.every(r=>selected.has(r.id));
+}
+function previewPool(){const bank=$('previewBank').value;return records.filter(r=>!bank||r.bank===bank)}
+function focusPreview(id){
+ const row=records.find(r=>r.id===id);
+ if(row&&$('previewBank').value&&row.bank!==$('previewBank').value)$('previewBank').value=row.bank;
+ previewIds=previewPool().map(r=>r.id);
+ previewIndex=Math.max(0,previewIds.indexOf(id));
+ updatePreview();
+ renderTable();
 }
 function setPreviewList(ids){previewIds=ids.filter(id=>records.some(r=>r.id===id));previewIndex=0;updatePreview()}
 function currentPreview(){return previewIds.length?records.find(r=>r.id===previewIds[previewIndex]):null}
@@ -221,40 +295,74 @@ const TEMPLATES=[
 ];
 function field(arr,font){return {x:arr[0],y:arr[1],w:arr[2],pitch:arr[2],font}}
 function asTemplate(t){return {id:t.id,name:t.name,short:t.short,date:{x:t.date[0],y:t.date[1],pitch:t.date[2],font:12},payee:field(t.payee,12),words:field(t.words,11),words2:field(t.words2,11),amount:field(t.amount,12)}}
-function templateFor(bank){const hit=TEMPLATES.find(t=>t.match.test(String(bank||'')));return hit?asTemplate(hit):null}
+function pick(src,key,fallback){const n=Number(src&&src[key]);return Number.isFinite(n)?n:fallback}
+function withLayout(t){const o=(layouts[t.id]&&layouts[t.id].fields)||{};return {...t,date:[pick(o.date,'x',t.date[0]),pick(o.date,'y',t.date[1]),pick(o.date,'pitch',t.date[2])],payee:[pick(o.payee,'x',t.payee[0]),pick(o.payee,'y',t.payee[1]),pick(o.payee,'w',t.payee[2])],words:[pick(o.words,'x',t.words[0]),pick(o.words,'y',t.words[1]),pick(o.words,'w',t.words[2])],words2:[pick(o.words2,'x',t.words2[0]),pick(o.words2,'y',t.words2[1]),pick(o.words2,'w',t.words2[2])],amount:[pick(o.amount,'x',t.amount[0]),pick(o.amount,'y',t.amount[1]),pick(o.amount,'w',t.amount[2])]}}
+function templateFor(bank){const hit=TEMPLATES.find(t=>t.match.test(String(bank||'')));return hit?asTemplate(withLayout(hit)):null}
+function templateById(id){const hit=TEMPLATES.find(t=>t.id===id);return hit?asTemplate(withLayout(hit)):null}
 function pct(mm,total){return (mm/total*100).toFixed(2)+'%'}
-function place(el,f){el.style.left=pct(f.x,STOCK.w);el.style.top=pct(f.y,STOCK.h);if(f.w)el.style.maxWidth=pct(f.w,STOCK.w)}
+function place(el,f,limitMm){el.style.left=pct(f.x,STOCK.w);el.style.top=pct(f.y,STOCK.h);const width=limitMm?Math.min(f.w||limitMm,Math.max(8,limitMm-f.x)):f.w;if(width)el.style.maxWidth=pct(width,STOCK.w)}
 function layoutGuides(t){
  $('pvLogo').textContent=t.short;
- $('pvDateLabel').style.left=pct(Math.max(2,t.date.x-18),STOCK.w);$('pvDateLabel').style.top=pct(t.date.y,STOCK.h);
- const boxes=$('pvBoxes');boxes.style.left=pct(t.date.x,STOCK.w);boxes.style.top=pct(Math.max(0,t.date.y-1.2),STOCK.h);boxes.style.width=pct(t.date.pitch*8,STOCK.w);
- $('pvRule').style.top=pct(t.payee.y+4.6,STOCK.h);
- $('pvSum').style.top=pct(t.words.y,STOCK.h);
- $('pvAmt').style.left=pct(t.amount.x-8,STOCK.w);$('pvAmt').style.top=pct(t.amount.y-1.6,STOCK.h);$('pvAmt').style.width=pct(t.amount.w+14,STOCK.w);
+ const above=y=>pct(Math.max(0.6,y-3.4),STOCK.h);
+ $('pvDateLabel').style.left=pct(t.date.x,STOCK.w);$('pvDateLabel').style.top=above(t.date.y);$('pvDateLabel').style.maxWidth=pct(t.date.pitch*8,STOCK.w);
+ const boxes=$('pvBoxes');boxes.style.left=pct(t.date.x,STOCK.w);boxes.style.top=pct(Math.max(0,t.date.y-0.5),STOCK.h);boxes.style.width=pct(t.date.pitch*8,STOCK.w);boxes.style.height=pct(5.2,STOCK.h);
+ $('pvPay').style.left=pct(Math.max(1.5,t.payee.x-16),STOCK.w);$('pvPay').style.top=above(t.payee.y);$('pvPay').style.maxWidth='14%';
+ $('pvBearer').style.right='2%';$('pvBearer').style.left='auto';$('pvBearer').style.top=pct(t.payee.y,STOCK.h);$('pvBearer').style.maxWidth='16%';
+ $('pvRule').style.left=pct(t.payee.x,STOCK.w);$('pvRule').style.right=pct(STOCK.w-t.amount.x+6,STOCK.w);$('pvRule').style.top=pct(t.payee.y+4.4,STOCK.h);
+ $('pvSum').style.left=pct(t.words.x,STOCK.w);$('pvSum').style.top=above(t.words.y);$('pvSum').style.maxWidth=pct(Math.max(12,Math.min(t.words.w,t.amount.x-t.words.x-2)),STOCK.w);
+ $('pvAmt').style.left=pct(Math.max(0,t.amount.x-8),STOCK.w);$('pvAmt').style.top=pct(Math.max(0,t.amount.y-1.1),STOCK.h);$('pvAmt').style.width=pct(Math.min(t.amount.w+12,STOCK.w-t.amount.x+8),STOCK.w);$('pvAmt').style.height=pct(6.4,STOCK.h);
  $('templateName').value=t.name;
+ $('previewTitle').textContent=t.name;
 }
-function updatePreview(){
- const r=currentPreview();$('prevBtn').disabled=!r||previewIndex<=0;$('nextBtn').disabled=!r||previewIndex>=previewIds.length-1;
- $('previewCounter').textContent=r?`Record ${previewIndex+1} of ${previewIds.length}`:'No record selected';
- const t=templateFor(r?.bank)||templateFor('City Bank PLC');
- layoutGuides(t);
- const digits=r?.date?dateDigits(r.date):'';
- $('pvDate').style.top=pct(t.date.y,STOCK.h);
- $('pvDate').innerHTML=[...Array(8)].map((_,i)=>`<span style="left:${pct(t.date.x+i*t.date.pitch,STOCK.w)};width:${pct(t.date.pitch,STOCK.w)}">${esc(digits[i]||'')}</span>`).join('');
- place($('pvPayee'),t.payee);place($('pvWords'),t.words);place($('pvWords2'),t.words2);place($('pvAmount'),t.amount);
- $('pvPayee').textContent=r?.payee||'';
- const parts=splitWords(r?.words||'',t.words.w);
+function updatePreview(opts){
+ const follow=!opts||opts.follow!==false;
+ const r=currentPreview();
+ if(follow&&r){const hit=TEMPLATES.find(item=>item.match.test(r.bank));if(hit)editorId=hit.id}
+ const t=r&&follow?templateFor(r.bank):templateById(editorId);
+ const layout=t||templateById('city-bank');
+ const matches=!!(r&&layout&&TEMPLATES.some(item=>item.id===layout.id&&item.match.test(r.bank)));
+ const shown=matches?r:null;
+ $('prevBtn').disabled=!r||previewIndex<=0;$('nextBtn').disabled=!r||previewIndex>=previewIds.length-1;
+ if(!r){
+  $('previewCounter').textContent='No cheque loaded';
+  $('previewTitle').textContent='Cheque preview';
+  $('previewHint').textContent='Import Excel to see the cheque here.';
+  $('previewStatus').textContent='Waiting for Excel';$('previewStatus').className='status warn';
+  $('pvLogo').textContent='';$('pvDate').innerHTML='';$('pvPayee').textContent='';$('pvWords').textContent='';$('pvWords2').textContent='';$('pvAmount').textContent='';
+  document.querySelectorAll('#previewCheque .mark').forEach(el=>el.style.visibility='hidden');
+  $('editorNote').textContent='';
+  fillEditor();
+  return;
+ }
+ document.querySelectorAll('#previewCheque .mark').forEach(el=>el.style.visibility='visible');
+ $('previewHint').textContent=r.payee+(r.cheque?' · Cheque '+r.cheque:'');
+ $('previewCounter').textContent=`${r.bank} · ${previewIndex+1} of ${previewIds.length}`;
+ layoutGuides(layout);
+ const digits=shown?dateDigits(shown.date):dateDigits(r.date);
+ $('pvDate').style.top=pct(layout.date.y,STOCK.h);
+ $('pvDate').innerHTML=[...Array(8)].map((_,i)=>`<span style="left:${pct(layout.date.x+i*layout.date.pitch,STOCK.w)};width:${pct(layout.date.pitch,STOCK.w)}">${esc(digits[i]||'')}</span>`).join('');
+ place($('pvPayee'),layout.payee,Math.min(layout.payee.x+layout.payee.w,STOCK.w-32));
+ place($('pvWords'),layout.words,Math.min(layout.words.x+layout.words.w,layout.amount.x-9));
+ place($('pvWords2'),layout.words2,layout.words2.x+layout.words2.w);
+ place($('pvAmount'),layout.amount,layout.amount.x+layout.amount.w);
+ const wordsText=r.words||'';
+ const parts=splitWords(wordsText,Math.min(layout.words.w,Math.max(12,layout.amount.x-layout.words.x-9)));
+ $('pvPayee').textContent=r.payee||'';
  $('pvWords').textContent=parts[0];$('pvWords2').textContent=parts[1];
- $('pvAmount').textContent=r&&Number.isFinite(r.amount)?formatChequeAmount(r.amount):'';
- if(!r){$('previewStatus').textContent='Draft preview';$('previewStatus').className='status warn'}
+ $('pvAmount').textContent=Number.isFinite(r.amount)?formatChequeAmount(r.amount):'';
+ const adjusting=document.body.classList.contains('adjusting');
+ ['date','payee','words','words2','amount'].forEach(name=>{const el=$('pv'+name[0].toUpperCase()+name.slice(1));if(el)el.classList.toggle('hot',adjusting&&name===$('editorField').value)});
+ if(!templateFor(r.bank)){$('previewStatus').textContent='No layout for this bank';$('previewStatus').className='status warn';$('previewTitle').textContent=r.bank||'Unknown bank'}
  else if(r.issues.length){$('previewStatus').textContent='Needs review';$('previewStatus').className='status bad'}
- else if(!templateFor(r.bank)){$('previewStatus').textContent='No layout for this bank';$('previewStatus').className='status warn'}
- else {$('previewStatus').textContent=t.short+' layout';$('previewStatus').className='status ok'}
+ else {$('previewStatus').textContent=layout.short+' layout';$('previewStatus').className='status ok'}
+ $('editorNote').textContent=!matches&&adjusting?'Preview is showing '+layout.short+' positions. This payment is '+r.bank+'.':'';
+ fillEditor();
+ document.querySelectorAll('#recordsBody tr[data-row]').forEach(tr=>tr.classList.toggle('active',Number(tr.dataset.row)===r.id));
 }
 function formatDate(s){if(!s)return '';let [y,m,d]=s.split('-');return `${d}-${m}-${y}`}
 function dateDigits(s){if(!s||!/^\d{4}-\d{2}-\d{2}$/.test(s))return '';let [y,m,d]=s.split('-');return d+m+y}
 function formatChequeAmount(amount){const whole=Math.floor(amount),paisa=Math.round((amount-whole)*100);const body=whole.toLocaleString('en-BD');return paisa?`${body}.${String(paisa).padStart(2,'0')}/=`:`${body}/=`}
-function splitWords(text,maxMm){const max=Math.max(18,Math.floor((maxMm||80)/1.85));const s=String(text||'').trim();if(s.length<=max)return [s,''];let cut=s.lastIndexOf(' ',max);if(cut<10)cut=max;return [s.slice(0,cut).trim(),s.slice(cut).trim()]}
+function splitWords(text,maxMm){const max=Math.max(16,Math.floor((maxMm||80)/2.15));const s=String(text||'').trim();if(s.length<=max)return [s,''];let cut=s.lastIndexOf(' ',max);if(cut<8)cut=max;return [s.slice(0,cut).trim(),s.slice(cut).trim()]}
 function loadSample(){
  headers=['Bank Name','Vendor Name','Amount','Cheque Date','Amount in Words','Cheque No'];
  rawRows=[
@@ -284,22 +392,53 @@ $('sampleBtn').onclick=loadSample;
 $('applyMapBtn').onclick=()=>{['bank','payee','amount','date','words','cheque'].forEach(k=>mapping[k]=Number($('map'+k[0].toUpperCase()+k.slice(1)).value));buildRecords()};
 $('defaultDate').value=new Date().toISOString().slice(0,10);
 $('defaultDate').addEventListener('change',()=>{if(records.length)buildRecords()});
-$('bankFilter').onchange=renderTable;$('searchInput').oninput=renderTable;$('printBank').onchange=renderTable;
-$('recordsBody').addEventListener('change',e=>{const id=Number(e.target.dataset.select);if(e.target.dataset.select===undefined)return;if(e.target.checked)selected.add(id);else selected.delete(id);renderTable();if(selected.size)setPreviewList([...selected])});
-$('selectShown').onchange=e=>{shownRecords().forEach(r=>e.target.checked?selected.add(r.id):selected.delete(r.id));renderTable();setPreviewList([...selected])};
-$('selectValidBtn').onclick=()=>{shownRecords().filter(r=>!r.issues.length).forEach(r=>selected.add(r.id));renderTable();setPreviewList([...selected])};
-$('selectAllBtn').onclick=()=>{shownRecords().forEach(r=>selected.add(r.id));renderTable();setPreviewList([...selected])};
-$('clearBtn').onclick=()=>{selected.clear();renderTable();setPreviewList([])};
-$('prevBtn').onclick=()=>{if(previewIndex>0){previewIndex--;updatePreview()}};
-$('nextBtn').onclick=()=>{if(previewIndex<previewIds.length-1){previewIndex++;updatePreview()}};
-$('previewBtn').onclick=()=>{if(!selected.size)return;setPreviewList([...selected]);$('previewCheque').scrollIntoView({behavior:'smooth',block:'center'})};
-function printRecords(list){
+function showPreviewBank(){previewIds=previewPool().map(r=>r.id);previewIndex=0;updatePreview();renderTable()}
+$('bankFilter').onchange=()=>{renderTable();const bank=$('bankFilter').value;if(bank){$('previewBank').value=bank;showPreviewBank()}};
+$('searchInput').oninput=renderTable;
+$('previewBank').onchange=showPreviewBank;
+$('printBank').onchange=()=>{renderTable();if($('printBank').value){$('previewBank').value=$('printBank').value;showPreviewBank()}};
+$('recordsBody').addEventListener('change',e=>{const id=Number(e.target.dataset.select);if(e.target.dataset.select===undefined)return;if(e.target.checked)selected.add(id);else selected.delete(id);renderTable()});
+$('recordsBody').addEventListener('click',e=>{const tr=e.target.closest('tr[data-row]');if(!tr||e.target.dataset.select!==undefined)return;focusPreview(Number(tr.dataset.row))});
+$('selectShown').onchange=e=>{shownRecords().forEach(r=>e.target.checked?selected.add(r.id):selected.delete(r.id));renderTable()};
+$('selectValidBtn').onclick=()=>{shownRecords().filter(r=>!r.issues.length).forEach(r=>selected.add(r.id));renderTable()};
+$('selectAllBtn').onclick=()=>{shownRecords().forEach(r=>selected.add(r.id));renderTable()};
+$('clearBtn').onclick=()=>{selected.clear();renderTable()};
+$('prevBtn').onclick=()=>{if(previewIndex>0){previewIndex--;updatePreview();renderTable()}};
+$('nextBtn').onclick=()=>{if(previewIndex<previewIds.length-1){previewIndex++;updatePreview();renderTable()}};
+function clamp(n,min,max){return Math.min(max,Math.max(min,n))}
+function round1(n){return Math.round(Number(n)*10)/10}
+function fieldModel(field){const base=TEMPLATES.find(t=>t.id===editorId);const o=(layouts[editorId]&&layouts[editorId].fields&&layouts[editorId].fields[field])||{};if(field==='date')return {x:pick(o,'x',base.date[0]),y:pick(o,'y',base.date[1]),third:pick(o,'pitch',base.date[2])};const arr=base[field];return {x:pick(o,'x',arr[0]),y:pick(o,'y',arr[1]),third:pick(o,'w',arr[2])}}
+function fillEditor(){editorWriting=true;const field=$('editorField').value||'date';const model=fieldModel(field);$('editorBank').value=editorId;$('editorX').value=round1(model.x);$('editorY').value=round1(model.y);$('editorThird').value=round1(model.third);$('editorThirdLabel').textContent=field==='date'?'Pitch mm':'Width mm';$('editorStatus').textContent=layouts[editorId]?'Saved on this computer.':'Using the measured positions.';editorWriting=false}
+function writeCurrent(){const field=$('editorField').value;const x=Number($('editorX').value),y=Number($('editorY').value),third=Number($('editorThird').value);if(![x,y,third].every(Number.isFinite))return;if(!layouts[editorId])layouts[editorId]={fields:{}};if(!layouts[editorId].fields)layouts[editorId].fields={};const patch=field==='date'?{x:round1(clamp(x,0,188.5)),y:round1(clamp(y,0,86.9)),pitch:round1(clamp(third,4,8))}:{x:round1(clamp(x,0,188.5)),y:round1(clamp(y,0,86.9)),w:round1(clamp(third,10,160))};layouts[editorId].fields[field]={...layouts[editorId].fields[field],...patch}}
+async function persistLayouts(){localStorage.setItem(LAYOUT_STORE,JSON.stringify(layouts));if(window.checkPrintAPI&&window.checkPrintAPI.saveTemplates){try{const clean=await window.checkPrintAPI.saveTemplates(layouts);if(clean&&typeof clean==='object')layouts=clean}catch(e){console.error(e);$('editorStatus').textContent='Saved in this window. Desktop save failed.';return}}$('editorStatus').textContent=layouts[editorId]?'Saved on this computer.':'Using the measured positions.'}
+function onEditorNumber(){if(editorWriting)return;writeCurrent();updatePreview({follow:false});persistLayouts()}
+function nudge(dx,dy){const model=fieldModel($('editorField').value);$('editorX').value=round1(clamp(model.x+dx,0,188.5));$('editorY').value=round1(clamp(model.y+dy,0,86.9));$('editorThird').value=round1(model.third);writeCurrent();updatePreview({follow:false});persistLayouts()}
+function resetLayout(){const name=($('editorBank').selectedOptions[0]||{}).textContent||'this bank';if(!confirm('Reset '+name+' to the measured positions?'))return;delete layouts[editorId];persistLayouts();updatePreview({follow:false})}
+function bindDrag(id,field){const el=$(id);el.addEventListener('pointerdown',event=>{if(event.button!==0||!document.body.classList.contains('adjusting'))return;$('editorField').value=field;const model=fieldModel(field);const startX=event.clientX,startY=event.clientY;const rect=$('previewCheque').getBoundingClientRect();el.setPointerCapture(event.pointerId);document.body.classList.add('dragging');const move=ev=>{const dx=(ev.clientX-startX)/rect.width*STOCK.w;const dy=(ev.clientY-startY)/rect.height*STOCK.h;$('editorX').value=round1(clamp(model.x+dx,0,188.5));$('editorY').value=round1(clamp(model.y+dy,0,86.9));$('editorThird').value=round1(model.third);writeCurrent();updatePreview({follow:false})};const up=()=>{el.removeEventListener('pointermove',move);el.removeEventListener('pointerup',up);document.body.classList.remove('dragging');persistLayouts()};el.addEventListener('pointermove',move);el.addEventListener('pointerup',up);event.preventDefault()})}
+function printKey(r){const amount=Number(r&&r.amount);return [String(r&&r.bank||'').trim().toLowerCase(),String(r&&r.cheque||'').trim().toLowerCase(),String(r&&r.payee||'').trim().toLowerCase(),Number.isFinite(amount)?amount.toFixed(2):'',String(r&&r.date||'').trim()].join('|')}
+function latestPrints(){const map=new Map();printLog.forEach(entry=>{if(entry&&entry.key)map.set(entry.key,entry)});return map}
+function shortTime(iso){const d=new Date(iso);return isNaN(d)?'':d.toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}
+function renderPrintLog(){const el=$('printLog');if(!printLog.length){el.textContent='No cheques printed from this app yet.';return}el.innerHTML=printLog.slice(-6).reverse().map(entry=>`<div>${esc(entry.payee)} · ${esc(entry.bank)} · ${esc(entry.cheque||'no number')} · ${esc(shortTime(entry.timestamp))}${entry.reprint?' · reprint':''}</div>`).join('')}
+function readStore(key,fallback){try{const value=JSON.parse(localStorage.getItem(key)||'');return value==null?fallback:value}catch(e){return fallback}}
+function slim(r){return {bank:r.bank,payee:r.payee,amount:r.amount,date:r.date,cheque:r.cheque||''}}
+function runPrint(){if(window.checkPrintAPI&&window.checkPrintAPI.printDialog)return window.checkPrintAPI.printDialog();return new Promise(resolve=>{let done=false;const finish=(success,reason)=>{if(done)return;done=true;window.removeEventListener('afterprint',onAfter);resolve({success,reason:reason||''})};const onAfter=()=>finish(true,'');window.addEventListener('afterprint',onAfter);try{window.print()}catch(e){finish(false,e.message||'Print failed')}})}
+async function rememberPrint(list,extra){extra=extra||{};if(window.checkPrintAPI&&window.checkPrintAPI.commitPrints){const stamped=await window.checkPrintAPI.commitPrints(list.map(slim),extra);printLog=printLog.concat(stamped)}else{const entries=list.map(r=>{const key=printKey(r);const prior=printLog.some(entry=>entry.key===key);return {key,bank:r.bank,payee:r.payee,amount:Number(r.amount),date:r.date,cheque:r.cheque||'',reprint:prior,reason:prior?String(extra.reason||'').trim():'',timestamp:new Date().toISOString()}});if(entries.some(entry=>entry.reprint)&&!String(extra.reason||'').trim())throw new Error('Reprint reason required');printLog=printLog.concat(entries)}localStorage.setItem(PRINT_STORE,JSON.stringify(printLog));renderPrintLog();renderTable()}
+function openReprintDialog(blocked,list){pendingPrintList=list;$('reprintItems').innerHTML=blocked.map(r=>`<li>${esc(r.payee)} · ${esc(r.bank)} · ${esc(r.cheque||'no cheque number')} · ${esc(r.date)}</li>`).join('');$('reprintReason').value='';$('reprintError').textContent='';$('reprintDialog').hidden=false;$('reprintReason').focus()}
+async function printRecords(list,extra){
+ extra=extra||{};
+ if(printing)return;
  if(!list.length){alert('No records selected for printing.');return}
  const bad=list.filter(r=>r.issues.length);if(bad.length){alert(`${bad.length} selected row(s) have validation issues. Fix them or deselect them before printing.`);return}
  const missing=[...new Set(list.filter(r=>!templateFor(r.bank)).map(r=>r.bank||'Unknown'))];
  if(missing.length){alert('No cheque layout for: '+missing.join(', ')+'.');return}
- const root=$('printRoot');root.innerHTML=list.map(r=>{
-  const t=templateFor(r.bank),digits=dateDigits(r.date),[w1,w2]=splitWords(r.words,t.words.w);
+ const keys=list.map(printKey);
+ if(new Set(keys).size!==keys.length){alert('Two selected rows are the same cheque. Deselect the duplicate before printing.');return}
+ const blocked=list.filter(r=>latestPrints().has(printKey(r)));
+ if(blocked.length&&!extra.reprint){openReprintDialog(blocked,list);return}
+ printing=true;
+ const root=$('printRoot');
+ root.innerHTML=list.map(r=>{
+  const t=templateFor(r.bank),digits=dateDigits(r.date),[w1,w2]=splitWords(r.words,Math.min(t.words.w,Math.max(12,t.amount.x-t.words.x-9)));
   const boxes=[...digits].map((ch,i)=>`<span class="digit" style="left:${t.date.x+i*t.date.pitch}mm;top:${t.date.y}mm;width:${t.date.pitch}mm">${esc(ch)}</span>`).join('');
   return `<div class="print-page"><div class="print-cheque">${boxes}
  <div class="p" style="left:${t.payee.x}mm;top:${t.payee.y}mm;font-size:${t.payee.font}pt;max-width:${t.payee.w}mm">${esc(r.payee)}</div>
@@ -308,11 +447,49 @@ function printRecords(list){
  <div class="p" style="left:${t.amount.x}mm;top:${t.amount.y}mm;font-size:${t.amount.font}pt;font-weight:700;max-width:${t.amount.w}mm">${esc(formatChequeAmount(r.amount))}</div>
  </div></div>`;
  }).join('');
- window.print();
+ try{
+  const result=await runPrint();
+  if(!result.success){if(result.reason&&!/cancel/i.test(result.reason))alert('Print was not completed. '+result.reason);return}
+  try{await rememberPrint(list,extra)}
+  catch(err){console.error(err);if(/Already printed/i.test(err.message||'')){openReprintDialog(blocked.length?blocked:list,list);return}alert('The print dialog finished, but the record was not saved. Check the paper before trying again. '+(err.message||''))}
+ }finally{printing=false;root.innerHTML=''}
 }
-$('printBtn').onclick=()=>printRecords([...selected].map(id=>records.find(r=>r.id===id)).filter(Boolean));
+function fillEditorBank(){$('editorBank').innerHTML=TEMPLATES.map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join('');$('editorBank').value=editorId}
+async function boot(){
+ layouts=readStore(LAYOUT_STORE,{});printLog=readStore(PRINT_STORE,[]);
+ if(!layouts||typeof layouts!=='object'||Array.isArray(layouts))layouts={};
+ if(!Array.isArray(printLog))printLog=[];
+ if(window.checkPrintAPI&&window.checkPrintAPI.getTemplates){
+  try{
+   const remoteLayouts=await window.checkPrintAPI.getTemplates();
+   const remotePrints=await window.checkPrintAPI.getPrints();
+   if(remoteLayouts&&typeof remoteLayouts==='object'&&!Array.isArray(remoteLayouts))layouts=remoteLayouts;
+   if(Array.isArray(remotePrints))printLog=remotePrints;
+   localStorage.setItem(LAYOUT_STORE,JSON.stringify(layouts));
+   localStorage.setItem(PRINT_STORE,JSON.stringify(printLog));
+  }catch(e){console.error(e)}
+ }
+ renderPrintLog();updatePreview({follow:false});renderTable();
+}
+fillEditorBank();
+['editorX','editorY','editorThird'].forEach(id=>$(id).addEventListener('input',onEditorNumber));
+$('editorField').onchange=()=>updatePreview({follow:false});
+$('editorBank').onchange=()=>{editorId=$('editorBank').value;updatePreview({follow:false})};
+$('nudgeLeft').onclick=()=>nudge(-0.5,0);
+$('nudgeRight').onclick=()=>nudge(0.5,0);
+$('nudgeUp').onclick=()=>nudge(0,-0.5);
+$('nudgeDown').onclick=()=>nudge(0,0.5);
+$('resetLayoutBtn').onclick=resetLayout;
+bindDrag('pvDate','date');bindDrag('pvPayee','payee');bindDrag('pvWords','words');bindDrag('pvWords2','words2');bindDrag('pvAmount','amount');
+$('reprintCancel').onclick=()=>{$('reprintDialog').hidden=true;pendingPrintList=null};
+$('reprintConfirm').onclick=async()=>{const reason=$('reprintReason').value.trim();if(!reason){$('reprintError').textContent='A reason is required.';return}const list=pendingPrintList;$('reprintDialog').hidden=true;pendingPrintList=null;if(list)await printRecords(list,{reprint:true,reason})};
+function setSetup(open){$('setupDrawer').hidden=!open;$('setupBackdrop').hidden=!open;document.body.classList.toggle('adjusting',open);updatePreview({follow:!open})}
+$('setupBtn').onclick=()=>setSetup($('setupDrawer').hidden);
+$('setupClose').onclick=()=>setSetup(false);
+$('setupBackdrop').onclick=()=>setSetup(false);
+$('printBtn').onclick=()=>{const chosen=[...selected].map(id=>records.find(r=>r.id===id)).filter(Boolean);if(chosen.length)return printRecords(chosen);const row=currentPreview();if(row)return printRecords([row]);alert('Import a cheque before printing.')};
 $('printBankBtn').onclick=()=>{const bank=$('printBank').value;if(!bank){alert('Select a bank first.');return}const list=records.filter(r=>r.bank===bank);if(!list.length){alert('No records for this bank.');return}if(!confirm(`Print ${list.length} cheque(s) for ${bank}, in spreadsheet order?`))return;printRecords(list)};
-window.addEventListener('afterprint',()=>{$('printRoot').innerHTML=''});
+boot();
 </script>
 <script src="./node_modules/xlsx/dist/xlsx.full.min.js"></script>
 </body></html>

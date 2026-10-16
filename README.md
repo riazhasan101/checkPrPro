@@ -51,9 +51,9 @@ Installer output: `dist/`.
 ## Required next steps
 
 1. Replace generic cheque layout with bank-specific millimetre-positioned templates.
-2. Implement bank-template editor and wire it into preview/printing.
-3. Wire the IPC audit and batch validation into the UI before any live printing.
-4. Introduce reliable print-status tracking, duplicate/reprint safeguards, and saved printer profiles.
+2. Calibrate the in-app layout editor against plain paper, then real cheque stock.
+3. Wire batch validation through the same path as printing before any live printing.
+4. Saved printer profiles are still required. Print status and reprint reasons are recorded on this computer.
 5. Replace the legacy XLSX parser with a maintained and security-reviewed dependency; evaluate ExcelJS for `.xlsx` and CSV, and explicitly handle legacy `.xls` conversion.
 6. Test real printers, paper sizes, and bank cheque stock.
 7. Run security review, dependency audit, and end-to-end acceptance testing.
