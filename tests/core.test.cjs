@@ -16,3 +16,28 @@ test('settings and audit persist',()=>{const dir=fs.mkdtempSync(path.join(os.tmp
 test('layout overrides stay on the leaf',()=>{const clean=sanitizeOverrides({'city-bank':{fields:{payee:{x:22.04},date:{x:999,pitch:1}}}});assert.equal(clean['city-bank'].fields.payee.x,22);assert.equal(clean['city-bank'].fields.date.x,188.5);assert.equal(clean['city-bank'].fields.date.pitch,4);const merged=mergeTemplate(cityBankTemplate,clean['city-bank']);assert.equal(merged.fields.payee.x,22);assert.equal(merged.fields.payee.y,cityBankTemplate.fields.payee.y);assert.throws(()=>sanitizeOverrides({'no-such-bank':{fields:{payee:{x:10}}}}));});
 test('printed cheque is blocked until a reprint reason is given',()=>{assert.equal(printKey(good),'bank a||vendor|1250.50|2026-10-20');const first=planCommit([],[good],{});assert.equal(first[0].reprint,false);assert.throws(()=>planCommit(first,[good],{}),/Already printed/);assert.throws(()=>planCommit(first,[good],{reprint:true,reason:'  '}),/reason/i);const again=planCommit(first,[good],{reprint:true,reason:'Printer jammed'});assert.equal(again[0].reprint,true);assert.equal(again[0].reason,'Printer jammed');assert.equal(planCommit([],[good,{...good,cheque:'2'}],{}).length,2);assert.throws(()=>planCommit([],[good,good],{}));});
 test('print ledger blocks a second commit',()=>{const dir=fs.mkdtempSync(path.join(os.tmpdir(),'checkprint-'));try{const store=createStore(dir);const stamped=store.commitPrints([good],{});assert.equal(stamped.length,1);assert.equal(store.getPrints().length,1);assert.throws(()=>store.commitPrints([good],{}));const again=store.commitPrints([good],{reprint:true,reason:'jam'});assert.equal(again[0].reprint,true);assert.equal(store.getPrints().length,2);assert.ok(store.getAudit().some(event=>event.type==='print'));assert.ok(store.getAudit().some(event=>event.type==='reprint'));}finally{fs.rmSync(dir,{recursive:true,force:true})}});
+const {chequeWords}=require('../src/core/words.cjs');
+test('cheque words use Crore / Lakh and read like the printed City Bank sample',()=>{
+  assert.equal(chequeWords(12345678),'One Crore Twenty Three Lakh Forty Five Thousand Six Hundred And Seventy Eight Only');
+  assert.equal(chequeWords(42500),'Forty Two Thousand Five Hundred Only');
+  assert.equal(chequeWords(96300),'Ninety Six Thousand Three Hundred Only');
+  assert.equal(chequeWords(42010),'Forty Two Thousand And Ten Only');
+  assert.equal(chequeWords(123456.78),'One Lakh Twenty Three Thousand Four Hundred And Fifty Six Taka And Seventy Eight Paisa Only');
+  assert.equal(chequeWords(0.5),'Fifty Paisa Only');
+  assert.equal(chequeWords(12345678,{lac:true}),'One Crore Twenty Three Lac Forty Five Thousand Six Hundred And Seventy Eight Only');
+});
+test('index.html layouts match src/core/cheque.cjs (one set of measurements)',()=>{
+  const vm=require('node:vm');
+  const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+  const block=html.match(/const TEMPLATES=\[([\s\S]*?)\n\];/);
+  assert.ok(block,'TEMPLATES block not found in index.html');
+  const ui=vm.runInNewContext('['+block[1]+']');
+  assert.equal(ui.length,bankTemplates.length);
+  for(const u of ui){
+    const c=bankTemplates.find(t=>t.id===u.id);assert.ok(c,'missing core template '+u.id);
+    const f=Object.assign({date:12,payee:12,words:11,amount:12},u.fonts);
+    assert.deepEqual([c.fields.date.x,c.fields.date.y,c.fields.date.pitch],Array.from(u.date),u.id+' date');
+    for(const k of ['payee','words','words2','amount'])assert.deepEqual([c.fields[k].x,c.fields[k].y,c.fields[k].w],Array.from(u[k]),u.id+' '+k);
+    assert.deepEqual([c.fields.date.font,c.fields.payee.font,c.fields.words.font,c.fields.words2.font,c.fields.amount.font],[f.date,f.payee,f.words,f.words,f.amount],u.id+' fonts');
+  }
+});

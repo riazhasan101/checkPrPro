@@ -48,6 +48,14 @@ Installer output: `dist/`.
 - To publish: create a new GitHub repository and push this directory. GitHub Actions will run automatically.
 - Configure Windows code-signing credentials and replace release workflow with signed builds before public distribution.
 
+## Matching the preview to a real cheque
+
+The preview draws your text on top of an image of the **blank** cheque, using the same millimetre positions the printer uses, so what you see is what prints.
+
+- **City Bank** and **IFIC Bank** ship with a measured layout and a built-in blank cheque image (embedded in `index.html`, so the app stays one file).
+- **Any other bank:** open **Setup → Adjust print positions**, pick the bank, and choose a scan or photo of a *blank* cheque of that bank (cropped to the cheque edges, 190.5 × 88.9 mm). Then drag each field onto its line; the X/Y values are saved. The image is only a preview aid and is never printed.
+- To make a calibrated layout permanent for everyone, copy the final X/Y/width values into `TEMPLATES` in `index.html` and `src/core/cheque.cjs` (a test checks the two stay identical), and add the image to `BUILTIN_SCANS` in `index.html`.
+
 ## Required next steps
 
 1. Replace generic cheque layout with bank-specific millimetre-positioned templates.

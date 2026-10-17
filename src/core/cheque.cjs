@@ -1,23 +1,26 @@
 'use strict';
 const {validatePayment}=require('./validation.cjs');
 const stock={widthMm:190.5,heightMm:88.9};
-function leaf(id,name,date,payee,words,words2,amount){
+function leaf(id,name,date,payee,words,words2,amount,fonts){
+  const f={date:12,payee:12,words:11,amount:12,...fonts};
   return {id,name,bank:name,...stock,fields:{
-    date:{x:date[0],y:date[1],pitch:date[2],font:12},
-    payee:{x:payee[0],y:payee[1],w:payee[2],font:12},
-    words:{x:words[0],y:words[1],w:words[2],font:11},
-    words2:{x:words2[0],y:words2[1],w:words2[2],font:11},
-    amount:{x:amount[0],y:amount[1],w:amount[2],font:12}
+    date:{x:date[0],y:date[1],pitch:date[2],font:f.date},
+    payee:{x:payee[0],y:payee[1],w:payee[2],font:f.payee},
+    words:{x:words[0],y:words[1],w:words[2],font:f.words},
+    words2:{x:words2[0],y:words2[1],w:words2[2],font:f.words},
+    amount:{x:amount[0],y:amount[1],w:amount[2],font:f.amount}
   }};
 }
 const bankTemplates=[
-  leaf('city-bank','City Bank PLC',[133,17.5,6],[20,29.5,118],[32,41.5,82],[12,50.5,108],[128,41.5,55]),
+  // City Bank: measured from a real cheque scan (see index.html TEMPLATES; a test keeps the two in step).
+  leaf('city-bank','City Bank PLC',[132.4,16.4,6.46],[18.9,30.3,140],[32,39.2,82],[6.7,48.3,118],[137.2,43.2,45],{date:11,payee:12.5,words:11.5,amount:10.2}),
   leaf('dbbl','Dutch-Bangla Bank',[118,21,6.2],[22,33,120],[32,41,88],[14,50,110],[128,41,52]),
   leaf('ucb','United Commercial Bank',[122,18.5,6.2],[22,33,115],[34,42,96],[14,51,110],[140,42,45]),
   leaf('brac','BRAC Bank',[130,17,6.2],[26,32,120],[32,39,96],[14,49,110],[138,39,48]),
   leaf('ebl','Eastern Bank',[128,17,6],[20,31,125],[34,39,88],[12,48,120],[130,39,52]),
   leaf('ibbl','Islami Bank',[128,16,5.8],[22,32,140],[36,41,86],[12,50,145],[136,41,50]),
-  leaf('ific','IFIC Bank',[130,16,6],[20,32,140],[36,41,88],[10,50,145],[136,41,50])
+  // IFIC: measured from a real cheque scan.
+  leaf('ific','IFIC Bank',[132.4,17.2,6.48],[17,30.6,140],[29.1,38.9,95],[7.5,48.1,117],[138.2,43.4,45],{date:11,payee:11.2,words:11.5,amount:10.2})
 ];
 const matchers=[
   [/city\s*bank/i,'city-bank'],
