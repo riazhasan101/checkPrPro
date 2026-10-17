@@ -14,11 +14,12 @@ function leaf(id,name,date,payee,words,words2,amount,fonts){
 const bankTemplates=[
   // City Bank: measured from a real cheque scan (see index.html TEMPLATES; a test keeps the two in step).
   leaf('city-bank','City Bank PLC',[132.4,16.4,6.46],[18.9,30.3,140],[32,39.2,82],[6.7,48.3,118],[137.2,43.2,45],{date:11,payee:12.5,words:11.5,amount:10.2}),
-  leaf('dbbl','Dutch-Bangla Bank',[118,21,6.2],[22,33,120],[32,41,88],[14,50,110],[128,41,52]),
-  leaf('ucb','United Commercial Bank',[122,18.5,6.2],[22,33,115],[34,42,96],[14,51,110],[140,42,45]),
-  leaf('brac','BRAC Bank',[130,17,6.2],[26,32,120],[32,39,96],[14,49,110],[138,39,48]),
-  leaf('ebl','Eastern Bank',[128,17,6],[20,31,125],[34,39,88],[12,48,120],[130,39,52]),
-  leaf('ibbl','Islami Bank',[128,16,5.8],[22,32,140],[36,41,86],[12,50,145],[136,41,50]),
+  // Not measured on a real cheque: estimates (see index.html TEMPLATES). Calibrate before live use.
+  leaf('dbbl','Dutch-Bangla Bank',[132.4,16.8,6.47],[18,30.45,140],[30.5,39,95],[7.1,48.2,117],[137.7,43.3,45],{date:11,payee:12,words:11.5,amount:10.2}),
+  leaf('ucb','United Commercial Bank',[132.5,16.6,6.33],[12.2,30.4,140],[24.9,39.2,95],[5,48.2,117],[137.7,42.8,45],{date:11,payee:12,words:11.5,amount:10.2}),
+  leaf('brac','BRAC Bank',[133.1,19,6.26],[21.2,30.4,140],[38.5,39,86],[10.4,48,114],[137.7,43.3,45],{date:11,payee:12,words:11.5,amount:10.2}),
+  leaf('ebl','Eastern Bank',[132.4,16.8,6.47],[18,30.45,140],[30.5,39,95],[7.1,48.2,117],[137.7,43.3,45],{date:11,payee:12,words:11.5,amount:10.2}),
+  leaf('ibbl','Islami Bank',[132.7,17,6.47],[17,30.65,140],[33.7,39.85,95],[6.1,48.45,117],[138.2,43.1,45],{date:11,payee:12,words:11.6,amount:11.4}),
   // IFIC: measured from a real cheque scan.
   leaf('ific','IFIC Bank',[132.4,17.2,6.48],[17,30.6,140],[29.1,38.9,95],[7.5,48.1,117],[138.2,43.4,45],{date:11,payee:11.2,words:11.5,amount:10.2})
 ];

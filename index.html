@@ -257,6 +257,10 @@ body.adjusting .cheque .date,body.adjusting .cheque .payee,body.adjusting .chequ
     <button type="button" id="nudgeDown">Down 0.5</button>
     <button type="button" id="resetLayoutBtn" class="danger">Reset bank</button>
    </div>
+   <div class="field" style="margin-top:14px"><label>Check it on paper</label>
+    <button type="button" id="testPrintBtn">Print alignment test page</button>
+    <div class="small">Prints sample text for this bank at these positions, with a frame, corner marks and a 100 mm ruler. Hold it against a real cheque in front of a window and adjust X and Y until the text sits on the right lines. If the ruler is not exactly 100 mm, set the printer to 100% / Actual size. This page is not saved in the print record.</div>
+   </div>
    <div id="editorNote" class="small" style="margin-top:8px"></div>
    <div id="editorStatus" class="small"></div>
   </div>
@@ -373,9 +377,10 @@ function renderTable(){
  updateSteps();
 }
 /* measured = positions taken from a real cheque shipped with the app; custom = you uploaded an image or moved fields in Setup; approx = a starting guess. */
-function calState(t){return BUILTIN_SCANS[t.id]?'measured':((scans[t.id]||layouts[t.id])?'custom':'approx')}
+function calState(t){const base=TEMPLATES.find(x=>x.id===t.id)||{};return BUILTIN_SCANS[t.id]?'measured':((scans[t.id]||layouts[t.id])?'custom':(base.src||'standard'))}
+function unverified(st){return st==='photo'||st==='standard'}
 function emptyState(){
- const chips=TEMPLATES.map(t=>{const st=calState(t);return `<span class="chip${st!=='approx'?' cal':''}" title="${st==='measured'?'Positions measured on a real cheque':st==='custom'?'Calibrated by you in Setup':'Approximate positions. Calibrate in Setup before printing'}">${esc(t.short)}</span>`}).join('');
+ const chips=TEMPLATES.map(t=>{const st=calState(t);return `<span class="chip${unverified(st)?'':' cal'}" title="${st==='measured'?'Positions measured on a real cheque':st==='custom'?'Calibrated by you in Setup':st==='photo'?'Estimated from a photo (about 2 mm). Calibrate in Setup before printing':'Standard layout, not checked. Calibrate in Setup before printing'}">${esc(t.short)}</span>`}).join('');
  return `<tr><td colspan="5" class="empty"><div class="dropzone"><svg width="56" height="56" viewBox="0 0 56 56" aria-hidden="true"><rect x="6" y="10" width="44" height="36" rx="6" fill="#e2f3ef" stroke="#0e7a6b" stroke-width="1.6"/><path d="M28 38V22m0 0l-7 7m7-7l7 7" stroke="#0e7a6b" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>Add your payment sheet</h3><p>Drop an Excel or CSV file here. Each row needs a bank, payee, amount and date.</p><div class="toolbar"><label class="file-button primary" for="excelFile">Choose file</label><button type="button" onclick="loadSample()">Try with sample data</button></div><div class="banklist"><div class="small">Green banks are calibrated to a real cheque. Calibrate the others once in Setup.</div><div class="chips">${chips}</div></div></div></td></tr>`;
 }
 function updateSteps(){
@@ -399,11 +404,12 @@ const TEMPLATES=[
  /* City Bank: measured from a real cheque scan. Every x/y below is millimetres from the cheque's top-left corner.
     date x = left edge of the first date box, y = top of the digit line; text fields x = where the first letter starts. */
  {id:'city-bank',match:/city\s*bank/i,name:'City Bank PLC',short:'City Bank',guard:'**',fonts:{date:11,payee:12.5,words:11.5,amount:10.2},date:[132.4,16.4,6.46],payee:[18.9,30.3,140],words:[32,39.2,82],words2:[6.7,48.3,118],amount:[137.2,43.2,45]},
- {id:'dbbl',match:/dutch[-\s]?bangla|\bdbbl\b/i,name:'Dutch-Bangla Bank',short:'Dutch-Bangla',date:[118,21,6.2],payee:[22,33,120],words:[32,41,88],words2:[14,50,110],amount:[128,41,52]},
- {id:'ucb',match:/united commercial|\bucb\b/i,name:'United Commercial Bank',short:'UCB',date:[122,18.5,6.2],payee:[22,33,115],words:[34,42,96],words2:[14,51,110],amount:[140,42,45]},
- {id:'brac',match:/brac\s*bank/i,name:'BRAC Bank',short:'BRAC Bank',date:[130,17,6.2],payee:[26,32,120],words:[32,39,96],words2:[14,49,110],amount:[138,39,48]},
- {id:'ebl',match:/eastern\s*bank|\bebl\b/i,name:'Eastern Bank',short:'Eastern Bank',date:[128,17,6],payee:[20,31,125],words:[34,39,88],words2:[12,48,120],amount:[130,39,52]},
- {id:'ibbl',match:/islami\s*bank/i,name:'Islami Bank',short:'Islami Bank',date:[128,16,5.8],payee:[22,32,140],words:[36,41,86],words2:[12,50,145],amount:[136,41,50]},
+ /* The banks below are NOT measured on a real cheque. src:'photo' = estimated from a photo (about +/-2 mm); src:'standard' = the layout City, IFIC and UCB share. Calibrate in Setup before printing on real cheques. */
+ {id:'dbbl',src:'standard',match:/dutch[-\s]?bangla|\bdbbl\b/i,name:'Dutch-Bangla Bank',short:'Dutch-Bangla',fonts:{date:11,payee:12,words:11.5,amount:10.2},date:[132.4,16.8,6.47],payee:[18,30.45,140],words:[30.5,39,95],words2:[7.1,48.2,117],amount:[137.7,43.3,45]},
+ {id:'ucb',src:'photo',match:/united commercial|\bucb\b/i,name:'United Commercial Bank',short:'UCB',fonts:{date:11,payee:12,words:11.5,amount:10.2},date:[132.5,16.6,6.33],payee:[12.2,30.4,140],words:[24.9,39.2,95],words2:[5,48.2,117],amount:[137.7,42.8,45]},
+ {id:'brac',src:'photo',match:/brac\s*bank/i,name:'BRAC Bank',short:'BRAC Bank',fonts:{date:11,payee:12,words:11.5,amount:10.2},date:[133.1,19,6.26],payee:[21.2,30.4,140],words:[38.5,39,86],words2:[10.4,48,114],amount:[137.7,43.3,45]},
+ {id:'ebl',src:'standard',match:/eastern\s*bank|\bebl\b/i,name:'Eastern Bank',short:'Eastern Bank',fonts:{date:11,payee:12,words:11.5,amount:10.2},date:[132.4,16.8,6.47],payee:[18,30.45,140],words:[30.5,39,95],words2:[7.1,48.2,117],amount:[137.7,43.3,45]},
+ {id:'ibbl',src:'photo',match:/islami\s*bank/i,name:'Islami Bank',short:'Islami Bank',guard:'**',fonts:{date:11,payee:12,words:11.6,amount:11.4},date:[132.7,17,6.47],payee:[17,30.65,140],words:[33.7,39.85,95],words2:[6.1,48.45,117],amount:[138.2,43.1,45]},
  /* IFIC: measured from a real cheque scan, like City Bank. This bank's sample writes "Lac" and groups figures as 1,23,45,678.00. */
  {id:'ific',match:/\bific\b/i,name:'IFIC Bank',short:'IFIC Bank',guard:'**',lac:true,indian:true,fonts:{date:11,payee:11.2,words:11.5,amount:10.2},date:[132.4,17.2,6.48],payee:[17,30.6,140],words:[29.1,38.9,95],words2:[7.5,48.1,117],amount:[138.2,43.4,45]}
 ];
@@ -469,14 +475,14 @@ function updatePreview(opts){
  $('pvPayee').textContent=tx.payee;
  $('pvWords').textContent=tx.line1;$('pvWords2').textContent=tx.line2;
  $('pvAmount').textContent=tx.amount;
- const wordsOverflow=!!tx.line2&&textMm(tx.line2,layout.words2.font)>layout.words2.w+0.5;
+ const wordsOverflow=!!tx.line2&&textMm(tx.line2,layout.words2.font)>maxW(layout,'words2')+0.5;
  const adjusting=document.body.classList.contains('adjusting');
  ['date','payee','words','words2','amount'].forEach(name=>{const el=$('pv'+name[0].toUpperCase()+name.slice(1));if(el)el.classList.toggle('hot',adjusting&&name===$('editorField').value)});
  if(!templateFor(r.bank)){$('previewStatus').textContent='No layout for this bank';$('previewStatus').className='status warn';$('previewTitle').textContent=r.bank||'Unknown bank'}
  else if(wordsOverflow){$('previewStatus').textContent='Amount in words too long';$('previewStatus').className='status bad'}
  else if(r.issues.length){$('previewStatus').textContent='Needs review';$('previewStatus').className='status bad'}
  else {$('previewStatus').textContent='Ready to print';$('previewStatus').className='status ok'}
- {const st=calState(layout),bd=$('stageBadge'),n=$('calibNote');bd.hidden=false;bd.className='stage-badge'+(st==='approx'?' approx':'');bd.textContent=st==='measured'?'Measured on a real cheque':st==='custom'?'Calibrated by you':'Approximate layout';n.hidden=st!=='approx';if(st==='approx')n.innerHTML='Positions for '+esc(layout.short)+' are approximate. <button type="button" class="linkbtn" data-calib>Calibrate this bank</button> before printing on real cheques.'}
+ {const st=calState(layout),bd=$('stageBadge'),n=$('calibNote');bd.hidden=false;bd.className='stage-badge'+(unverified(st)?' approx':'');bd.textContent=st==='measured'?'Measured on a real cheque':st==='custom'?'Calibrated by you':st==='photo'?'Estimated from a photo':'Standard layout, not checked';n.hidden=!unverified(st);if(unverified(st))n.innerHTML=(st==='photo'?'Positions for '+esc(layout.short)+' are estimated from a photo and can be about 2 mm off. ':'No sample cheque for '+esc(layout.short)+' yet, so this uses the layout City, IFIC and UCB share. ')+'<button type="button" class="linkbtn" data-calib>Calibrate this bank</button> before printing on real cheques.'}
  $('editorNote').textContent=!matches&&adjusting?'Preview is showing '+layout.short+' positions. This payment is '+r.bank+'.':'';
  fillEditor();
  document.querySelectorAll('#recordsBody tr[data-row]').forEach(tr=>tr.classList.toggle('active',Number(tr.dataset.row)===r.id));
@@ -494,7 +500,7 @@ function splitWords(text,maxMm,pt){const s=String(text||'').trim();if(!s)return 
    guard (e.g. "**") fences the words/payee/amount so nothing can be added before or after them. */
 function chequeTexts(r,t){
  const g=t.guard||'',fence=s=>s?g+s+g:'';
- const [line1,line2]=splitWords(fence(r.words||''),t.words.w,t.words.font);
+ const [line1,line2]=splitWords(fence(r.words||''),maxW(t,'words'),t.words.font);
  return {digits:dateDigits(r.date),payee:fence(r.payee||''),line1,line2,amount:Number.isFinite(r.amount)?fence(formatChequeAmount(r.amount,t.indian)):''};
 }
 function loadSample(){
@@ -568,6 +574,23 @@ function printPagesHtml(list){return list.map(r=>{
  const line=(name,text)=>{const f=t[name];return `<div class="p" style="left:${f.x}mm;top:${f.y}mm;font-size:${f.font}pt;max-width:${maxW(t,name)}mm">${esc(text)}</div>`};
  return `<div class="print-page"><div class="print-cheque">${digits}${line('payee',tx.payee)}${line('words',tx.line1)}${line('words2',tx.line2)}${line('amount',tx.amount)}</div></div>`;
 }).join('')}
+/* Test page for lining a bank up on paper: sample text at the current positions, plus a frame, corner marks, crosses at each field and a 100 mm ruler. */
+function testPageHtml(){
+ const t=templateById(editorId),rec={bank:t.name,payee:'Sample Payee Name',amount:1234567.89,date:'2026-10-20'};rec.words=amountWords(rec.amount,t.name);
+ const tx=chequeTexts(rec,t),L=(x,y,w,h,extra)=>`<div style="position:absolute;left:${x}mm;top:${y}mm;width:${w}mm;height:${h}mm;background:#000;${extra||''}"></div>`;
+ const digits=[...tx.digits].map((ch,i)=>`<span class="digit" style="left:${t.date.x+i*t.date.pitch}mm;top:${t.date.y}mm;width:${t.date.pitch}mm;font-size:${t.date.font}pt">${esc(ch)}</span>`).join('');
+ const line=(name,text)=>{const f=t[name];return `<div class="p" style="left:${f.x}mm;top:${f.y}mm;font-size:${f.font}pt;max-width:${maxW(t,name)}mm">${esc(text)}</div>`};
+ const cross=name=>{const f=t[name];return L(f.x-1.5,f.y,3,0.15)+L(f.x,f.y-1.5,0.15,3)};
+ const marks=[[0,0],[STOCK.w-5,0],[0,STOCK.h-5],[STOCK.w-5,STOCK.h-5]].map(([x,y])=>L(x,y,5,0.15)+L(x+(x?4.85:0),y,0.15,5)).join('');
+ const ruler=L(45,STOCK.h-9,100,0.15)+[0,1,2,3,4,5,6,7,8,9,10].map(i=>L(45+i*10-0.07,STOCK.h-(i%5?10.5:11.5),0.15,i%5?1.5:2.5)).join('')+`<div class="p" style="left:45mm;top:${STOCK.h-7}mm;font-size:7pt">100 mm ruler. ${esc(t.name)} alignment test. Not a cheque.</div>`;
+ const frame=L(0,0,STOCK.w,0.15)+L(0,STOCK.h-0.15,STOCK.w,0.15)+L(0,0,0.15,STOCK.h)+L(STOCK.w-0.15,0,0.15,STOCK.h);
+ return `<div class="print-page"><div class="print-cheque">${frame}${marks}${ruler}${['date','payee','words','words2','amount'].map(cross).join('')}${digits}${line('payee',tx.payee)}${line('words',tx.line1)}${line('words2',tx.line2)}${line('amount',tx.amount)}</div></div>`;
+}
+async function printTestPage(){
+ if(printing)return;printing=true;const root=$('printRoot');root.innerHTML=testPageHtml();
+ try{const result=await runPrint();if(!result.success&&result.reason&&!/cancel/i.test(result.reason))alert('Print was not completed. '+result.reason)}finally{printing=false;root.innerHTML=''}
+}
+$('testPrintBtn').onclick=printTestPage;
 async function printRecords(list,extra){
  extra=extra||{};
  if(printing)return;
@@ -575,8 +598,8 @@ async function printRecords(list,extra){
  const bad=list.filter(r=>r.issues.length);if(bad.length){alert(`${bad.length} selected row(s) have validation issues. Fix them or deselect them before printing.`);return}
  const missing=[...new Set(list.filter(r=>!templateFor(r.bank)).map(r=>r.bank||'Unknown'))];
  if(missing.length){alert('No cheque layout for: '+missing.join(', ')+'.');return}
- const approx=[...new Set(list.map(r=>templateFor(r.bank)).filter(t=>t&&calState(t)==='approx').map(t=>t.short))];
- if(approx.length&&!extra.reprint&&!confirm('The positions for '+approx.join(', ')+' are approximate and have not been checked against a real cheque.\n\nPrint on plain paper first and hold it over a real cheque. Print now anyway?'))return;
+ const approx=[...new Set(list.map(r=>templateFor(r.bank)).filter(t=>t&&unverified(calState(t))).map(t=>t.short))];
+ if(approx.length&&!extra.reprint&&!confirm('The positions for '+approx.join(', ')+' are estimates and have not been checked against a real cheque.\n\nPrint on plain paper first and hold it over a real cheque. Print now anyway?'))return;
  const keys=list.map(printKey);
  if(new Set(keys).size!==keys.length){alert('Two selected rows are the same cheque. Deselect the duplicate before printing.');return}
  const blocked=list.filter(r=>latestPrints().has(printKey(r)));
