@@ -15,6 +15,7 @@ const bankTemplates=[
   // City Bank: measured from a real cheque scan (see index.html TEMPLATES; a test keeps the two in step).
   leaf('city-bank','City Bank PLC',[132.4,16.4,6.46],[18.9,30.3,140],[32,39.2,82],[6.7,48.3,118],[137.2,43.2,45],{date:11,payee:12.5,words:11.5,amount:10.2}),
   // Not measured on a real cheque: estimates (see index.html TEMPLATES). Calibrate before live use.
+  leaf('ab-bank','AB Bank',[133,18.0,6.3],[17.5,34.5,120],[34,42.0,95],[8,48.5,120],[142,45.0,42],{date:11,payee:12.5,words:11.5,amount:10.2}),
   leaf('dbbl','Dutch-Bangla Bank',[132.4,16.8,6.47],[18,30.45,140],[30.5,39,95],[7.1,48.2,117],[137.7,43.3,45],{date:11,payee:12,words:11.5,amount:10.2}),
   leaf('ucb','United Commercial Bank',[132.5,16.6,6.33],[12.2,30.4,140],[24.9,39.2,95],[5,48.2,117],[137.7,42.8,45],{date:11,payee:12,words:11.5,amount:10.2}),
   leaf('brac','BRAC Bank',[133.1,19,6.26],[21.2,30.4,140],[38.5,39,86],[10.4,48,114],[137.7,43.3,45],{date:11,payee:12,words:11.5,amount:10.2}),
@@ -25,6 +26,7 @@ const bankTemplates=[
 ];
 const matchers=[
   [/city\s*bank/i,'city-bank'],
+  [/\bab\s*bank/i,'ab-bank'],
   [/dutch[-\s]?bangla|\bdbbl\b/i,'dbbl'],
   [/united commercial|\bucb\b/i,'ucb'],
   [/brac\s*bank/i,'brac'],
