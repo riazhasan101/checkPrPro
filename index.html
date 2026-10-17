@@ -17,6 +17,13 @@ header>*{position:relative}
 .brand strong{display:block;font-size:19px;font-weight:650;letter-spacing:.1px;line-height:1.15}
 .brand small{display:block;font-size:12px;color:#a9bdd1;margin-top:1px}
 .steps{display:flex;align-items:center;gap:4px}
+body.mode-single .only-excel,body.mode-excel .only-single{display:none!important}
+.mode-tabs{display:flex;gap:4px;padding:10px 12px 0;background:#f3f6f8;border-bottom:1px solid var(--line2);border-radius:12px 12px 0 0}
+.mode-tabs button{border:0;border-radius:9px 9px 0 0;background:transparent;color:#51657a;padding:10px 18px;font-weight:650;box-shadow:none;margin-bottom:-1px;border:1px solid transparent;border-bottom:0}
+.mode-tabs button:hover{background:#e8eef1}
+.mode-tabs button.on{background:#fff;color:var(--accent-d);border-color:var(--line2)}
+.sform{display:grid;grid-template-columns:1fr 1fr;gap:14px}.sform .sfull{grid-column:1/-1}
+.sform input,.sform select{padding:11px 12px;font-size:14px}
 .step{display:flex;align-items:center;gap:8px;padding:6px 13px 6px 7px;border-radius:999px;color:#8ea6bd;font-weight:600;font-size:13px;transition:background .2s,color .2s}
 .step b{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;border:1.5px solid currentColor;font-size:12px;font-weight:700}
 .step+.step::before{content:"";width:22px;height:1.5px;background:#ffffff2b;margin-right:8px;margin-left:-4px}
@@ -145,21 +152,35 @@ body.adjusting .cheque .date,body.adjusting .cheque .payee,body.adjusting .chequ
 .cheque .hot{outline:1px dashed #2457a7;outline-offset:1px}
 </style>
 </head>
-<body>
+<body class="mode-single">
 <header class="no-print">
  <div class="brand">
   <svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true"><rect x="1" y="7" width="36" height="24" rx="4" fill="#fff" fill-opacity=".1" stroke="#fff" stroke-opacity=".55" stroke-width="1.5"/><path d="M6 14h10M6 18h14" stroke="#fff" stroke-opacity=".55" stroke-width="1.5" stroke-linecap="round"/><rect x="25" y="12" width="8" height="7" rx="1.5" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.3"/><path d="M6 25.5l4 3.5 8-8" stroke="#3fd1b5" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-  <div><strong>CheckPrint</strong><small>Print bank cheques straight from Excel</small></div>
+  <div><strong>CheckPrint</strong><small>Print bank cheques exactly where the bank wants them</small></div>
  </div>
- <nav class="steps" id="steps" aria-label="Progress"><div class="step current" data-step="1"><b>1</b>Import</div><div class="step" data-step="2"><b>2</b>Review</div><div class="step" data-step="3"><b>3</b>Print</div></nav>
+ <nav class="steps only-excel" id="steps" aria-label="Progress"><div class="step current" data-step="1"><b>1</b>Import</div><div class="step" data-step="2"><b>2</b>Review</div><div class="step" data-step="3"><b>3</b>Print</div></nav>
  <div class="header-actions"><button type="button" id="setupBtn">Setup</button></div>
 </header>
 <main class="no-print">
  <section class="panel">
-  <div class="panel-head"><div><h2>Payment records</h2><div class="sub">Import a sheet, check each row, then print.</div></div>
-   <div class="toolbar"><label class="file-button primary" for="excelFile">Import Excel</label><input id="excelFile" type="file" accept=".xlsx,.xls,.csv"><button id="sampleBtn">Load sample</button></div>
+  <div class="mode-tabs" id="modeTabs" role="tablist"><button type="button" role="tab" id="tabSingle" class="on" aria-selected="true">Single cheque</button><button type="button" role="tab" id="tabExcel" aria-selected="false">Import from Excel</button></div>
+  <div class="panel-head"><div><h2 id="leftTitle">Write a cheque</h2><div class="sub" id="leftSub">Pick the bank, fill in the details, and the cheque on the right updates as you type.</div></div>
+   <div class="toolbar only-excel"><label class="file-button primary" for="excelFile">Import Excel</label><input id="excelFile" type="file" accept=".xlsx,.xls,.csv"><button id="sampleBtn">Load sample</button></div>
   </div>
-  <div class="panel-body">
+  <div class="panel-body only-single" id="singlePane">
+   <div class="sform">
+    <div class="field sfull"><label for="sBank">Bank</label><select id="sBank"></select></div>
+    <div class="field sfull"><label for="sPayee">Pay to (payee name)</label><input id="sPayee" autocomplete="off" placeholder="e.g. Rahim Traders"></div>
+    <div class="field"><label for="sAmount">Amount (Tk)</label><input id="sAmount" inputmode="decimal" autocomplete="off" placeholder="e.g. 125000"></div>
+    <div class="field"><label for="sDate">Cheque date</label><input type="date" id="sDate"></div>
+    <div class="field sfull"><label for="sWords">Amount in words <span class="small" id="sWordsTag">(automatic)</span></label><input id="sWords" autocomplete="off" placeholder="Filled in automatically from the amount"></div>
+    <div class="field sfull"><label for="sCheque">Cheque no. <span class="small">(optional, for your record)</span></label><input id="sCheque" autocomplete="off"></div>
+   </div>
+   <div class="small" id="sNote" style="margin-top:12px"></div>
+   <div class="toolbar" style="margin-top:14px"><button type="button" id="sClear">Clear form</button><button type="button" id="sPrint" class="primary">Print this cheque</button></div>
+   <div class="small" style="margin-top:14px">Have a whole sheet of payments? Use <b>Import from Excel</b> above.</div>
+  </div>
+  <div class="panel-body only-excel">
    <div class="metrics">
     <div class="metric"><span>Total rows</span><strong id="totalMetric">0</strong></div>
     <div class="metric"><span>Ready</span><strong id="validMetric">0</strong></div>
@@ -180,7 +201,7 @@ body.adjusting .cheque .date,body.adjusting .cheque .payee,body.adjusting .chequ
  <section class="panel" id="previewPanel">
   <div class="panel-head">
    <div><h2 id="previewTitle">Cheque preview</h2><div class="sub" id="previewHint">The cheque for the selected row appears here.</div></div>
-   <div class="field" style="min-width:210px"><label for="previewBank">Show cheques for</label><select id="previewBank"><option value="">All loaded cheques</option></select></div>
+   <div class="field only-excel" style="min-width:210px"><label for="previewBank">Show cheques for</label><select id="previewBank"><option value="">All loaded cheques</option></select></div>
   </div>
   <div class="panel-body">
    <div class="preview-stage"><div class="stage-badge" id="stageBadge" hidden></div><div class="cheque" id="previewCheque">
@@ -204,7 +225,7 @@ body.adjusting .cheque .date,body.adjusting .cheque .payee,body.adjusting .chequ
    <div class="preview-meta"><span id="previewCounter">No cheque loaded</span><span class="status warn" id="previewStatus">Waiting for Excel</span></div>
    <div class="calib" id="calibNote" hidden></div>
    <div class="preview-actions">
-    <div class="toolbar"><button id="prevBtn" disabled>&larr; Previous</button><button id="nextBtn" disabled>Next &rarr;</button></div>
+    <div class="toolbar only-excel"><button id="prevBtn" disabled>&larr; Previous</button><button id="nextBtn" disabled>Next &rarr;</button></div>
     <button id="printBtn" class="primary" disabled>Print</button>
    </div>
   </div>
@@ -271,7 +292,7 @@ body.adjusting .cheque .date,body.adjusting .cheque .payee,body.adjusting .chequ
    <div id="printLog" class="small">No cheques printed from this app yet.</div>
   </div>
  </aside>
-<footer class="no-print">CheckPrint · build 2026-10-17d · Layout adjustments and the print record stay on this computer. Keep sensitive payment spreadsheets on trusted devices only.</footer>
+<footer class="no-print">CheckPrint · build 2026-10-17e · Layout adjustments and the print record stay on this computer. Keep sensitive payment spreadsheets on trusted devices only.</footer>
 <div id="reprintDialog" class="modal" hidden>
  <div class="modal-card" role="dialog" aria-labelledby="reprintTitle">
   <h3 id="reprintTitle">These cheques were already printed</h3>
@@ -293,6 +314,7 @@ const BUILTIN_SCANS={
 </script>
 <script>
 const $=id=>document.getElementById(id);
+let mode='single',stash={excel:null};
 let headers=[], rawRows=[], records=[], selected=new Set(), previewIds=[], previewIndex=0;
 let mapping={bank:-1,payee:-1,amount:-1,date:-1,words:-1,cheque:-1};
 const LAYOUT_STORE='checkprint.layouts.v1',PRINT_STORE='checkprint.prints.v1';
@@ -344,6 +366,7 @@ function bdWords(n,lac){
 function amountWords(amount,bank){if(!Number.isFinite(amount)||amount<0)return '';const tpl=TEMPLATES.find(x=>x.match.test(String(bank||''))),lac=!!(tpl&&tpl.lac);let whole=Math.floor(amount),paisa=Math.round((amount-whole)*100);if(paisa===100){whole++;paisa=0}if(!paisa)return bdWords(whole,lac)+' Only';return (whole?bdWords(whole,lac)+' Taka And ':'')+under100(paisa)+' Paisa Only'}
 function val(row,k){let idx=mapping[k];return idx>=0?row[idx]:''}
 function buildRecords(){
+ if(mode!=='excel'){stash.excel=null;setMode('excel')}
  records=rawRows.map((row,i)=>{
   const bank=String(val(row,'bank')||'').trim(),payee=String(val(row,'payee')||'').trim(),amount=numberAmount(val(row,'amount')),date=parseDate(val(row,'date'))||$('defaultDate').value,words=String(val(row,'words')||'').trim(),cheque=String(val(row,'cheque')||'').trim();
   const issues=[];if(!bank)issues.push('Missing bank');if(!payee)issues.push('Missing payee');if(!Number.isFinite(amount)||amount<=0)issues.push('Invalid amount');if(!date)issues.push('Missing date');
@@ -533,9 +556,9 @@ $('sampleBtn').onclick=loadSample;
 ['dragenter','dragover'].forEach(t=>document.addEventListener(t,e=>{if(e.dataTransfer&&[...e.dataTransfer.types].includes('Files')){e.preventDefault();document.body.classList.add('dropping')}}));
 ['dragleave','drop'].forEach(t=>document.addEventListener(t,e=>{if(t==='drop'||e.target===document.documentElement||!e.relatedTarget)document.body.classList.remove('dropping')}));
 document.addEventListener('drop',e=>{if(!e.dataTransfer||!e.dataTransfer.files.length)return;e.preventDefault();$('excelFile').files=e.dataTransfer.files;$('excelFile').dispatchEvent(new Event('change'))});
-$('applyMapBtn').onclick=()=>{['bank','payee','amount','date','words','cheque'].forEach(k=>mapping[k]=Number($('map'+k[0].toUpperCase()+k.slice(1)).value));buildRecords()};
+$('applyMapBtn').onclick=()=>{if(mode!=='excel'){setSetup(false);return}['bank','payee','amount','date','words','cheque'].forEach(k=>mapping[k]=Number($('map'+k[0].toUpperCase()+k.slice(1)).value));buildRecords()};
 $('defaultDate').value=new Date().toISOString().slice(0,10);
-$('defaultDate').addEventListener('change',()=>{if(records.length)buildRecords()});
+$('defaultDate').addEventListener('change',()=>{if(mode==='excel'&&records.length)buildRecords()});
 function showPreviewBank(){previewIds=previewPool().map(r=>r.id);previewIndex=0;updatePreview();renderTable()}
 $('bankFilter').onchange=()=>{renderTable();const bank=$('bankFilter').value;if(bank){$('previewBank').value=bank;showPreviewBank()}};
 $('searchInput').oninput=renderTable;
@@ -671,7 +694,62 @@ $('setupClose').onclick=()=>setSetup(false);
 $('setupBackdrop').onclick=()=>setSetup(false);
 $('printBtn').onclick=()=>{const chosen=[...selected].map(id=>records.find(r=>r.id===id)).filter(Boolean);if(chosen.length)return printRecords(chosen);const row=currentPreview();if(row)return printRecords([row]);alert('Import a cheque before printing.')};
 $('printBankBtn').onclick=()=>{const bank=$('printBank').value;if(!bank){alert('Select a bank first.');return}const list=records.filter(r=>r.bank===bank);if(!list.length){alert('No records for this bank.');return}if(!confirm(`Print ${list.length} cheque(s) for ${bank}, in spreadsheet order?`))return;printRecords(list)};
-boot();
+
+/* ---- Single cheque mode (default) and Excel mode share the same preview and print path ---- */
+const SB_STORE='checkprint.single.v1';
+let sWordsManual=false;
+function singleBanks(){
+ const cur=$('sBank').value||(()=>{try{return localStorage.getItem(SB_STORE)||''}catch(e){return ''}})()||TEMPLATES[0].id;
+ $('sBank').innerHTML=TEMPLATES.map(t=>{const st=calState(t);return `<option value="${t.id}">${esc(t.name)}${unverified(st)?' (estimated layout)':''}</option>`}).join('');
+ $('sBank').value=TEMPLATES.some(t=>t.id===cur)?cur:TEMPLATES[0].id;
+}
+function singleRecord(){
+ const t=TEMPLATES.find(x=>x.id===$('sBank').value)||TEMPLATES[0];
+ const payee=$('sPayee').value.trim(),amount=numberAmount($('sAmount').value),date=$('sDate').value;
+ const auto=Number.isFinite(amount)&&amount>0?amountWords(amount,t.name):'';
+ $('sWords').placeholder=auto||'Filled in automatically from the amount';
+ const words=sWordsManual&&$('sWords').value.trim()?$('sWords').value.trim():auto;
+ $('sWordsTag').textContent=sWordsManual&&$('sWords').value.trim()?'(typed by you)':'(automatic)';
+ const issues=[];if(!payee)issues.push('Missing payee');if(!Number.isFinite(amount)||amount<=0)issues.push('Invalid amount');if(!date)issues.push('Missing date');
+ return {id:0,row:1,bank:t.name,payee,amount,date,words,cheque:$('sCheque').value.trim(),issues,source:[]};
+}
+function syncSingle(){
+ if(mode!=='single')return;
+ const rec=singleRecord();
+ try{localStorage.setItem(SB_STORE,$('sBank').value)}catch(e){}
+ records=[rec];selected=new Set();previewIds=[0];previewIndex=0;
+ updatePreview();renderTable();
+ const t=templateFor(rec.bank),st=t?calState(t):'';
+ $('previewCounter').textContent=rec.bank;
+ if(rec.issues.length){$('previewStatus').textContent=rec.payee||rec.amount?'Fill in: '+rec.issues.map(x=>x.replace('Missing ','').replace('Invalid ','')).join(', '):'Fill in the form';$('previewStatus').className='status warn'}
+ $('printBtn').disabled=!!rec.issues.length;$('sPrint').disabled=!!rec.issues.length;
+ $('printBtn').textContent='Print this cheque';
+ $('sNote').textContent=t&&unverified(st)?'Layout for '+t.short+' is an estimate, not yet checked on a real cheque. Print a test on plain paper first.':'';
+}
+function setMode(m,force){
+ if(m===mode&&!force)return;
+ if(mode==='excel'&&m!=='excel')stash.excel={records,selected,previewIds,previewIndex};
+ mode=m;
+ document.body.classList.toggle('mode-single',m==='single');document.body.classList.toggle('mode-excel',m==='excel');
+ $('tabSingle').classList.toggle('on',m==='single');$('tabExcel').classList.toggle('on',m==='excel');
+ $('tabSingle').setAttribute('aria-selected',m==='single');$('tabExcel').setAttribute('aria-selected',m==='excel');
+ $('leftTitle').textContent=m==='single'?'Write a cheque':'Payment records';
+ $('leftSub').textContent=m==='single'?'Pick the bank, fill in the details, and the cheque on the right updates as you type.':'Import a sheet, check each row, then print.';
+ if(m==='single'){singleBanks();syncSingle()}
+ else{
+  const s=stash.excel;
+  if(s){records=s.records;selected=s.selected;previewIds=s.previewIds;previewIndex=s.previewIndex}else{records=[];selected=new Set();previewIds=[];previewIndex=0}
+  refreshBankLists();$('previewBank').value='';updatePreview();renderTable();
+ }
+}
+$('tabSingle').onclick=()=>setMode('single');
+$('tabExcel').onclick=()=>setMode('excel');
+['sBank','sPayee','sAmount','sDate','sCheque'].forEach(id=>$(id).addEventListener('input',syncSingle));
+$('sWords').addEventListener('input',()=>{sWordsManual=!!$('sWords').value.trim();syncSingle()});
+$('sClear').onclick=()=>{['sPayee','sAmount','sWords','sCheque'].forEach(id=>$(id).value='');sWordsManual=false;$('sDate').value=$('defaultDate').value;syncSingle();$('sPayee').focus()};
+$('sPrint').onclick=()=>$('printBtn').click();
+$('sDate').value=new Date().toISOString().slice(0,10);
+boot().then(()=>setMode('single',true));
 </script>
 <script src="./node_modules/xlsx/dist/xlsx.full.min.js"></script>
 </body></html>
