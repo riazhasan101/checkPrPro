@@ -116,7 +116,7 @@ window.addEventListener('hashchange',route);
 function boot(){$('login').hidden=!!T;$('app').hidden=!T;if(T)route()}
 $('go').onclick=async()=>{$('lerr').textContent='';try{const j=await api('POST','/login',{email:$('em').value,password:$('pw').value});T=j.token;sessionStorage.setItem('adm',T);$('who').textContent=j.email;$('pw').value='';boot()}catch(e){$('lerr').textContent=e.message}};
 $('pw').addEventListener('keydown',e=>{if(e.key==='Enter')$('go').click()});
-$('out').onclick=()=>{T='';sessionStorage.removeItem('adm');boot()};
+$('out').onclick=async()=>{try{if(T)await api('POST','/logout')}catch(e){}T='';sessionStorage.removeItem('adm');boot()};
 document.querySelector('#nav').addEventListener('click',e=>{const a=e.target.closest('a');if(a)go(a.dataset.v)});
 const coForm=(c={})=>F('name','Company name','required maxlength=100',c.name)+`<div class="two">${F('contact','Contact person','maxlength=80',c.contact)}${F('phone','Phone','maxlength=20',c.phone)}</div>${F('email','Email','maxlength=254',c.email)}${F('address','Address','maxlength=200',c.address)}${F('notes','Notes','maxlength=500',c.notes)}`;
 document.addEventListener('click',guard(async e=>{

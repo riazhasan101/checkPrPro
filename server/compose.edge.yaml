@@ -1,0 +1,15 @@
+# Use this when another Caddy already owns ports 80 and 443, as on the shared VPS.
+#   docker compose -f compose.yaml -f compose.edge.yaml up -d --build
+# The API joins the external proxy network. Add a site block there; do not start the bundled Caddy.
+services:
+  api:
+    container_name: checkprint-license-api
+    networks:
+      - default
+      - edge
+  caddy:
+    profiles: ["bundled-caddy"]
+networks:
+  edge:
+    name: proxy_default
+    external: true

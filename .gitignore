@@ -12,6 +12,10 @@ coverage/
 build-app/
 licence-private.pem
 license-private.pem
+licence-public.pem
+license-public.pem
+*.pfx
+*.p12
 server/node_modules/
 server/.env
 server/downloads/

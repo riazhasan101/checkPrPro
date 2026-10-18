@@ -1,4 +1,6 @@
-# Licence server + database. Put a TLS reverse proxy (Caddy, nginx or your host's load balancer) in front: the desktop app only talks https.
+# Licence server, database, and Caddy. Point an A/AAAA record at this VPS, set LICENSE_DOMAIN
+# to that hostname, then: docker compose up -d --build
+# Caddy publishes 80 and 443. The API is also on 127.0.0.1:8080 for a host proxy. Postgres stays private.
 services:
   db:
     image: postgres:16
@@ -7,7 +9,6 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD}
       POSTGRES_DB: checkprint
     volumes: [dbdata:/var/lib/postgresql/data]
-    # not published to the internet
   api:
     build: .
     restart: unless-stopped
@@ -24,10 +25,30 @@ services:
       TRUST_PROXY: "1"
       DOWNLOAD_DIR: /downloads
     volumes:
-      - ./downloads:/downloads:ro      # put CheckPrint-x.y.z-Setup-x64.exe here; it appears on /download
+      - ./downloads:/downloads:ro
     ports: ["127.0.0.1:8080:8080"]
     read_only: true
     cap_drop: [ALL]
     security_opt: ["no-new-privileges:true"]
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on: [api]
+    environment:
+      LICENSE_DOMAIN: ${LICENSE_DOMAIN:?set LICENSE_DOMAIN to the hostname customers will use}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddydata:/data
+      - caddyconfig:/config
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE]
+    security_opt: ["no-new-privileges:true"]
 volumes:
   dbdata:
+  caddydata:
+  caddyconfig:
