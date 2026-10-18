@@ -22,6 +22,9 @@ services:
       PAY_BANK: ${PAY_BANK:-}
       SUPPORT_CONTACT: ${SUPPORT_CONTACT:-}
       TRUST_PROXY: "1"
+      DOWNLOAD_DIR: /downloads
+    volumes:
+      - ./downloads:/downloads:ro      # put CheckPrint-x.y.z-Setup-x64.exe here; it appears on /download
     ports: ["127.0.0.1:8080:8080"]
     read_only: true
     cap_drop: [ALL]

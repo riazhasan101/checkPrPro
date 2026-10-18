@@ -3,6 +3,7 @@ const http=require('node:http');
 const fs=require('node:fs');
 const path=require('node:path');
 const {hashPassword,verifyPassword,DUMMY,sha256,randomToken,safeEqual,signToken}=require('./crypto.cjs');
+const {createDownloads}=require('./download.cjs');
 
 const GRACE_MS=7*24*3600*1000;            // how long a device may run without reaching the server (7 days)
 const MAX_DEVICE_ROWS=10;                  // hard cap of non-revoked device records per account
@@ -11,6 +12,7 @@ const EMAIL=/^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,}$/;
 
 function createApp({pool,privateKey,env=process.env}){
   const adminHtml=fs.readFileSync(path.join(__dirname,'admin.html'),'utf8');
+  const downloads=createDownloads(env.DOWNLOAD_DIR||'/downloads',{support:env.SUPPORT_CONTACT||''});
   const hits=new Map();
   const trustProxy=env.TRUST_PROXY==='1';
   const ipOf=req=>trustProxy?String(req.headers['x-forwarded-for']||'').split(',')[0].trim()||req.socket.remoteAddress:req.socket.remoteAddress;
@@ -395,6 +397,7 @@ function createApp({pool,privateKey,env=process.env}){
           'Content-Security-Policy':"default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; img-src data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"});
         return res.end(adminHtml);
       }
+      if(downloads(req,res,url))return;
       if(!url.pathname.startsWith('/api/'))return send(res,404,{code:'NOT_FOUND'});
       const r=routes.find(x=>x.method===req.method&&x.re.test(url.pathname));
       if(!r)return send(res,404,{code:'NOT_FOUND',message:'Unknown endpoint'});

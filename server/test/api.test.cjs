@@ -194,3 +194,17 @@ test('admin creates, edits and resets users',{skip},async()=>{
   assert.equal((await call('POST','/api/device/activate',{email:'au1@x.com',password:'a brand new passphrase',fp:'a'.repeat(40)})).body.code,'NO_SUBSCRIPTION');
   const sum=(await call('GET','/api/admin/summary',null,adm())).body;assert.ok(sum.companies>=2&&sum.clients>=3&&'requests' in sum&&'revenue30' in sum);
 });
+
+test('download page serves only the installer, with its checksum',{skip},async()=>{
+  const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),http=require('node:http');
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'dl-'));fs.writeFileSync(path.join(dir,'CheckPrint-1.0.0-Setup-x64.exe'),'MZ-test');fs.writeFileSync(path.join(dir,'secret.txt'),'no');
+  const s=createApp({pool,privateKey:PRIV,env:{DOWNLOAD_DIR:dir}});await new Promise(r=>s.listen(0,'127.0.0.1',r));const b='http://127.0.0.1:'+s.address().port;
+  try{
+    const page=await (await fetch(b+'/download')).text();
+    assert.match(page,/CheckPrint-1\.0\.0-Setup-x64\.exe/);assert.match(page,/[0-9a-f]{64}/);
+    const f=await fetch(b+'/download/CheckPrint-1.0.0-Setup-x64.exe');assert.equal(f.status,200);assert.equal(await f.text(),'MZ-test');
+    assert.equal((await fetch(b+'/download/secret.txt')).status,404,'only the installer name is served');
+    assert.equal((await fetch(b+'/download/..%2Fetc%2Fpasswd')).status,404);
+    assert.equal((await fetch(b+'/download/CheckPrint-9.9.9-Setup-x64.exe')).status,404);
+  }finally{s.close();fs.rmSync(dir,{recursive:true,force:true})}
+});
