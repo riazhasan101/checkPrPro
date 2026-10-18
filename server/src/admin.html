@@ -1,66 +1,145 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CheckPrint Admin</title>
 <style>
-:root{--bg:#f3f5f4;--card:#fff;--ink:#0f2238;--muted:#5d6d7b;--line:#dde4e7;--accent:#0e7a6b;--red:#b42318;--amber:#8a5a00}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 "Segoe UI",system-ui,sans-serif}
-header{background:#0f2238;color:#fff;padding:14px 22px;display:flex;justify-content:space-between;align-items:center}header b{font-size:17px}
-main{max-width:1180px;margin:0 auto;padding:20px}.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:18px}
-h2{margin:0 0 12px;font-size:16px}.tiles{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}.tile{flex:1 1 150px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}.tile span{color:var(--muted);font-size:12px}.tile strong{display:block;font-size:24px}
-table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px 10px;border-bottom:1px solid #eaeff1;vertical-align:top}th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
-.wrap{overflow-x:auto}button,input,select{font:inherit;border:1px solid #c9d3d9;border-radius:8px;padding:7px 12px;background:#fff;color:var(--ink)}button{cursor:pointer;font-weight:600}button.p{background:var(--accent);border-color:var(--accent);color:#fff}button.d{color:var(--red)}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600;background:#e8eef1}.ok{background:#e2f3ef;color:#0a5f53}.bad{background:#fde8e6;color:var(--red)}.warn{background:#fff3d6;color:var(--amber)}
-.err{color:var(--red);min-height:20px}.small{color:var(--muted);font-size:12px}#login{max-width:360px;margin:80px auto}#login input{width:100%;margin-bottom:10px}
+:root{--bg:#eef2f3;--card:#fff;--ink:#0f2238;--ink2:#17314e;--muted:#5d6d7b;--line:#dde4e7;--line2:#eaeff1;--accent:#0e7a6b;--accent-d:#0a5f53;--accent-soft:#e2f3ef;--red:#b42318;--red-soft:#fde8e6;--amber:#8a5a00;--amber-soft:#fff3d6}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 "Segoe UI Variable Text","Segoe UI",system-ui,sans-serif}
+.shell{display:grid;grid-template-columns:230px minmax(0,1fr);min-height:100vh}
+aside{background:linear-gradient(180deg,#0f2238,#0b1a2b);color:#cfe0f1;padding:18px 12px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px}
+.logo{display:flex;align-items:center;gap:10px;padding:4px 10px 16px;color:#fff;font-weight:700;font-size:16px}.logo i{width:30px;height:30px;border-radius:8px;background:var(--accent);display:grid;place-items:center;font-style:normal}
+nav a{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 12px;border-radius:9px;color:#b9cde2;text-decoration:none;font-weight:600;cursor:pointer}
+nav a:hover{background:#ffffff12;color:#fff}nav a.on{background:#ffffff1f;color:#fff}
+nav b{min-width:20px;text-align:center;padding:1px 7px;border-radius:99px;background:#f0b429;color:#2a1c00;font-size:12px}nav b:empty,nav b[data-n="0"]{display:none}
+.who{margin-top:auto;padding:10px;font-size:12px;color:#8ea6bd;border-top:1px solid #ffffff1a;word-break:break-all}.who button{margin-top:8px;width:100%;background:#ffffff12;color:#fff;border-color:#ffffff33}
+main{padding:24px 28px;min-width:0}h1{margin:0 0 4px;font-size:22px}.lead{color:var(--muted);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:18px}h2{margin:0 0 12px;font-size:16px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-bottom:18px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}.tile span{color:var(--muted);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}.tile strong{display:block;font-size:26px;margin-top:2px;font-variant-numeric:tabular-nums}
+.tile.alert{border-color:#f0c36b;background:#fffaf0}.tile.alert strong{color:var(--amber)}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line2);vertical-align:top}th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+tbody tr:hover{background:#f8fafb}.wrap{overflow-x:auto}.num{font-variant-numeric:tabular-nums}
+button,input,select,textarea{font:inherit;border:1px solid #c9d3d9;border-radius:8px;padding:8px 12px;background:#fff;color:var(--ink)}button{cursor:pointer;font-weight:600}button:hover{background:#f1f5f6}
+button.p{background:var(--accent);border-color:var(--accent);color:#fff}button.p:hover{background:var(--accent-d)}button.d{color:var(--red)}button.s{padding:5px 10px;font-size:13px}
+input:focus,select:focus,textarea:focus{outline:2px solid #9ad9cc;outline-offset:1px;border-color:var(--accent)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}.grow{flex:1}.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600;background:#e8eef1;white-space:nowrap}
+.ok{background:var(--accent-soft);color:var(--accent-d)}.bad{background:var(--red-soft);color:var(--red)}.warn{background:var(--amber-soft);color:var(--amber)}
+.small{color:var(--muted);font-size:12px}.err{color:var(--red);min-height:20px;margin-bottom:8px}.empty{padding:26px;text-align:center;color:var(--muted)}
+dialog{border:0;border-radius:14px;padding:0;width:min(520px,94vw);box-shadow:0 20px 60px #0f223855}dialog::backdrop{background:#0f223880}
+dialog form{padding:20px}dialog h2{margin-bottom:14px}.f{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}.f label{font-size:12px;font-weight:650;color:#43566a}.f input,.f select,.f textarea{width:100%}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#login{max-width:380px;margin:12vh auto;padding:26px}#login input{width:100%;margin-bottom:10px}
+.crumb{display:flex;gap:6px;align-items:center;margin-bottom:10px}.crumb a{color:var(--accent-d);cursor:pointer;font-weight:600}
+@media(max-width:860px){.shell{grid-template-columns:1fr}aside{position:static;height:auto;flex-direction:row;flex-wrap:wrap;padding:10px}.logo{padding:4px 8px}.who{display:none}main{padding:16px}.two{grid-template-columns:1fr}}
 </style></head><body>
-<header><b>CheckPrint Admin</b><span id="who"></span></header>
-<main>
-<div id="login" class="card"><h2>Admin sign-in</h2><input id="em" type="email" placeholder="Email" autocomplete="username"><input id="pw" type="password" placeholder="Password" autocomplete="current-password"><button class="p" id="go" style="width:100%">Sign in</button><div class="err" id="lerr"></div></div>
-<div id="app" hidden>
-<div class="tiles" id="tiles"></div>
-<div class="card"><h2>Payments waiting for confirmation</h2><div class="small" style="margin-bottom:10px">Check the transaction ID and amount in your bKash / Nagad / bank statement before confirming. Confirming adds one month or one year to the customer's subscription.</div><div class="wrap"><table><thead><tr><th>When</th><th>Customer</th><th>Plan</th><th>Amount</th><th>Method</th><th>Trx ID</th><th>From</th><th></th></tr></thead><tbody id="pay"></tbody></table></div></div>
-<div class="card"><h2>Customers</h2><div class="row"><input id="q" placeholder="Search name, email, phone" style="min-width:260px"><button id="search">Search</button></div><div class="wrap"><table><thead><tr><th>Customer</th><th>Plan</th><th>Valid until</th><th>Devices</th><th></th></tr></thead><tbody id="users"></tbody></table></div></div>
-<div class="card" id="detail" hidden></div>
-<div class="card"><h2>Plans and prices (BDT)</h2><div class="wrap"><table><thead><tr><th>Plan</th><th>Devices</th><th>Monthly</th><th>Yearly</th><th></th></tr></thead><tbody id="plans"></tbody></table></div></div>
-</div>
-<div class="err" id="err" style="max-width:1180px;margin:0 auto;padding:0 20px"></div>
-</main>
+<div id="login" class="card" hidden><h2>CheckPrint admin sign-in</h2><input id="em" type="email" placeholder="Email" autocomplete="username"><input id="pw" type="password" placeholder="Password" autocomplete="current-password"><button class="p" id="go" style="width:100%">Sign in</button><div class="err" id="lerr"></div></div>
+<div class="shell" id="app" hidden>
+<aside><div class="logo"><i>&#10003;</i>CheckPrint Admin</div>
+<nav id="nav"><a data-v="overview">Overview</a><a data-v="requests">Subscription requests <b id="nReq"></b></a><a data-v="payments">Payments <b id="nPay"></b></a><a data-v="companies">Companies</a><a data-v="users">Users</a><a data-v="plans">Plans &amp; prices</a><a data-v="audit">Activity log</a></nav>
+<div class="who"><span id="who"></span><button id="out">Sign out</button></div></aside>
+<main><div class="err" id="err"></div><div id="view"></div></main></div>
+<dialog id="dlg"><form method="dialog" id="dform"></form></dialog>
 <script>
-const $=id=>document.getElementById(id);let T=sessionStorage.getItem('adm')||'';
+const $=id=>document.getElementById(id);let T=sessionStorage.getItem('adm')||'',PLANS=[],COMP=[];
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const d=s=>s?new Date(s).toLocaleString():'-';
-async function api(m,p,b){const r=await fetch('/api/admin'+p,{method:m,headers:{'Content-Type':'application/json',Authorization:'Bearer '+T},body:b?JSON.stringify(b):undefined});const j=await r.json().catch(()=>({}));if(r.status===401&&p!=='/login'){T='';sessionStorage.removeItem('adm');show()}if(!r.ok)throw new Error(j.message||'Request failed');return j}
-function show(){$('login').hidden=!!T;$('app').hidden=!T;if(T)load()}
-$('go').onclick=async()=>{$('lerr').textContent='';try{const j=await api('POST','/login',{email:$('em').value,password:$('pw').value});T=j.token;sessionStorage.setItem('adm',T);$('who').textContent=j.email;$('pw').value='';show()}catch(e){$('lerr').textContent=e.message}};
+const d=s=>s?new Date(s).toLocaleString([], {dateStyle:'medium',timeStyle:'short'}):'-';const dd=s=>s?new Date(s).toLocaleDateString([], {dateStyle:'medium'}):'-';
+const money=n=>'৳'+Number(n||0).toLocaleString('en-BD');
+async function api(m,p,b){const r=await fetch('/api/admin'+p,{method:m,headers:{'Content-Type':'application/json',Authorization:'Bearer '+T},body:b?JSON.stringify(b):undefined});const j=await r.json().catch(()=>({}));if(r.status===401&&p!=='/login'){T='';sessionStorage.removeItem('adm');boot()}if(!r.ok)throw new Error(j.message||'Request failed');return j}
+const guard=fn=>async(...a)=>{$('err').textContent='';try{await fn(...a)}catch(e){$('err').textContent=e.message;scrollTo(0,0)}};
+const active=x=>x&&new Date(x)>new Date();
+const planOpts=sel=>PLANS.map(p=>`<option value="${esc(p.id)}"${p.id===sel?' selected':''}>${esc(p.name)} (${p.maxDevices} device${p.maxDevices>1?'s':''})</option>`).join('');
+const compOpts=sel=>'<option value="">No company</option>'+COMP.map(c=>`<option value="${esc(c.id)}"${c.id===sel?' selected':''}>${esc(c.name)}</option>`).join('');
+const subPill=(end)=>end?`<span class="pill ${active(end)?'ok':'bad'}">${active(end)?'active':'expired'}</span> <span class="small">${dd(end)}</span>`:'<span class="pill warn">no subscription</span>';
+/* ---------- dialog helper ---------- */
+function ask(title,fields,okLabel){return new Promise(res=>{
+  const f=$('dform');f.innerHTML=`<h2>${esc(title)}</h2>${fields}<div class="row" style="justify-content:flex-end;margin:6px 0 0"><button value="cancel" type="button" id="dc">Cancel</button><button class="p" value="ok" id="dok">${esc(okLabel||'Save')}</button></div>`;
+  const dl=$('dlg');let done=false;const fin=v=>{if(done)return;done=true;dl.close();res(v)};
+  $('dc').onclick=()=>fin(null);dl.oncancel=()=>fin(null);
+  f.onsubmit=e=>{e.preventDefault();const o={};new FormData(f).forEach((v,k)=>o[k]=v);fin(o)};dl.showModal();
+})}
+const F=(id,label,extra='',val='')=>`<div class="f"><label for="${id}">${esc(label)}</label><input id="${id}" name="${id}" value="${esc(val)}" ${extra}></div>`;
+const S=(id,label,opts)=>`<div class="f"><label for="${id}">${esc(label)}</label><select id="${id}" name="${id}">${opts}</select></div>`;
+/* ---------- views ---------- */
+const V={};
+V.overview=async()=>{
+  const [s,rq,pay]=await Promise.all([api('GET','/summary'),api('GET','/requests?status=pending'),api('GET','/payments?status=pending')]);
+  const t=(l,v,al)=>`<div class="tile${al&&v?' alert':''}"><span>${l}</span><strong>${v}</strong></div>`;
+  return `<h1>Overview</h1><p class="lead">What needs your attention, and how the business is doing.</p>
+  <div class="tiles">${t('Requests to review',s.requests,1)}${t('Payments to confirm',s.pending,1)}${t('Expiring in 7 days',s.expiring,1)}${t('Active subscriptions',s.active)}${t('Expired',s.expired)}${t('Users without plan',s.nosub)}${t('Companies',s.companies)}${t('Users',s.clients)}${t('Revenue, last 30 days',money(s.revenue30))}</div>
+  <div class="card"><h2>Subscription requests</h2>${reqTable(rq.slice(0,6))}</div>
+  <div class="card"><h2>Payments waiting</h2>${payTable(pay.slice(0,6))}</div>`;
+};
+const reqTable=rows=>rows.length?`<div class="wrap"><table><thead><tr><th>When</th><th>User</th><th>Company</th><th>Plan</th><th>Note</th><th></th></tr></thead><tbody>${rows.map(x=>`<tr><td>${d(x.created_at)}</td><td>${esc(x.name)}<div class="small">${esc(x.email)} ${esc(x.phone)}</div></td><td>${esc(x.company_name||'-')}</td><td>${esc(x.plan_id)} / ${esc(x.period)}</td><td>${esc(x.note)}${x.status!=='pending'?` <span class="pill ${x.status==='allowed'?'ok':'bad'}">${esc(x.status)}</span> ${esc(x.reason)}`:''}</td><td style="white-space:nowrap">${x.status==='pending'?`<button class="p s" data-allow="${esc(x.id)}" data-period="${esc(x.period)}">Allow</button> <button class="d s" data-deny="${esc(x.id)}">Deny</button>`:''}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Nothing waiting.</div>';
+const payTable=rows=>rows.length?`<div class="wrap"><table><thead><tr><th>When</th><th>User</th><th>Plan</th><th class="num">Amount</th><th>Method</th><th>Trx ID</th><th>Sender</th><th></th></tr></thead><tbody>${rows.map(x=>`<tr><td>${d(x.created_at)}</td><td>${esc(x.name)}<div class="small">${esc(x.email)}</div></td><td>${esc(x.plan_id)} / ${esc(x.period)}</td><td class="num">${money(x.amount)}</td><td>${esc(x.method)}</td><td><b>${esc(x.trx_id)}</b></td><td>${esc(x.payer_number)}</td><td style="white-space:nowrap">${x.status==='pending'?`<button class="p s" data-ok="${esc(x.id)}">Confirm</button> <button class="d s" data-no="${esc(x.id)}">Reject</button>`:`<span class="pill ${x.status==='confirmed'?'ok':'bad'}">${esc(x.status)}</span>`}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Nothing waiting.</div>';
+V.requests=async()=>{const st=location.hash.includes('all')?'all':'pending';const rows=await api('GET','/requests?status='+st);
+  return `<h1>Subscription requests</h1><p class="lead">Customers ask for a plan inside the desktop app. Allow gives them the subscription at once; Deny tells them why not.</p><div class="row"><button class="s" data-go="requests">Waiting</button><button class="s" data-go="requests/all">All requests</button></div><div class="card">${reqTable(rows)}</div>`};
+V.payments=async()=>{const st=location.hash.includes('all')?'all':'pending';const rows=await api('GET','/payments?status='+st);
+  return `<h1>Payments</h1><p class="lead">Compare the transaction ID and amount with your bKash, Nagad or bank statement, then confirm. Confirming adds one month or one year.</p><div class="row"><button class="s" data-go="payments">Waiting</button><button class="s" data-go="payments/all">All payments</button></div><div class="card">${payTable(rows)}</div>`};
+V.companies=async()=>{
+  const q=$('cq')?$('cq').value:'';const rows=await api('GET','/companies?q='+encodeURIComponent(q));
+  return `<h1>Companies</h1><p class="lead">Group users by company, block a whole company, keep contact details.</p>
+  <div class="row"><input id="cq" class="grow" placeholder="Search company, contact or phone" value="${esc(q)}"><button data-go="companies" id="csearch">Search</button><button class="p" data-newco>New company</button></div>
+  <div class="card wrap">${rows.length?`<table><thead><tr><th>Company</th><th>Contact</th><th class="num">Users</th><th class="num">Active</th><th>Latest end</th><th></th></tr></thead><tbody>${rows.map(c=>`<tr><td><a href="#company/${esc(c.id)}"><b>${esc(c.name)}</b></a> ${c.blocked?'<span class="pill bad">blocked</span>':''}<div class="small">${esc(c.address)}</div></td><td>${esc(c.contact)}<div class="small">${esc(c.phone)} ${esc(c.email)}</div></td><td class="num">${c.users}</td><td class="num">${c.active}</td><td>${c.latest_end?subPill(c.latest_end):'-'}</td><td><button class="s" data-go="company/${esc(c.id)}">Open</button></td></tr>`).join('')}</tbody></table>`:'<div class="empty">No companies yet. Add the first one.</div>'}</div>`};
+V.company=async id=>{
+  const j=await api('GET','/companies/'+id),c=j.company;
+  return `<div class="crumb"><a data-go="companies">Companies</a> / <b>${esc(c.name)}</b></div><h1>${esc(c.name)} ${c.blocked?'<span class="pill bad">blocked</span>':''}</h1>
+  <div class="card"><div class="two"><div><div class="small">Contact</div>${esc(c.contact)||'-'}<div class="small">${esc(c.phone)} ${esc(c.email)}</div></div><div><div class="small">Address</div>${esc(c.address)||'-'}<div class="small">${esc(c.notes)}</div></div></div>
+  <div class="row" style="margin:14px 0 0"><button data-editco="${esc(c.id)}">Edit details</button><button class="${c.blocked?'':'d'}" data-blockco="${esc(c.id)}" data-state="${c.blocked?'0':'1'}">${c.blocked?'Unblock company':'Block company'}</button><button class="d" data-delco="${esc(c.id)}">Delete</button></div></div>
+  <div class="row"><h2 style="margin:0" class="grow">Users in this company</h2><button class="p" data-newuser="${esc(c.id)}">Add user</button></div>
+  <div class="card wrap">${j.users.length?`<table><thead><tr><th>User</th><th>Subscription</th><th></th></tr></thead><tbody>${j.users.map(u=>`<tr><td>${esc(u.name)} ${u.blocked?'<span class="pill bad">blocked</span>':''}<div class="small">${esc(u.email)} ${esc(u.phone)}</div></td><td>${esc(u.plan_id||'')} ${subPill(u.period_end)}</td><td><button class="s" data-go="user/${esc(u.id)}">Open</button></td></tr>`).join('')}</tbody></table>`:'<div class="empty">No users yet.</div>'}</div>`};
+V.users=async()=>{
+  const q=$('uq')?$('uq').value:'',co=$('uc')?$('uc').value:'';const rows=await api('GET','/users?q='+encodeURIComponent(q)+(co?'&company='+co:''));
+  return `<h1>Users</h1><p class="lead">Every customer account. Open one to extend the subscription, reset the password or remove a computer.</p>
+  <div class="row"><input id="uq" class="grow" placeholder="Search name, email, phone or company" value="${esc(q)}"><select id="uc">${compOpts(co).replace('No company','All companies')}</select><button data-go="users" id="usearch">Search</button><button class="p" data-newuser="">New user</button></div>
+  <div class="card wrap">${rows.length?`<table><thead><tr><th>User</th><th>Company</th><th>Plan</th><th>Subscription</th><th class="num">Computers</th><th></th></tr></thead><tbody>${rows.map(x=>`<tr><td>${esc(x.name)} ${x.blocked?'<span class="pill bad">blocked</span>':''}<div class="small">${esc(x.email)} ${esc(x.phone)}</div></td><td>${esc(x.company_name||'-')}</td><td>${esc(x.plan_id||'-')}</td><td>${subPill(x.period_end)}</td><td class="num">${x.devices}</td><td><button class="s" data-go="user/${esc(x.id)}">Open</button></td></tr>`).join('')}</tbody></table>`:'<div class="empty">No users found.</div>'}</div>`};
+V.user=async id=>{
+  const j=await api('GET','/users/'+id),u=j.user,sub=j.subscription;
+  return `<div class="crumb"><a data-go="users">Users</a> / <b>${esc(u.name)}</b></div><h1>${esc(u.name)} ${u.blocked?'<span class="pill bad">blocked</span>':''}</h1><p class="lead">${esc(u.email)} ${esc(u.phone)} · ${u.company_id?`<a data-go="company/${esc(u.company_id)}">${esc(u.company_name)}</a>`:'no company'}</p>
+  <div class="card"><h2>Subscription</h2><p>${sub?`Plan <b>${esc(sub.planName)}</b>, valid until <b>${d(sub.periodEnd)}</b> ${sub.active?'<span class="pill ok">active</span>':'<span class="pill bad">expired</span>'}`:'No subscription yet.'}</p>
+  <div class="row"><input id="xd" type="number" value="30" style="width:90px"> days on plan <select id="xp">${planOpts(sub&&sub.plan)}</select><button class="p" data-ext="${esc(u.id)}">Add days</button><button data-ext="${esc(u.id)}" data-neg="1">Remove days</button><button class="d" data-cancel="${esc(u.id)}">End subscription now</button></div></div>
+  <div class="card"><h2>Account</h2><div class="row"><button data-edituser="${esc(u.id)}">Edit name, phone, company</button><button data-pwuser="${esc(u.id)}">Set new password</button><button class="${u.blocked?'':'d'}" data-blockuser="${esc(u.id)}" data-state="${u.blocked?'0':'1'}">${u.blocked?'Unblock user':'Block user'}</button></div></div>
+  <div class="card"><h2>Computers</h2><div class="row"><button class="d s" data-reset="${esc(u.id)}">Remove all computers</button></div><div class="wrap">${j.devices.length?`<table><thead><tr><th>Computer</th><th>First seen</th><th>Last seen</th><th></th></tr></thead><tbody>${j.devices.map(x=>`<tr><td>${esc(x.name)} <span class="small">${esc(x.platform)}</span> ${x.revoked?'<span class="pill bad">removed</span>':''}</td><td>${d(x.first_seen)}</td><td>${d(x.last_seen)}</td><td>${x.revoked?'':`<button class="d s" data-rev="${esc(x.id)}" data-user="${esc(u.id)}">Remove</button>`}</td></tr>`).join('')}</tbody></table>`:'<div class="empty">No computer has signed in yet.</div>'}</div></div>
+  <div class="card"><h2>Payments</h2>${j.payments.length?payTable(j.payments.map(p=>({...p,name:u.name,email:u.email}))):'<div class="empty">No payments.</div>'}</div>`};
+V.plans=async()=>{const c=await fetch('/api/config').then(r=>r.json());PLANS=c.plans;
+  return `<h1>Plans &amp; prices</h1><p class="lead">Prices in BDT. "Computers" is how many PCs one user may sign in on.</p><div class="card wrap"><table><thead><tr><th>Plan</th><th>Computers</th><th>Monthly</th><th>Yearly</th><th></th></tr></thead><tbody>${c.plans.map(x=>`<tr data-plan="${esc(x.id)}"><td><b>${esc(x.name)}</b></td><td><input type="number" min="1" value="${esc(x.maxDevices)}" style="width:80px" class="mx"></td><td><input type="number" min="0" value="${esc(x.priceMonthly)}" style="width:110px" class="pm"></td><td><input type="number" min="0" value="${esc(x.priceYearly)}" style="width:110px" class="py"></td><td><button class="p s" data-save="${esc(x.id)}">Save</button></td></tr>`).join('')}</tbody></table></div>`};
+V.audit=async()=>{const rows=await api('GET','/audit');return `<h1>Activity log</h1><p class="lead">The last 200 actions by customers and admins.</p><div class="card wrap"><table><thead><tr><th>When</th><th>Who</th><th>Action</th><th>Details</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${d(x.at)}</td><td>${esc(x.actor)}</td><td>${esc(x.action)}</td><td class="small">${esc(JSON.stringify(x.detail))}</td></tr>`).join('')}</tbody></table></div>`};
+/* ---------- router ---------- */
+async function route(){
+  if(!T)return;
+  const h=(location.hash||'#overview').slice(1),[name,arg]=h.split('/');const view=V[name]?name:'overview';
+  document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.dataset.v===(view==='company'?'companies':view==='user'?'users':view)));
+  try{
+    if(!PLANS.length)PLANS=(await fetch('/api/config').then(r=>r.json())).plans;
+    COMP=await api('GET','/companies');
+    $('view').innerHTML=await V[view](arg);$('err').textContent='';
+    const s=await api('GET','/summary');$('nReq').textContent=s.requests;$('nReq').dataset.n=s.requests;$('nPay').textContent=s.pending;$('nPay').dataset.n=s.pending;
+  }catch(e){$('err').textContent=e.message}
+}
+const go=h=>{if(location.hash==='#'+h)route();else location.hash=h};
+window.addEventListener('hashchange',route);
+function boot(){$('login').hidden=!!T;$('app').hidden=!T;if(T)route()}
+$('go').onclick=async()=>{$('lerr').textContent='';try{const j=await api('POST','/login',{email:$('em').value,password:$('pw').value});T=j.token;sessionStorage.setItem('adm',T);$('who').textContent=j.email;$('pw').value='';boot()}catch(e){$('lerr').textContent=e.message}};
 $('pw').addEventListener('keydown',e=>{if(e.key==='Enter')$('go').click()});
-const guard=fn=>async(...a)=>{$('err').textContent='';try{await fn(...a)}catch(e){$('err').textContent=e.message}};
-async function load(){
-  const [s,p,u,pl]=await Promise.all([api('GET','/summary'),api('GET','/payments?status=pending'),api('GET','/users?q='+encodeURIComponent($('q').value)),fetch('/api/config').then(r=>r.json())]);
-  $('tiles').innerHTML=[['Customers',s.clients],['Active subscriptions',s.active],['Payments to confirm',s.pending],['Expiring in 7 days',s.expiring]].map(x=>`<div class="tile"><span>${x[0]}</span><strong>${esc(x[1])}</strong></div>`).join('');
-  $('pay').innerHTML=p.length?p.map(x=>`<tr><td>${d(x.created_at)}</td><td>${esc(x.name)}<div class="small">${esc(x.email)} ${esc(x.phone)}</div></td><td>${esc(x.plan_id)} / ${esc(x.period)}</td><td>${esc(x.amount)}</td><td>${esc(x.method)}</td><td><b>${esc(x.trx_id)}</b></td><td>${esc(x.payer_number)}</td><td><button class="p" data-ok="${esc(x.id)}">Confirm</button> <button class="d" data-no="${esc(x.id)}">Reject</button></td></tr>`).join(''):'<tr><td colspan="8" class="small">Nothing waiting.</td></tr>';
-  $('users').innerHTML=u.map(x=>{const act=x.period_end&&new Date(x.period_end)>new Date();return `<tr><td>${esc(x.name)} ${x.blocked?'<span class="pill bad">blocked</span>':''}<div class="small">${esc(x.email)} ${esc(x.phone)}</div></td><td>${esc(x.plan_id||'-')}</td><td>${x.period_end?`<span class="pill ${act?'ok':'bad'}">${act?'active':'expired'}</span> ${d(x.period_end)}`:'<span class="pill warn">no subscription</span>'}</td><td>${esc(x.devices)}</td><td><button data-open="${esc(x.id)}">Manage</button></td></tr>`}).join('')||'<tr><td colspan="5" class="small">No customers.</td></tr>';
-  $('plans').innerHTML=pl.plans.map(x=>`<tr data-plan="${esc(x.id)}"><td><b>${esc(x.name)}</b></td><td><input type="number" min="1" value="${esc(x.maxDevices)}" style="width:80px" class="mx"></td><td><input type="number" min="0" value="${esc(x.priceMonthly)}" style="width:110px" class="pm"></td><td><input type="number" min="0" value="${esc(x.priceYearly)}" style="width:110px" class="py"></td><td><button data-save="${esc(x.id)}">Save</button></td></tr>`).join('');
-}
-async function openUser(id){
-  const j=await api('GET','/users/'+id),sub=j.subscription;
-  const el=$('detail');el.hidden=false;
-  el.innerHTML=`<h2>${esc(j.user.name)} <span class="small">${esc(j.user.email)} ${esc(j.user.phone)}</span></h2>
-  <div class="row"><span>${sub?`Plan <b>${esc(sub.planName)}</b>, valid until <b>${d(sub.periodEnd)}</b> (${sub.active?'active':'expired'})`:'No subscription'}</span></div>
-  <div class="row"><input id="xd" type="number" value="30" style="width:90px"> days <select id="xp"><option value="basic">Basic</option><option value="pro">Pro</option><option value="business">Business</option></select><button data-ext="${esc(id)}">Add / remove days</button><button class="d" data-cancel="${esc(id)}">End subscription now</button><button class="d" data-block="${esc(id)}" data-state="${j.user.blocked?'0':'1'}">${j.user.blocked?'Unblock':'Block'} account</button></div>
-  <h2 style="margin-top:14px">Devices</h2><div class="row"><button class="d" data-reset="${esc(id)}">Remove all devices</button></div>
-  <div class="wrap"><table><thead><tr><th>Computer</th><th>First seen</th><th>Last seen</th><th></th></tr></thead><tbody>${j.devices.map(x=>`<tr><td>${esc(x.name)} <span class="small">${esc(x.platform)}</span> ${x.revoked?'<span class="pill bad">removed</span>':''}</td><td>${d(x.first_seen)}</td><td>${d(x.last_seen)}</td><td>${x.revoked?'':`<button class="d" data-rev="${esc(x.id)}" data-user="${esc(id)}">Remove</button>`}</td></tr>`).join('')}</tbody></table></div>
-  <h2 style="margin-top:14px">Payments</h2><div class="wrap"><table><tbody>${j.payments.map(x=>`<tr><td>${d(x.created_at)}</td><td>${esc(x.plan_id)}/${esc(x.period)}</td><td>${esc(x.amount)}</td><td>${esc(x.method)} ${esc(x.trx_id)}</td><td><span class="pill ${x.status==='confirmed'?'ok':x.status==='rejected'?'bad':'warn'}">${esc(x.status)}</span></td></tr>`).join('')}</tbody></table></div>`;
-  el.scrollIntoView({behavior:'smooth'});
-}
+$('out').onclick=()=>{T='';sessionStorage.removeItem('adm');boot()};
+document.querySelector('#nav').addEventListener('click',e=>{const a=e.target.closest('a');if(a)go(a.dataset.v)});
+const coForm=(c={})=>F('name','Company name','required maxlength=100',c.name)+`<div class="two">${F('contact','Contact person','maxlength=80',c.contact)}${F('phone','Phone','maxlength=20',c.phone)}</div>${F('email','Email','maxlength=254',c.email)}${F('address','Address','maxlength=200',c.address)}${F('notes','Notes','maxlength=500',c.notes)}`;
 document.addEventListener('click',guard(async e=>{
-  const t=e.target.closest('button');if(!t)return;const ds=t.dataset;
-  if(t.id==='search'){await load();return}
-  if(ds.ok){await api('POST','/payments/'+ds.ok+'/confirm');await load()}
-  else if(ds.no){const note=prompt('Reason (optional)')||'';await api('POST','/payments/'+ds.no+'/reject',{note});await load()}
-  else if(ds.open)await openUser(ds.open);
-  else if(ds.ext){await api('POST','/users/'+ds.ext+'/extend',{days:Number($('xd').value),plan:$('xp').value});await openUser(ds.ext);await load()}
-  else if(ds.cancel){if(!confirm('End this subscription now?'))return;await api('POST','/users/'+ds.cancel+'/cancel');await openUser(ds.cancel);await load()}
-  else if(ds.block){await api('POST','/users/'+ds.block+'/block',{blocked:ds.state==='1'});await openUser(ds.block);await load()}
-  else if(ds.reset){if(!confirm('Remove every device of this customer?'))return;await api('POST','/users/'+ds.reset+'/reset-devices');await openUser(ds.reset)}
-  else if(ds.rev){await api('POST','/devices/'+ds.rev+'/revoke');await openUser(ds.user)}
-  else if(ds.save){const tr=t.closest('tr');await api('PUT','/plans/'+ds.save,{maxDevices:tr.querySelector('.mx').value,priceMonthly:tr.querySelector('.pm').value,priceYearly:tr.querySelector('.py').value});await load()}
+  const t=e.target.closest('button');if(!t)return;const ds=t.dataset;const cur=()=>route();
+  if(ds.go){go(ds.go);return}
+  if(ds.allow){const a=await ask('Allow this request',`<p class="small">The subscription starts now. Leave days empty to give one ${ds.period==='yearly'?'year':'month'}.</p>${F('days','Days (optional)','type=number min=1 max=3650')}`,'Allow');if(!a)return;await api('POST','/requests/'+ds.allow+'/allow',{days:a.days});cur()}
+  else if(ds.deny){const a=await ask('Deny this request',F('note','Reason shown to the customer','maxlength=200'),'Deny');if(!a)return;await api('POST','/requests/'+ds.deny+'/deny',{note:a.note});cur()}
+  else if(ds.ok){await api('POST','/payments/'+ds.ok+'/confirm');cur()}
+  else if(ds.no){const a=await ask('Reject this payment',F('note','Reason (optional)','maxlength=200'),'Reject');if(!a)return;await api('POST','/payments/'+ds.no+'/reject',{note:a.note});cur()}
+  else if('newco' in ds){const a=await ask('New company',coForm(),'Create');if(!a)return;const r=await api('POST','/companies',a);go('company/'+r.id)}
+  else if(ds.editco){const c=(await api('GET','/companies/'+ds.editco)).company;const a=await ask('Edit company',coForm(c));if(!a)return;await api('PUT','/companies/'+ds.editco,a);cur()}
+  else if(ds.blockco){await api('POST','/companies/'+ds.blockco+'/block',{blocked:ds.state==='1'});cur()}
+  else if(ds.delco){if(!confirm('Delete this company? It must have no users.'))return;await api('POST','/companies/'+ds.delco+'/delete');go('companies')}
+  else if('newuser' in ds){const a=await ask('New user',`${F('name','Name','required maxlength=80')}<div class="two">${F('email','Email','required type=email')}${F('phone','Phone','maxlength=20')}</div>${F('password','Password (10+ characters)','required type=password minlength=10 autocomplete=new-password')}${S('companyId','Company',compOpts(ds.newuser))}<div class="two">${S('plan','Plan',planOpts())}${F('days','Free days (optional)','type=number min=1 max=3650')}</div>`,'Create user');if(!a)return;const r=await api('POST','/users',a);go('user/'+r.id)}
+  else if(ds.edituser){const j=await api('GET','/users/'+ds.edituser),u=j.user;const a=await ask('Edit user',`${F('name','Name','required maxlength=80',u.name)}${F('phone','Phone','maxlength=20',u.phone)}${S('companyId','Company',compOpts(u.company_id))}`);if(!a)return;await api('PUT','/users/'+ds.edituser,a);cur()}
+  else if(ds.pwuser){const a=await ask('Set a new password',F('password','New password (10+ characters)','required type=password minlength=10 autocomplete=new-password'),'Set password');if(!a)return;await api('POST','/users/'+ds.pwuser+'/password',a);alert('Password changed. Tell the customer.')}
+  else if(ds.blockuser){await api('POST','/users/'+ds.blockuser+'/block',{blocked:ds.state==='1'});cur()}
+  else if(ds.ext){const n=Number($('xd').value)*(ds.neg?-1:1);await api('POST','/users/'+ds.ext+'/extend',{days:n,plan:$('xp').value});cur()}
+  else if(ds.cancel){if(!confirm('End this subscription now?'))return;await api('POST','/users/'+ds.cancel+'/cancel');cur()}
+  else if(ds.reset){if(!confirm('Remove every computer of this user?'))return;await api('POST','/users/'+ds.reset+'/reset-devices');cur()}
+  else if(ds.rev){await api('POST','/devices/'+ds.rev+'/revoke');cur()}
+  else if(ds.save){const tr=t.closest('tr');await api('PUT','/plans/'+ds.save,{maxDevices:tr.querySelector('.mx').value,priceMonthly:tr.querySelector('.pm').value,priceYearly:tr.querySelector('.py').value});cur()}
 }));
-show();
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.target.id==='cq'||e.target.id==='uq')){go(e.target.id==='cq'?'companies':'users');route()}});
+boot();
 </script></body></html>

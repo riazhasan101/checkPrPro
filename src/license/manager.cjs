@@ -80,6 +80,7 @@ class LicenseManager{
   async me(){const r=await this._call('GET','/api/me',null,true);if(r.status===401){this.state={lastSeen:this.state.lastSeen};this.save()}return r.status<400?{ok:true,...r.body}:{ok:false,code:r.body.code,message:r.body.message}}
   async config(){const r=await this._call('GET','/api/config');return r.body}
   async register(data){const r=await this._call('POST','/api/auth/register',data);return r.status<400?{ok:true}:{ok:false,code:r.body.code,message:r.body.message}}
+  async requestSubscription(data){const r=await this._call('POST','/api/subscription/request',data,true);return r.status<400?{ok:true}:{ok:false,code:r.body.code,message:r.body.message}}
   async submitPayment(data){const r=await this._call('POST','/api/payments',data,true);return r.status<400?{ok:true,...r.body}:{ok:false,code:r.body.code,message:r.body.message}}
   async removeDevice(id){const r=await this._call('POST',`/api/devices/${encodeURIComponent(id)}/revoke`,null,true);return r.status<400?{ok:true}:{ok:false,code:r.body.code,message:r.body.message}}
   signOut(){this.state={lastSeen:this.state.lastSeen};this.save()}

@@ -102,9 +102,11 @@ app.whenReady().then(async()=>{
   ipcMain.handle('license:info',e=>{if(!fromApp(e)&&!fromLic(e))throw new Error('Untrusted sender');return license.info()});
   ipcMain.handle('license:manage',e=>{if(!fromApp(e))throw new Error('Untrusted sender');if(!licWin)createLicenseWindow(true);else licWin.focus();return true});
   ipcMain.handle('license:signout',e=>{if(!fromApp(e)&&!fromLic(e))throw new Error('Untrusted sender');license.signOut();showLicense();return true});
-  lic('license:status',()=>license.info());
+  lic('license:status',()=>({...license.info(),manage:!!(licWin&&licWin.manage)}));
   lic('license:config',()=>license.config());
-  lic('license:register',d=>license.register({email:String(d&&d.email||''),password:String(d&&d.password||''),name:String(d&&d.name||''),phone:String(d&&d.phone||'')}));
+  lic('license:register',d=>license.register({email:String(d&&d.email||''),password:String(d&&d.password||''),name:String(d&&d.name||''),phone:String(d&&d.phone||''),company:String(d&&d.company||'')}));
+  lic('license:requestSubscription',d=>license.requestSubscription({plan:String(d&&d.plan||''),period:String(d&&d.period||''),note:String(d&&d.note||'')}));
+  lic('license:close',()=>{if(licWin&&licWin.manage)setImmediate(()=>{if(licWin)licWin.close()});return {ok:true}});
   lic('license:activate',async d=>{const r=await license.activate(String(d&&d.email||'').trim().toLowerCase(),String(d&&d.password||''));if(r.ok)setImmediate(onLicensed);return r});
   lic('license:refresh',async()=>{const r=await license.refresh();if(r.ok)setImmediate(onLicensed);return r});
   lic('license:me',()=>license.me());

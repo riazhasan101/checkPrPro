@@ -32,6 +32,16 @@ npm run keygen            # writes licence-private.pem (SECRET) and licence-publ
 * Open `https://license.yourdomain.com/admin`, sign in with `ADMIN_EMAIL`, then remove `ADMIN_PASSWORD` from `.env` and restart.
 * Back up the PostgreSQL volume daily. Losing the private key means re-issuing the app with a new public key.
 
+## Admin dashboard (`https://license.yourdomain.com/admin`)
+* **Overview**: requests and payments waiting, subscriptions ending in 7 days, active/expired counts, revenue of the last 30 days.
+* **Subscription requests**: customers ask for a plan inside the desktop app after signing in. **Allow** starts the subscription at once (optionally for a custom number of days); **Deny** shows them your reason.
+* **Payments**: customers who paid by bKash/Nagad/bank send the transaction ID; compare it with your statement and **Confirm**.
+* **Companies**: create and edit companies (contact, phone, address), block a whole company, see its users and their subscriptions.
+* **Users**: create users (optionally with free days), change name/phone/company, set a new password, block, add or remove days, end a subscription, remove computers.
+* **Plans & prices** and an **Activity log** of every action.
+
+In the desktop app: sign in (or create an account, optionally with a company name), then choose **Ask for approval** or **Pay now**. Once you allow it, the customer presses *Check now* and the app opens. The *Subscription* button in the app shows the plan, the end date and lets them renew.
+
 ## Daily work in the admin panel
 * **Payments waiting**: compare trx ID and amount with your bKash/Nagad/bank statement, then Confirm or Reject (with a reason).
 * **Customers**: add or remove days (gifts, refunds), end a subscription, block an account, remove devices.

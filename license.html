@@ -27,7 +27,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}td{padding:7px 4px;bord
  <div id="vAuth">
   <div class="tabs"><button id="tSign" class="on">Sign in</button><button id="tReg">Create account</button></div>
   <div class="card">
-   <div id="regOnly" hidden><label for="name">Your name or company</label><input id="name" autocomplete="name"><label for="phone">Phone (optional)</label><input id="phone" autocomplete="tel"></div>
+   <div id="regOnly" hidden><label for="name">Your name</label><input id="name" autocomplete="name"><label for="company">Company (optional)</label><input id="company" autocomplete="organization"><label for="phone">Phone (optional)</label><input id="phone" autocomplete="tel"></div>
    <label for="email">Email</label><input id="email" type="email" autocomplete="username">
    <label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password"><div class="sub" id="pwHint" hidden style="margin:4px 0 0">At least 10 characters.</div>
    <button class="primary" id="go">Sign in</button><div class="msg" id="authMsg"></div>
@@ -36,18 +36,25 @@ table{width:100%;border-collapse:collapse;font-size:13px}td{padding:7px 4px;bord
  </div>
 
  <div id="vPay" hidden>
-  <div class="top"><span id="who"></span><button class="link" id="out1">Sign out</button></div>
+  <div class="top"><span id="who"></span><span><button class="link" id="closeManage" hidden>Close</button> <button class="link" id="out1">Sign out</button></span></div>
+  <div class="card" id="curCard" hidden><h2>Your subscription</h2><div id="curInfo" class="sub" style="margin:0"></div></div>
   <div class="card"><h2 id="payTitle">Choose a plan</h2><div class="sub" id="payWhy"></div>
    <div class="plans" id="plans"></div>
    <div class="seg"><button id="pM" class="on">Monthly</button><button id="pY">Yearly</button></div>
+  </div>
+  <div class="card"><h2>Ask for approval</h2><div class="sub">Send a request for the plan above. The CheckPrint team reviews it and allows it from their dashboard. Then press <b>Check now</b>.</div>
+   <label for="rnote">Message (optional)</label><input id="rnote" maxlength="200" placeholder="e.g. company name, how many cheques a month">
+   <button class="primary" id="sendReq">Send request</button><div class="msg" id="reqMsg"></div><table id="reqList"></table>
+   <button class="primary" id="recheck">Check now</button><div class="msg" id="recheckMsg"></div>
+  </div>
+  <div class="card"><h2>Or pay now</h2><div class="sub">Send the money, then enter the transaction ID. We confirm each payment by hand, usually within a few hours.</div>
    <label for="method">Pay with</label><select id="method"><option value="bkash">bKash</option><option value="nagad">Nagad</option><option value="bank">Bank transfer</option></select>
    <div class="box" id="howto"></div>
    <label for="trx">Transaction ID (from your payment SMS)</label><input id="trx" autocomplete="off" maxlength="40">
    <label for="payer">Number or account you paid from</label><input id="payer" autocomplete="off" maxlength="20">
    <button class="primary" id="submitPay">Send payment details</button><div class="msg" id="payMsg"></div>
+   <h2 style="margin-top:18px">Your payments</h2><table id="payList"></table>
   </div>
-  <div class="card"><h2>Your payments</h2><div class="sub">We confirm each payment by hand, usually within a few hours. Press the button below once confirmed.</div><table id="payList"></table>
-   <button class="primary" id="recheck">I have paid, check now</button><div class="msg" id="recheckMsg"></div></div>
  </div>
 
  <div id="vDev" hidden>
@@ -76,7 +83,7 @@ $('go').onclick=()=>busy($('go'),async()=>{
   say('authMsg','');const email=$('email').value.trim(),password=$('pw').value;
   if(!email||!password){say('authMsg','Enter your email and password.','err');return}
   if(reg){
-    const r=await api.register({email,password,name:$('name').value,phone:$('phone').value});
+    const r=await api.register({email,password,name:$('name').value,phone:$('phone').value,company:$('company').value});
     if(!r.ok){say('authMsg',r.message||'Could not create the account.','err');return}
     setReg(false);say('authMsg','Account created. Signing you in...','ok');
   }
@@ -118,10 +125,20 @@ async function drawPayments(){
   const me=await api.me();const t=$('payList');t.textContent='';
   if(!me.ok){say('payMsg',me.message||'','err');return}
   $('who').textContent=me.user.email;
+  const sub=me.subscription;
+  $('curCard').hidden=!sub;
+  if(sub)$('curInfo').textContent=sub.planName+' plan, '+(sub.active?'valid until ':'ended on ')+new Date(sub.periodEnd).toLocaleDateString()+(sub.active?'':' (expired)')+'.';
+  const rq=$('reqList');rq.textContent='';
+  (me.requests||[]).forEach(x=>rq.append(el('tr',{},el('td',{textContent:new Date(x.created_at).toLocaleDateString()}),el('td',{textContent:x.plan_id+' / '+x.period}),el('td',{},el('span',{className:'pill '+(x.status==='allowed'?'ok':x.status==='denied'?'bad':'warn'),textContent:x.status==='pending'?'waiting for approval':x.status+(x.status==='denied'&&x.reason?': '+x.reason:'')})))));
   const list=me.payments||[];
   if(!list.length)t.append(el('tr',{},el('td',{textContent:'No payments yet.'})));
   list.forEach(x=>t.append(el('tr',{},el('td',{textContent:new Date(x.created_at).toLocaleDateString()}),el('td',{textContent:x.plan_id+' / '+x.period}),el('td',{textContent:x.method+' '+x.trx_id}),el('td',{},el('span',{className:'pill '+(x.status==='confirmed'?'ok':x.status==='rejected'?'bad':'warn'),textContent:x.status+(x.status==='rejected'&&x.note?': '+x.note:'')})))));
 }
+$('sendReq').onclick=()=>busy($('sendReq'),async()=>{
+  say('reqMsg','');const r=await api.requestSubscription({plan,period,note:$('rnote').value});
+  if(!r.ok){say('reqMsg',r.code==='REQUEST_PENDING'?'You already have a request waiting for approval.':(r.message||'Could not send.'),'err');return}
+  $('rnote').value='';say('reqMsg','Request sent. You will be able to continue once it is allowed.','ok');await drawPayments();
+});
 $('submitPay').onclick=()=>busy($('submitPay'),async()=>{
   say('payMsg','');const r=await api.submitPayment({plan,period,method:$('method').value,trxId:$('trx').value,payerNumber:$('payer').value});
   if(!r.ok){say('payMsg',r.message||'Could not send.','err');return}
@@ -129,7 +146,7 @@ $('submitPay').onclick=()=>busy($('submitPay'),async()=>{
 });
 $('recheck').onclick=()=>busy($('recheck'),async()=>{
   say('recheckMsg','Checking...');const r=await api.refresh();
-  if(r.ok)return;say('recheckMsg',r.code==='NO_SUBSCRIPTION'||r.code==='EXPIRED'?'Not confirmed yet. Please try again in a little while.':(r.message||'Could not check.'),'err');await drawPayments();
+  if(r.ok)return;say('recheckMsg',r.code==='NO_SUBSCRIPTION'||r.code==='EXPIRED'?'Not allowed yet. Please try again in a little while.':(r.message||'Could not check.'),'err');await drawPayments();
 });
 async function showDev(r){
   show('vDev');$('devWhy').textContent=r.message||'';const me=await api.me();const t=$('devList');t.textContent='';
@@ -142,6 +159,10 @@ $('stopRetry').onclick=()=>busy($('stopRetry'),async()=>{const r=await api.refre
 for(const id of ['out1','out2','out3'])$(id).onclick=()=>{api.signOut();show('vAuth')};
 (async()=>{
   const s=await api.status();
+  if(s.manage&&s.signedIn){                       // opened from the app's Subscription button
+    $('tag').textContent='Your subscription';$('closeManage').hidden=false;$('closeManage').onclick=()=>api.close();
+    $('payTitle').textContent='Renew or change plan';cfg=await api.config();show('vPay');drawPlans();await drawPayments();return;
+  }
   if(s.signedIn){const r=await api.refresh();if(!r.ok&&r.code!=='UNAUTHORIZED'){if(r.code==='NETWORK'||r.offline){show('vStop');$('stopTitle').textContent='No connection';$('stopMsg').textContent=s.message||r.message||'Connect to the internet to verify your subscription.'}else route(r)}}
   if(s.email)$('email').value=s.email;
 })();
