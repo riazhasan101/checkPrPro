@@ -46,7 +46,7 @@ Installer output: `dist/`.
 - `.github/workflows/ci.yml`: lint, unit tests, Docker build, Windows installer artifact.
 - `.github/workflows/release.yml`: tag `v*` to build and attach installer to a GitHub release.
 - To publish: create a new GitHub repository and push this directory. GitHub Actions will run automatically.
-- Configure Windows code-signing credentials and replace release workflow with signed builds before public distribution.
+- Tag builds run `npm run build:protected:signed` and refuse to publish an unsigned installer. Set `WIN_CSC_LINK` and `WIN_CSC_KEY_PASSWORD`, and point `src/license/config.cjs` at the real licence server first. See `docs/LICENSING.md`.
 
 ## Matching the preview to a real cheque
 

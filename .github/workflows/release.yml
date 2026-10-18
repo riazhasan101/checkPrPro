@@ -16,24 +16,21 @@ jobs:
       - run: npm install --no-audit --no-fund
       - run: npm run lint
       - run: npm test
-      - name: Build installer
+      - name: Build protected signed installer
         shell: pwsh
         env:
           WIN_CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
           WIN_CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
+          CHECKPRINT_ASAR_INTEGRITY: '1'
         run: |
-          if ([string]::IsNullOrWhiteSpace($env:WIN_CSC_LINK)) {
-            $env:CSC_IDENTITY_AUTO_DISCOVERY = 'false'
-            Write-Host 'WIN_CSC_LINK is not set. Building an unsigned installer.'
-          } elseif ([string]::IsNullOrWhiteSpace($env:WIN_CSC_KEY_PASSWORD)) {
-            Write-Error 'WIN_CSC_LINK is set but WIN_CSC_KEY_PASSWORD is empty.'
+          if ([string]::IsNullOrWhiteSpace($env:WIN_CSC_LINK) -or [string]::IsNullOrWhiteSpace($env:WIN_CSC_KEY_PASSWORD)) {
+            Write-Error 'Refusing to publish an unsigned installer. Set the WIN_CSC_LINK and WIN_CSC_KEY_PASSWORD repository secrets to your Authenticode certificate.'
             exit 1
-          } else {
-            $env:CSC_LINK = $env:WIN_CSC_LINK
-            $env:CSC_KEY_PASSWORD = $env:WIN_CSC_KEY_PASSWORD
-            Write-Host 'Signing certificate found. The installer will be Authenticode-signed.'
           }
-          npm run build:win
+          $env:CSC_LINK = $env:WIN_CSC_LINK
+          $env:CSC_KEY_PASSWORD = $env:WIN_CSC_KEY_PASSWORD
+          Write-Host 'Signing certificate found. Building the obfuscated installer and Authenticode-signing it.'
+          npm run build:protected:signed
       - uses: softprops/action-gh-release@v2
         with:
           files: dist/*.exe

@@ -26,10 +26,10 @@ cd server
 npm install
 npm run keygen            # writes licence-private.pem (SECRET) and licence-public.pem
 ```
-* Put the **private** key in `LICENSE_PRIVATE_KEY` on the server only. Never commit it, never ship it.
-* Paste the **public** key into `src/license/pubkey.cjs` and your server address (https) into `src/license/config.cjs`.
-* Copy `.env.example` to `.env`, fill it, then `docker compose up -d --build`. Put a TLS proxy (for example Caddy: `license.yourdomain.com { reverse_proxy 127.0.0.1:8080 }`) in front.
-* Open `https://license.yourdomain.com/admin`, sign in with `ADMIN_EMAIL`, then remove `ADMIN_PASSWORD` from `.env` and restart.
+* Put the **private** key in `LICENSE_PRIVATE_KEY` inside `server/.env` only. Never commit it, never ship it. `npm run verify-keys` checks that it matches `src/license/pubkey.cjs`.
+* The **public** key belongs in `src/license/pubkey.cjs`. Set the server address with `node scripts/set-license-url.cjs https://license.yourdomain.com` (the same hostname as `LICENSE_DOMAIN`). A placeholder blocks `npm run build:protected`.
+* From `server/`, fill `.env` and run `docker compose up -d --build`. Caddy in that compose file is the only published service: it terminates HTTPS on ports 80 and 443 and proxies to the API. Point DNS at the VPS first.
+* Open `https://license.yourdomain.com/admin`, sign in, then run `npm run seal-admin` and `docker compose up -d`. The server refuses the next start while `ADMIN_PASSWORD` is still set.
 * Back up the PostgreSQL volume daily. Losing the private key means re-issuing the app with a new public key.
 
 ## Daily work in the admin panel
@@ -40,9 +40,10 @@ npm run keygen            # writes licence-private.pem (SECRET) and licence-publ
 ## Build the protected installer
 ```bash
 npm install
-npm run build:protected   # obfuscates src/, then packages build-app/ with electron-builder
+node scripts/set-license-url.cjs https://license.yourdomain.com
+npm run build:protected:signed   # obfuscates src/, then packages and Authenticode-signs the installer
 ```
-The build **stops** if the public key or server address is still a placeholder. Sign the installer (see DEPLOYMENT.md): unsigned installers show a scary warning and are easier to tamper with.
+The build **stops** if the public key or server address is still a placeholder, or if `CSC_LINK` / `CSC_KEY_PASSWORD` (the Windows code-signing certificate) is missing. See DEPLOYMENT.md. A self-signed file does not make Windows trust the installer.
 
 `scripts/fuses.cjs` turns off Node mode, `--inspect` and loose-folder loading in the packaged app. The asar integrity check is **off by default**; set `CHECKPRINT_ASAR_INTEGRITY=1` for a release build, then install it on a clean Windows PC and confirm it starts before you ship it.
 

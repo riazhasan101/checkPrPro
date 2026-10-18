@@ -2,7 +2,7 @@
 <style>
 :root{--bg:#f3f5f4;--card:#fff;--ink:#0f2238;--muted:#5d6d7b;--line:#dde4e7;--accent:#0e7a6b;--red:#b42318;--amber:#8a5a00}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 "Segoe UI",system-ui,sans-serif}
-header{background:#0f2238;color:#fff;padding:14px 22px;display:flex;justify-content:space-between;align-items:center}header b{font-size:17px}
+header{background:#0f2238;color:#fff;padding:14px 22px;display:flex;justify-content:space-between;align-items:center}header b{font-size:17px}header button{background:transparent;color:#fff;border-color:rgba(255,255,255,.45)}
 main{max-width:1180px;margin:0 auto;padding:20px}.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:18px}
 h2{margin:0 0 12px;font-size:16px}.tiles{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}.tile{flex:1 1 150px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}.tile span{color:var(--muted);font-size:12px}.tile strong{display:block;font-size:24px}
 table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px 10px;border-bottom:1px solid #eaeff1;vertical-align:top}th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
@@ -10,7 +10,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px 10px
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600;background:#e8eef1}.ok{background:#e2f3ef;color:#0a5f53}.bad{background:#fde8e6;color:var(--red)}.warn{background:#fff3d6;color:var(--amber)}
 .err{color:var(--red);min-height:20px}.small{color:var(--muted);font-size:12px}#login{max-width:360px;margin:80px auto}#login input{width:100%;margin-bottom:10px}
 </style></head><body>
-<header><b>CheckPrint Admin</b><span id="who"></span></header>
+<header><b>CheckPrint Admin</b><span><span id="who"></span> <button id="out" hidden type="button">Sign out</button></span></header>
 <main>
 <div id="login" class="card"><h2>Admin sign-in</h2><input id="em" type="email" placeholder="Email" autocomplete="username"><input id="pw" type="password" placeholder="Password" autocomplete="current-password"><button class="p" id="go" style="width:100%">Sign in</button><div class="err" id="lerr"></div></div>
 <div id="app" hidden>
@@ -27,7 +27,8 @@ const $=id=>document.getElementById(id);let T=sessionStorage.getItem('adm')||'';
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const d=s=>s?new Date(s).toLocaleString():'-';
 async function api(m,p,b){const r=await fetch('/api/admin'+p,{method:m,headers:{'Content-Type':'application/json',Authorization:'Bearer '+T},body:b?JSON.stringify(b):undefined});const j=await r.json().catch(()=>({}));if(r.status===401&&p!=='/login'){T='';sessionStorage.removeItem('adm');show()}if(!r.ok)throw new Error(j.message||'Request failed');return j}
-function show(){$('login').hidden=!!T;$('app').hidden=!T;if(T)load()}
+function show(){$('login').hidden=!!T;$('app').hidden=!T;$('out').hidden=!T;if(T)load()}
+$('out').onclick=async()=>{try{if(T)await api('POST','/logout')}catch(e){/* still drop the local token */}T='';sessionStorage.removeItem('adm');$('who').textContent='';$('pw').value='';show()};
 $('go').onclick=async()=>{$('lerr').textContent='';try{const j=await api('POST','/login',{email:$('em').value,password:$('pw').value});T=j.token;sessionStorage.setItem('adm',T);$('who').textContent=j.email;$('pw').value='';show()}catch(e){$('lerr').textContent=e.message}};
 $('pw').addEventListener('keydown',e=>{if(e.key==='Enter')$('go').click()});
 const guard=fn=>async(...a)=>{$('err').textContent='';try{await fn(...a)}catch(e){$('err').textContent=e.message}};

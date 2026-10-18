@@ -2,6 +2,10 @@
 node_modules
 dist
 release
+.env
+*.pem
+*.pfx
+*.p12
 *.xlsx
 *.xls
 *.csv

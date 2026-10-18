@@ -7,6 +7,8 @@
   "scripts": {
     "start": "node src/index.cjs",
     "keygen": "node src/keygen.cjs",
+    "verify-keys": "node src/verify-keys.cjs",
+    "seal-admin": "node src/seal-admin.cjs",
     "test": "node --test test/*.test.cjs"
   },
   "dependencies": {"pg": "^8.13.1"},

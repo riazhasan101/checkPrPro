@@ -1,7 +1,8 @@
 'use strict';
-const {app,BrowserWindow,ipcMain,safeStorage}=require('electron');
+const {app,BrowserWindow,ipcMain,safeStorage,dialog}=require('electron');
 const path=require('node:path');
 const os=require('node:os');
+const crypto=require('node:crypto');
 const {pathToFileURL}=require('node:url');
 const {createStore}=require('./core/store.cjs');
 const {prepareBatch,sanitizeOverrides}=require('./core/cheque.cjs');
@@ -68,11 +69,27 @@ const lic=(channel,fn)=>ipcMain.handle(channel,async(e,...a)=>{
   try{return await fn(...a)}catch(err){return {ok:false,code:err.code||'ERROR',message:err.message}}
 });
 
+function packagedLicenceOk(publicKey,url){
+  try{if(crypto.createPublicKey(publicKey).asymmetricKeyType!=='ed25519')return false}catch{return false}
+  try{
+    const u=new URL(url);
+    const host=u.hostname.toLowerCase();
+    if(u.protocol!=='https:')return false;
+    if(host==='license.example.com'||host==='example.com'||host==='localhost'||host==='127.0.0.1')return false;
+  }catch{return false}
+  return true;
+}
 app.whenReady().then(async()=>{
   if(!gotLock)return;
+  const publicKey=(!app.isPackaged&&process.env.CHECKPRINT_PUBKEY_PEM)||PUB.PEM;
+  if(app.isPackaged&&!packagedLicenceOk(publicKey,serverUrl(true))){
+    dialog.showErrorBox('CheckPrint','This installation has no real licence server. Contact the person who sold you CheckPrint.');
+    app.exit(1);
+    return;
+  }
   store=createStore(path.join(app.getPath('userData'),'checkprint'));
   license=new LicenseManager({
-    dir:path.join(app.getPath('userData'),'checkprint'),safeStorage,serverUrl:serverUrl(app.isPackaged),publicKey:PUB.PEM,fingerprint:fingerprint(),
+    dir:path.join(app.getPath('userData'),'checkprint'),safeStorage,serverUrl:serverUrl(app.isPackaged),publicKey,fingerprint:fingerprint(),
     deviceName:os.hostname(),platform:process.platform,allowHttp:!app.isPackaged
   });
 

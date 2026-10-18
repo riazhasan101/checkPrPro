@@ -13,7 +13,14 @@ function createApp({pool,privateKey,env=process.env}){
   const adminHtml=fs.readFileSync(path.join(__dirname,'admin.html'),'utf8');
   const hits=new Map();
   const trustProxy=env.TRUST_PROXY==='1';
-  const ipOf=req=>trustProxy?String(req.headers['x-forwarded-for']||'').split(',')[0].trim()||req.socket.remoteAddress:req.socket.remoteAddress;
+  /* Behind Caddy, trust the proxy-set client address. A caller-supplied X-Forwarded-For list is not the client: the proxy value is the last hop, and X-Real-IP is set explicitly. */
+  const ipOf=req=>{
+    if(!trustProxy)return req.socket.remoteAddress;
+    const real=String(req.headers['x-real-ip']||'').split(',')[0].trim();
+    if(real)return real;
+    const fwd=String(req.headers['x-forwarded-for']||'').split(',').map(s=>s.trim()).filter(Boolean);
+    return fwd.length?fwd[fwd.length-1]:req.socket.remoteAddress;
+  };
   function limited(key,max,windowMs){
     const now=Date.now();let h=hits.get(key);
     if(!h||h.reset<now){h={count:0,reset:now+windowMs};hits.set(key,h)}
@@ -26,7 +33,7 @@ function createApp({pool,privateKey,env=process.env}){
 
   function send(res,status,obj,extra={}){
     const body=JSON.stringify(obj);
-    res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Content-Length':Buffer.byteLength(body),...extra});
+    res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','X-Frame-Options':'DENY','Referrer-Policy':'no-referrer','Content-Security-Policy':"default-src 'none'",'Content-Length':Buffer.byteLength(body),...extra});
     res.end(body);
   }
   function readBody(req){
@@ -184,7 +191,13 @@ function createApp({pool,privateKey,env=process.env}){
   });
   const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
   const admin=(method,p,fn)=>route(method,p,async(req,body,params,url)=>{const a=await adminAuth(req);if(params.id&&!UUID.test(params.id)&&!p.startsWith('/api/admin/plans/'))throw fail(400,'BAD_ID','Bad id');return fn(a,body,params,url)});
-  admin('POST','/api/admin/logout',async(a,b,p,u)=>({status:200,body:{ok:true}}));
+  route('POST','/api/admin/logout',async(req)=>{
+    const a=await adminAuth(req);
+    const m=/^Bearer ([A-Za-z0-9_-]{20,80})$/.exec(req.headers.authorization||'');
+    if(m)await pool.query('DELETE FROM sessions WHERE token_hash=$1',[sha256(m[1])]);
+    audit(a.email,'admin-logout');
+    return {status:200,body:{ok:true}};
+  });
   admin('GET','/api/admin/summary',async()=>{
     const q=await pool.query(`SELECT (SELECT count(*) FROM users WHERE role='client')::int clients,
       (SELECT count(*) FROM subscriptions WHERE period_end>now())::int active,
