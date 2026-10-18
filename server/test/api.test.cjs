@@ -22,7 +22,7 @@ before(async()=>{
   if(skip)return;
   pool=createPool(URL_);await pool.query('DROP SCHEMA public CASCADE;CREATE SCHEMA public');await migrate(pool);
   await pool.query("INSERT INTO users(email,password_hash,name,role) VALUES('admin@x.com',$1,'Admin','admin')",[await hashPassword('admin-password-123')]);
-  server=createApp({pool,privateKey:PRIV,env:{PAY_BKASH:'01700000000'}});
+  server=createApp({pool,privateKey:PRIV,env:{PAY_BKASH:'01700000000',REGISTER_PER_HOUR:'1000'}});
   await new Promise(r=>server.listen(0,'127.0.0.1',r));base='http://127.0.0.1:'+server.address().port;
   adminTok=(await call('POST','/api/admin/login',{email:'admin@x.com',password:'admin-password-123'})).body.token;
 });
@@ -123,4 +123,88 @@ test('inputs are not trusted',{skip},async()=>{
 test('audit log records admin actions',{skip},async()=>{
   const a=(await call('GET','/api/admin/audit',null,adm())).body.map(x=>x.action);
   for(const k of ['register','payment-submit','payment-confirm','device-activate','admin-login'])assert.ok(a.includes(k),k);
+});
+
+/* ---------- companies, subscription requests, admin-created users ---------- */
+test('companies: create, edit, duplicate name, registration links by name, delete rules',{skip},async()=>{
+  assert.equal((await call('POST','/api/admin/companies',{name:' '},adm())).status,400);
+  const c=await call('POST','/api/admin/companies',{name:'Acme Garments Ltd',contact:'Rahim',phone:'01711111111',address:'Gazipur'},adm());
+  assert.equal(c.status,201);const cid=c.body.id;
+  assert.equal((await call('POST','/api/admin/companies',{name:'acme garments LTD'},adm())).body.code,'COMPANY_EXISTS','names are unique ignoring case');
+  assert.equal((await call('PUT',`/api/admin/companies/${cid}`,{name:'Acme Garments Ltd',contact:'Karim',phone:'01722222222'},adm())).status,200);
+  const reg=await call('POST','/api/auth/register',{email:'co1@x.com',password:PW,name:'Co One',company:'ACME garments ltd'});
+  assert.equal(reg.status,201);
+  const got=await call('GET',`/api/admin/companies/${cid}`,null,adm());
+  assert.equal(got.body.company.contact,'Karim');assert.equal(got.body.users.length,1);assert.equal(got.body.users[0].email,'co1@x.com');
+  const list=(await call('GET','/api/admin/companies?q=acme',null,adm())).body;assert.equal(list[0].users,1);
+  assert.equal((await call('POST',`/api/admin/companies/${cid}/delete`,null,adm())).body.code,'HAS_USERS');
+  assert.equal((await call('GET','/api/admin/companies',null)).status,401,'admin only');
+});
+test('subscription request: customer asks in the app, admin allows, licence is issued',{skip},async()=>{
+  await call('POST','/api/auth/register',{email:'req1@x.com',password:PW,name:'Req One'});
+  const act=await call('POST','/api/device/activate',{email:'req1@x.com',password:PW,fp:'r'.repeat(40),deviceName:'PC',platform:'win32'});
+  assert.equal(act.body.code,'NO_SUBSCRIPTION');const auth=`Device ${act.body.deviceId}.${act.body.deviceSecret}`;
+  assert.equal((await call('POST','/api/subscription/request',{plan:'nope',period:'monthly'},auth)).body.code,'BAD_PLAN');
+  assert.equal((await call('POST','/api/subscription/request',{plan:'basic',period:'weekly'},auth)).body.code,'BAD_PERIOD');
+  assert.equal((await call('POST','/api/subscription/request',{plan:'basic',period:'monthly',note:'please'},auth)).status,201);
+  assert.equal((await call('POST','/api/subscription/request',{plan:'basic',period:'yearly'},auth)).body.code,'REQUEST_PENDING','one pending request at a time');
+  assert.equal((await call('POST','/api/subscription/request',{plan:'basic',period:'monthly'})).status,401,'needs device credentials');
+  const pend=(await call('GET','/api/admin/requests',null,adm())).body;const mine=pend.find(r=>r.email==='req1@x.com');
+  assert.ok(mine);assert.equal(mine.note,'please');
+  assert.equal((await call('GET','/api/me',null,auth)).body.requests[0].status,'pending');
+  assert.equal((await call('POST',`/api/admin/requests/${mine.id}/allow`,{days:0},adm())).body.code,'BAD_DAYS');
+  const al=await call('POST',`/api/admin/requests/${mine.id}/allow`,{},adm());assert.equal(al.status,200);
+  assert.equal((await call('POST',`/api/admin/requests/${mine.id}/allow`,{},adm())).body.code,'ALREADY_DECIDED');
+  const r=await call('POST','/api/license/refresh',{fp:'r'.repeat(40)},auth);
+  assert.equal(r.body.ok,true);assert.ok(verifyToken(r.body.token,PUB).exp>Date.now()+27*86400000);
+  assert.equal((await call('GET','/api/me',null,auth)).body.requests[0].status,'allowed');
+});
+test('subscription request can be denied with a reason',{skip},async()=>{
+  await call('POST','/api/auth/register',{email:'req2@x.com',password:PW,name:'Req Two'});
+  const act=await call('POST','/api/device/activate',{email:'req2@x.com',password:PW,fp:'q'.repeat(40)});
+  const auth=`Device ${act.body.deviceId}.${act.body.deviceSecret}`;
+  await call('POST','/api/subscription/request',{plan:'basic',period:'yearly'},auth);
+  const mine=(await call('GET','/api/admin/requests',null,adm())).body.find(r=>r.email==='req2@x.com');
+  assert.equal((await call('POST',`/api/admin/requests/${mine.id}/deny`,{note:'No payment received'},adm())).status,200);
+  const me=(await call('GET','/api/me',null,auth)).body;assert.equal(me.requests[0].status,'denied');assert.equal(me.requests[0].reason,'No payment received');
+  assert.equal((await call('POST','/api/license/refresh',{fp:'q'.repeat(40)},auth)).body.code,'NO_SUBSCRIPTION');
+});
+test('blocking a company cuts off every user in it',{skip},async()=>{
+  const c=(await call('POST','/api/admin/companies',{name:'Blockable Co'},adm())).body.id;
+  const u=await call('POST','/api/admin/users',{email:'bc1@x.com',password:PW,name:'BC',companyId:c,plan:'basic',days:30},adm());assert.equal(u.status,201);
+  const act=await call('POST','/api/device/activate',{email:'bc1@x.com',password:PW,fp:'c'.repeat(40)});assert.equal(act.body.ok,true);
+  const auth=`Device ${act.body.deviceId}.${act.body.deviceSecret}`;
+  assert.equal((await call('POST',`/api/admin/companies/${c}/block`,{blocked:true},adm())).status,200);
+  assert.equal((await call('POST','/api/license/refresh',{fp:'c'.repeat(40)},auth)).body.code,'BLOCKED');
+  await call('POST',`/api/admin/companies/${c}/block`,{blocked:false},adm());
+  assert.equal((await call('POST','/api/license/refresh',{fp:'c'.repeat(40)},auth)).body.ok,true);
+});
+test('admin creates, edits and resets users',{skip},async()=>{
+  assert.equal((await call('POST','/api/admin/users',{email:'bad',password:PW,name:'x'},adm())).body.code,'BAD_EMAIL');
+  assert.equal((await call('POST','/api/admin/users',{email:'au1@x.com',password:'short',name:'x'},adm())).body.code,'WEAK_PASSWORD');
+  assert.equal((await call('POST','/api/admin/users',{email:'au1@x.com',password:PW,name:'x',days:30},adm())).body.code,'BAD_PLAN','days need a plan');
+  assert.equal((await call('POST','/api/admin/users',{email:'au1@x.com',password:PW,name:'x',companyId:'00000000-0000-0000-0000-000000000000'},adm())).body.code,'BAD_COMPANY');
+  const u=await call('POST','/api/admin/users',{email:'au1@x.com',password:PW,name:'Admin Made'},adm());assert.equal(u.status,201);
+  assert.equal((await call('POST','/api/admin/users',{email:'AU1@x.com',password:PW,name:'dup'},adm())).body.code,'EMAIL_EXISTS');
+  assert.equal((await call('PUT',`/api/admin/users/${u.body.id}`,{name:'Renamed',phone:'01733333333'},adm())).status,200);
+  assert.equal((await call('GET',`/api/admin/users/${u.body.id}`,null,adm())).body.user.name,'Renamed');
+  assert.equal((await call('POST',`/api/admin/users/${u.body.id}/password`,{password:'short'},adm())).body.code,'WEAK_PASSWORD');
+  assert.equal((await call('POST',`/api/admin/users/${u.body.id}/password`,{password:'a brand new passphrase'},adm())).status,200);
+  assert.equal((await call('POST','/api/device/activate',{email:'au1@x.com',password:PW,fp:'a'.repeat(40)})).status,401,'old password no longer works');
+  assert.equal((await call('POST','/api/device/activate',{email:'au1@x.com',password:'a brand new passphrase',fp:'a'.repeat(40)})).body.code,'NO_SUBSCRIPTION');
+  const sum=(await call('GET','/api/admin/summary',null,adm())).body;assert.ok(sum.companies>=2&&sum.clients>=3&&'requests' in sum&&'revenue30' in sum);
+});
+
+test('download page serves only the installer, with its checksum',{skip},async()=>{
+  const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),http=require('node:http');
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'dl-'));fs.writeFileSync(path.join(dir,'CheckPrint-1.0.0-Setup-x64.exe'),'MZ-test');fs.writeFileSync(path.join(dir,'secret.txt'),'no');
+  const s=createApp({pool,privateKey:PRIV,env:{DOWNLOAD_DIR:dir}});await new Promise(r=>s.listen(0,'127.0.0.1',r));const b='http://127.0.0.1:'+s.address().port;
+  try{
+    const page=await (await fetch(b+'/download')).text();
+    assert.match(page,/CheckPrint-1\.0\.0-Setup-x64\.exe/);assert.match(page,/[0-9a-f]{64}/);
+    const f=await fetch(b+'/download/CheckPrint-1.0.0-Setup-x64.exe');assert.equal(f.status,200);assert.equal(await f.text(),'MZ-test');
+    assert.equal((await fetch(b+'/download/secret.txt')).status,404,'only the installer name is served');
+    assert.equal((await fetch(b+'/download/..%2Fetc%2Fpasswd')).status,404);
+    assert.equal((await fetch(b+'/download/CheckPrint-9.9.9-Setup-x64.exe')).status,404);
+  }finally{s.close();fs.rmSync(dir,{recursive:true,force:true})}
 });

@@ -1,6 +1,6 @@
 # Licence server, database, and Caddy. Point an A/AAAA record at this VPS, set LICENSE_DOMAIN
 # to that hostname, then: docker compose up -d --build
-# Only ports 80 and 443 are published. The API and Postgres stay on the docker network.
+# Caddy publishes 80 and 443. The API is also on 127.0.0.1:8080 for a host proxy. Postgres stays private.
 services:
   db:
     image: postgres:16
@@ -23,6 +23,10 @@ services:
       PAY_BANK: ${PAY_BANK:-}
       SUPPORT_CONTACT: ${SUPPORT_CONTACT:-}
       TRUST_PROXY: "1"
+      DOWNLOAD_DIR: /downloads
+    volumes:
+      - ./downloads:/downloads:ro
+    ports: ["127.0.0.1:8080:8080"]
     read_only: true
     cap_drop: [ALL]
     security_opt: ["no-new-privileges:true"]

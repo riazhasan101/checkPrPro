@@ -30,7 +30,7 @@ before(async()=>{
   try{
     const {createPool,migrate}=require('../server/src/db.cjs');({createApp:srv}=require('../server/src/app.cjs'));({hashPassword:hash}=require('../server/src/crypto.cjs'));
     const kp=crypto.generateKeyPairSync('ed25519');PUB=kp.publicKey.export({type:'spki',format:'pem'});PRIV=kp.privateKey.export({type:'pkcs8',format:'pem'});
-    pool=createPool(URL_);await pool.query('DROP SCHEMA public CASCADE;CREATE SCHEMA public');await migrate(pool);
+    pool=createPool(URL_);await pool.query('DROP SCHEMA public CASCADE;CREATE SCHEMA public');await migrate(pool);await pool.query("INSERT INTO users(email,password_hash,name,role) VALUES('boss@x.com',$1,'Boss','admin')",[await hash('boss-password-123')]);
     const app=srv({pool,privateKey:PRIV,env:{}});await new Promise(r=>app.listen(0,'127.0.0.1',r));srv=app;base='http://127.0.0.1:'+app.address().port;
   }catch(e){skip='server dependencies missing: '+e.message}
 });
@@ -89,3 +89,20 @@ test('plain http servers are refused outside development',{skip},async()=>{
   await assert.rejects(()=>m.config(),/https/);
 });
 function fpOfRaw(raw){return crypto.createHash('sha256').update(raw).digest('hex').slice(0,24)}
+
+test('desktop flow: sign up with a company, ask for a plan, owner allows it, app unlocks',{skip},async()=>{
+  const m=mk(fpA);
+  assert.equal((await m.register({email:'ask@x.com',password:PW,name:'Ask',company:'Zed Mills'})).ok,true);
+  const a=await m.activate('ask@x.com',PW);assert.equal(a.code,'NO_SUBSCRIPTION');assert.equal(m.isValid(),false);
+  assert.equal((await m.requestSubscription({plan:'basic',period:'monthly',note:'hello'})).ok,true);
+  assert.equal((await m.requestSubscription({plan:'basic',period:'monthly'})).code,'REQUEST_PENDING');
+  assert.equal((await m.refresh()).ok,false,'still locked while the request is waiting');
+  const me=await m.me();assert.equal(me.requests[0].status,'pending');
+  // the owner allows it (same SQL the admin endpoint runs through its own test in server/test)
+  const rid=(await pool.query("SELECT r.id FROM sub_requests r JOIN users u ON u.id=r.user_id WHERE u.email='ask@x.com'")).rows[0].id;
+  const adm=await call_('POST','/api/admin/login',{email:'boss@x.com',password:'boss-password-123'});
+  assert.equal((await call_('POST',`/api/admin/requests/${rid}/allow`,{},'Bearer '+adm.body.token)).status,200);
+  const r=await m.refresh();assert.equal(r.ok,true);assert.equal(m.isValid(),true);
+  assert.equal((await pool.query("SELECT c.name FROM users u JOIN companies c ON c.id=u.company_id WHERE u.email='ask@x.com'")).rows[0].name,'Zed Mills');
+});
+async function call_(method,p,body,auth){const r=await fetch(base+p,{method,headers:{'Content-Type':'application/json',...(auth?{Authorization:auth}:{})},body:JSON.stringify(body)});return {status:r.status,body:await r.json()}}

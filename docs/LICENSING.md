@@ -32,6 +32,23 @@ npm run keygen            # writes licence-private.pem (SECRET) and licence-publ
 * Open `https://license.yourdomain.com/admin`, sign in, then run `npm run seal-admin` and `docker compose up -d`. The server refuses the next start while `ADMIN_PASSWORD` is still set.
 * Back up the PostgreSQL volume daily. Losing the private key means re-issuing the app with a new public key.
 
+## Admin dashboard (`https://license.yourdomain.com/admin`)
+* **Overview**: requests and payments waiting, subscriptions ending in 7 days, active/expired counts, revenue of the last 30 days.
+* **Subscription requests**: customers ask for a plan inside the desktop app after signing in. **Allow** starts the subscription at once (optionally for a custom number of days); **Deny** shows them your reason.
+* **Payments**: customers who paid by bKash/Nagad/bank send the transaction ID; compare it with your statement and **Confirm**.
+* **Companies**: create and edit companies (contact, phone, address), block a whole company, see its users and their subscriptions.
+* **Users**: create users (optionally with free days), change name/phone/company, set a new password, block, add or remove days, end a subscription, remove computers.
+* **Plans & prices** and an **Activity log** of every action.
+
+In the desktop app: sign in (or create an account, optionally with a company name), then choose **Ask for approval** or **Pay now**. Once you allow it, the customer presses *Check now* and the app opens. The *Subscription* button in the app shows the plan, the end date and lets them renew.
+
+## Publishing the installer (no code-signing certificate needed)
+The server has a public page `https://license.yourdomain.com/download` with a download button, the SHA-256 checksum and a Bengali install guide (including the "Windows protected your PC → More info → Run anyway" step).
+1. On the VPS, put the installer in `server/downloads/` (next to `compose.yaml`), named exactly `CheckPrint-<version>-Setup-x64.exe`. The newest version is shown.
+2. `docker compose up -d` (the folder is mounted read-only at `/downloads`; only files with that exact name pattern are ever served).
+3. Send clients the `/download` link only. Do not send the file over chat.
+An unsigned installer works; Windows just shows a warning once. See the signing notes above if you later buy a certificate.
+
 ## Daily work in the admin panel
 * **Payments waiting**: compare trx ID and amount with your bKash/Nagad/bank statement, then Confirm or Reject (with a reason).
 * **Customers**: add or remove days (gifts, refunds), end a subscription, block an account, remove devices.
