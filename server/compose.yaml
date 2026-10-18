@@ -1,0 +1,30 @@
+# Licence server + database. Put a TLS reverse proxy (Caddy, nginx or your host's load balancer) in front: the desktop app only talks https.
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD}
+      POSTGRES_DB: checkprint
+    volumes: [dbdata:/var/lib/postgresql/data]
+    # not published to the internet
+  api:
+    build: .
+    restart: unless-stopped
+    depends_on: [db]
+    environment:
+      DATABASE_URL: postgres://postgres:${DB_PASSWORD}@db:5432/checkprint
+      LICENSE_PRIVATE_KEY: ${LICENSE_PRIVATE_KEY:?set LICENSE_PRIVATE_KEY}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      PAY_BKASH: ${PAY_BKASH:-}
+      PAY_NAGAD: ${PAY_NAGAD:-}
+      PAY_BANK: ${PAY_BANK:-}
+      SUPPORT_CONTACT: ${SUPPORT_CONTACT:-}
+      TRUST_PROXY: "1"
+    ports: ["127.0.0.1:8080:8080"]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+volumes:
+  dbdata:

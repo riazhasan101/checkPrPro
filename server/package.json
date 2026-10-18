@@ -1,0 +1,14 @@
+{
+  "name": "checkprint-license-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Subscription, device-licence and admin API for CheckPrint",
+  "main": "src/index.cjs",
+  "scripts": {
+    "start": "node src/index.cjs",
+    "keygen": "node src/keygen.cjs",
+    "test": "node --test test/*.test.cjs"
+  },
+  "dependencies": {"pg": "^8.13.1"},
+  "engines": {"node": ">=20"}
+}

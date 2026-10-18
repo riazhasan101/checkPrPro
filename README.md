@@ -67,3 +67,6 @@ The preview draws your text on top of an image of the **blank** cheque, using th
 7. Run security review, dependency audit, and end-to-end acceptance testing.
 
 See `docs/DEPLOYMENT.md` for GitHub instructions and limitations.
+
+## Subscription licensing
+See [docs/LICENSING.md](docs/LICENSING.md): licence server, admin panel, device binding, protected build and the limits of copy protection.

@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<title>CheckPrint licence</title>
+<style>
+:root{--ink:#0f2238;--paper:#f3f5f4;--card:#fff;--line:#dde4e7;--text:#16212c;--muted:#5d6d7b;--accent:#0e7a6b;--accent-d:#0a5f53;--red:#b42318;--amber:#8a5a00}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--text);font:14px/1.5 "Segoe UI Variable Text","Segoe UI",system-ui,sans-serif}
+header{background:linear-gradient(135deg,#0f2238,#17314e);color:#fff;padding:20px 26px}header h1{margin:0;font-size:20px}header p{margin:4px 0 0;color:#9fb4c9;font-size:13px}
+main{padding:22px 26px 40px;max-width:540px;margin:0 auto}
+.tabs{display:flex;gap:4px;margin-bottom:16px}.tabs button{flex:1;border-radius:8px 8px 0 0;border:1px solid var(--line);border-bottom:0;background:#e9eef0;color:var(--muted)}.tabs button.on{background:#fff;color:var(--accent-d)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:16px}
+h2{margin:0 0 6px;font-size:17px}.sub{color:var(--muted);font-size:13px;margin-bottom:14px}
+label{display:block;font-size:12px;font-weight:650;color:#43566a;margin:12px 0 4px}
+input,select{width:100%;border:1px solid #c9d3d9;border-radius:8px;padding:10px 12px;font:inherit;background:#fff;color:var(--text)}input:focus,select:focus{outline:2px solid #0e7a6b55;border-color:var(--accent)}
+button{border:1px solid #c9d3d9;border-radius:8px;background:#fff;color:#1f3042;padding:10px 16px;font:600 14px inherit;cursor:pointer}button.primary{background:var(--accent);border-color:var(--accent);color:#fff;width:100%;margin-top:16px}button:disabled{opacity:.5;cursor:not-allowed}button.link{border:0;background:none;color:var(--accent-d);padding:4px 0;text-decoration:underline}
+.msg{margin-top:12px;font-size:13px;min-height:18px}.msg.err{color:var(--red)}.msg.ok{color:var(--accent-d)}
+.plans{display:grid;gap:10px}.plan{border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}.plan.on{border-color:var(--accent);background:#e2f3ef}.plan b{font-size:15px}.plan small{color:var(--muted)}
+.seg{display:flex;gap:6px;margin:12px 0}.seg button{flex:1}.seg button.on{background:#e2f3ef;border-color:var(--accent);color:var(--accent-d)}
+.box{background:#f7f9fa;border:1px dashed #b9c6cd;border-radius:10px;padding:12px 14px;margin-top:12px;font-size:13px}.box b{font-size:15px;user-select:all}
+table{width:100%;border-collapse:collapse;font-size:13px}td{padding:7px 4px;border-bottom:1px solid #eaeff1}
+.pill{display:inline-block;padding:1px 9px;border-radius:99px;font-size:12px;font-weight:600;background:#e8eef1}.pill.ok{background:#e2f3ef;color:var(--accent-d)}.pill.bad{background:#fde8e6;color:var(--red)}.pill.warn{background:#fff3d6;color:var(--amber)}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;color:var(--muted);font-size:13px}
+[hidden]{display:none!important}
+</style></head><body>
+<header><h1>CheckPrint</h1><p id="tag">Sign in to activate this computer</p></header>
+<main>
+ <div id="vAuth">
+  <div class="tabs"><button id="tSign" class="on">Sign in</button><button id="tReg">Create account</button></div>
+  <div class="card">
+   <div id="regOnly" hidden><label for="name">Your name or company</label><input id="name" autocomplete="name"><label for="phone">Phone (optional)</label><input id="phone" autocomplete="tel"></div>
+   <label for="email">Email</label><input id="email" type="email" autocomplete="username">
+   <label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password"><div class="sub" id="pwHint" hidden style="margin:4px 0 0">At least 10 characters.</div>
+   <button class="primary" id="go">Sign in</button><div class="msg" id="authMsg"></div>
+  </div>
+  <div class="sub">One subscription lets you use CheckPrint on the computers included in your plan. This computer will be linked to your account.</div>
+ </div>
+
+ <div id="vPay" hidden>
+  <div class="top"><span id="who"></span><button class="link" id="out1">Sign out</button></div>
+  <div class="card"><h2 id="payTitle">Choose a plan</h2><div class="sub" id="payWhy"></div>
+   <div class="plans" id="plans"></div>
+   <div class="seg"><button id="pM" class="on">Monthly</button><button id="pY">Yearly</button></div>
+   <label for="method">Pay with</label><select id="method"><option value="bkash">bKash</option><option value="nagad">Nagad</option><option value="bank">Bank transfer</option></select>
+   <div class="box" id="howto"></div>
+   <label for="trx">Transaction ID (from your payment SMS)</label><input id="trx" autocomplete="off" maxlength="40">
+   <label for="payer">Number or account you paid from</label><input id="payer" autocomplete="off" maxlength="20">
+   <button class="primary" id="submitPay">Send payment details</button><div class="msg" id="payMsg"></div>
+  </div>
+  <div class="card"><h2>Your payments</h2><div class="sub">We confirm each payment by hand, usually within a few hours. Press the button below once confirmed.</div><table id="payList"></table>
+   <button class="primary" id="recheck">I have paid, check now</button><div class="msg" id="recheckMsg"></div></div>
+ </div>
+
+ <div id="vDev" hidden>
+  <div class="top"><span id="who2"></span><button class="link" id="out2">Sign out</button></div>
+  <div class="card"><h2>Computer limit reached</h2><div class="sub" id="devWhy"></div><table id="devList"></table>
+   <button class="primary" id="retry">Try again</button><div class="msg" id="devMsg"></div></div>
+ </div>
+
+ <div id="vStop" hidden>
+  <div class="card"><h2 id="stopTitle"></h2><div class="sub" id="stopMsg"></div><button class="primary" id="stopRetry">Check again</button><button class="link" id="out3" style="margin-top:10px">Sign out</button></div>
+ </div>
+</main>
+<script>
+const $=id=>document.getElementById(id);const api=window.licenseAPI;
+const show=v=>['vAuth','vPay','vDev','vStop'].forEach(x=>$(x).hidden=x!==v);
+const say=(id,t,kind)=>{const e=$(id);e.textContent=t||'';e.className='msg'+(kind?' '+kind:'')};
+const el=(tag,props,...kids)=>{const e=document.createElement(tag);Object.assign(e,props||{});kids.flat().forEach(k=>e.append(k));return e};
+let cfg=null,plan='pro',period='monthly',reg=false,lastCode='';
+const taka=n=>'Tk '+Number(n).toLocaleString('en-BD');
+function setReg(on){reg=on;$('tSign').className=on?'':'on';$('tReg').className=on?'on':'';$('regOnly').hidden=!on;$('pwHint').hidden=!on;$('go').textContent=on?'Create account':'Sign in';$('pw').autocomplete=on?'new-password':'current-password';say('authMsg','')}
+$('tSign').onclick=()=>setReg(false);$('tReg').onclick=()=>setReg(true);
+$('pw').addEventListener('keydown',e=>{if(e.key==='Enter')$('go').click()});
+async function busy(btn,fn){btn.disabled=true;try{return await fn()}finally{btn.disabled=false}}
+
+$('go').onclick=()=>busy($('go'),async()=>{
+  say('authMsg','');const email=$('email').value.trim(),password=$('pw').value;
+  if(!email||!password){say('authMsg','Enter your email and password.','err');return}
+  if(reg){
+    const r=await api.register({email,password,name:$('name').value,phone:$('phone').value});
+    if(!r.ok){say('authMsg',r.message||'Could not create the account.','err');return}
+    setReg(false);say('authMsg','Account created. Signing you in...','ok');
+  }
+  const r=await api.activate({email,password});
+  $('pw').value='';
+  if(r.ok)return;           // main process opens the app
+  await route(r);
+});
+
+async function route(r){
+  lastCode=r.code;
+  if(r.code==='NO_SUBSCRIPTION'||r.code==='EXPIRED')return showPay(r);
+  if(r.code==='DEVICE_LIMIT')return showDev(r);
+  if(['INVALID_CREDENTIALS','LOCKED','RATE_LIMITED','NETWORK','INSECURE','BAD_SIGNATURE','ERROR','TOO_MANY_DEVICES','ADMIN_ACCOUNT','BAD_EMAIL','WEAK_PASSWORD','EMAIL_EXISTS','BAD_DEVICE'].includes(r.code)){show('vAuth');say('authMsg',r.message||'Something went wrong.','err');return}
+  $('stopTitle').textContent=r.code==='BLOCKED'?'Account blocked':'Cannot start';$('stopMsg').textContent=r.message||'Contact support.';show('vStop');
+}
+async function showPay(r){
+  show('vPay');
+  $('payTitle').textContent=r.code==='EXPIRED'?'Renew your subscription':'Choose a plan';
+  $('payWhy').textContent=r.message||'';
+  cfg=cfg||await api.config();drawPlans();await drawPayments();
+}
+function drawPlans(){
+  const box=$('plans');box.textContent='';
+  (cfg.plans||[]).forEach(p=>{
+    const price=period==='yearly'?p.priceYearly:p.priceMonthly;
+    const d=el('div',{className:'plan'+(p.id===plan?' on':'')},el('div',{},el('b',{textContent:p.name}),el('br'),el('small',{textContent:p.maxDevices+(p.maxDevices>1?' computers':' computer')})),el('b',{textContent:taka(price)+(period==='yearly'?' / year':' / month')}));
+    d.onclick=()=>{plan=p.id;drawPlans()};box.append(d);
+  });
+  $('pM').className=period==='monthly'?'on':'';$('pY').className=period==='yearly'?'on':'';drawHow();
+}
+function drawHow(){
+  const m=$('method').value,p=(cfg.plans||[]).find(x=>x.id===plan),amt=p?(period==='yearly'?p.priceYearly:p.priceMonthly):0,num=(cfg.pay||{})[m]||'';
+  const h=$('howto');h.textContent='';
+  h.append(el('div',{textContent:m==='bank'?'Transfer to this account:':'Send money (Send Money / Payment) to:'}),el('div',{},el('b',{textContent:num||'(payment number not set yet, contact support)'})),el('div',{textContent:'Amount: '+taka(amt)}),el('div',{className:'sub',style:'margin:6px 0 0',textContent:'Then enter the transaction ID below.'}));
+}
+$('pM').onclick=()=>{period='monthly';drawPlans()};$('pY').onclick=()=>{period='yearly';drawPlans()};$('method').onchange=drawHow;
+async function drawPayments(){
+  const me=await api.me();const t=$('payList');t.textContent='';
+  if(!me.ok){say('payMsg',me.message||'','err');return}
+  $('who').textContent=me.user.email;
+  const list=me.payments||[];
+  if(!list.length)t.append(el('tr',{},el('td',{textContent:'No payments yet.'})));
+  list.forEach(x=>t.append(el('tr',{},el('td',{textContent:new Date(x.created_at).toLocaleDateString()}),el('td',{textContent:x.plan_id+' / '+x.period}),el('td',{textContent:x.method+' '+x.trx_id}),el('td',{},el('span',{className:'pill '+(x.status==='confirmed'?'ok':x.status==='rejected'?'bad':'warn'),textContent:x.status+(x.status==='rejected'&&x.note?': '+x.note:'')})))));
+}
+$('submitPay').onclick=()=>busy($('submitPay'),async()=>{
+  say('payMsg','');const r=await api.submitPayment({plan,period,method:$('method').value,trxId:$('trx').value,payerNumber:$('payer').value});
+  if(!r.ok){say('payMsg',r.message||'Could not send.','err');return}
+  $('trx').value='';say('payMsg','Received. We will confirm it shortly.','ok');await drawPayments();
+});
+$('recheck').onclick=()=>busy($('recheck'),async()=>{
+  say('recheckMsg','Checking...');const r=await api.refresh();
+  if(r.ok)return;say('recheckMsg',r.code==='NO_SUBSCRIPTION'||r.code==='EXPIRED'?'Not confirmed yet. Please try again in a little while.':(r.message||'Could not check.'),'err');await drawPayments();
+});
+async function showDev(r){
+  show('vDev');$('devWhy').textContent=r.message||'';const me=await api.me();const t=$('devList');t.textContent='';
+  if(!me.ok){say('devMsg',me.message||'','err');return}
+  $('who2').textContent=me.user.email;
+  me.devices.forEach(d=>t.append(el('tr',{},el('td',{textContent:(d.name||'Computer')+(d.current?' (this computer)':'')}),el('td',{textContent:new Date(d.last_seen).toLocaleDateString()}),el('td',{},d.current?'':(()=>{const b=el('button',{textContent:'Remove'});b.onclick=async()=>{b.disabled=true;const x=await api.removeDevice(d.id);if(!x.ok)say('devMsg',x.message,'err');else showDev(r)};return b})()))));
+}
+$('retry').onclick=()=>busy($('retry'),async()=>{const r=await api.refresh();if(r.ok)return;if(r.code==='DEVICE_LIMIT')say('devMsg',r.message,'err');else route(r)});
+$('stopRetry').onclick=()=>busy($('stopRetry'),async()=>{const r=await api.refresh();if(!r.ok)route(r)});
+for(const id of ['out1','out2','out3'])$(id).onclick=()=>{api.signOut();show('vAuth')};
+(async()=>{
+  const s=await api.status();
+  if(s.signedIn){const r=await api.refresh();if(!r.ok&&r.code!=='UNAUTHORIZED'){if(r.code==='NETWORK'||r.offline){show('vStop');$('stopTitle').textContent='No connection';$('stopMsg').textContent=s.message||r.message||'Connect to the internet to verify your subscription.'}else route(r)}}
+  if(s.email)$('email').value=s.email;
+})();
+</script></body></html>

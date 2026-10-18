@@ -32,6 +32,7 @@ body.mode-single .only-excel,body.mode-excel .only-single{display:none!important
 .step.done{color:#86dccb}
 .step.done b{font-size:0}.step.done b::after{content:"\2713";font-size:12px}
 .header-actions{display:flex;align-items:center;gap:8px}
+.lic-badge{font-size:12.5px;font-weight:600;color:#9fe3d3;padding:4px 10px;border-radius:99px;background:#ffffff14}.lic-badge.soon{color:#ffd88a;background:#ffffff1f}
 header button{background:#ffffff12;color:#fff;border-color:#ffffff33}
 header button:hover{background:#ffffff24}
 main{max-width:1680px;margin:0 auto;padding:22px 26px 10px;display:grid;grid-template-columns:minmax(440px,.95fr) minmax(540px,1.15fr);gap:22px;align-items:start}
@@ -159,7 +160,7 @@ body.adjusting .cheque .date,body.adjusting .cheque .payee,body.adjusting .chequ
   <div><strong>CheckPrint</strong><small>Print bank cheques exactly where the bank wants them</small></div>
  </div>
  <nav class="steps only-excel" id="steps" aria-label="Progress"><div class="step current" data-step="1"><b>1</b>Import</div><div class="step" data-step="2"><b>2</b>Review</div><div class="step" data-step="3"><b>3</b>Print</div></nav>
- <div class="header-actions"><button type="button" id="setupBtn">Setup</button></div>
+ <div class="header-actions"><span id="licBadge" class="lic-badge" hidden></span><button type="button" id="licManage" hidden>Subscription</button><button type="button" id="setupBtn">Setup</button></div>
 </header>
 <main class="no-print">
  <section class="panel">
@@ -292,7 +293,7 @@ body.adjusting .cheque .date,body.adjusting .cheque .payee,body.adjusting .chequ
    <div id="printLog" class="small">No cheques printed from this app yet.</div>
   </div>
  </aside>
-<footer class="no-print">CheckPrint · build 2026-10-18b · Layout adjustments and the print record stay on this computer. Keep sensitive payment spreadsheets on trusted devices only.</footer>
+<footer class="no-print">CheckPrint · build 2026-10-18c · Layout adjustments and the print record stay on this computer. Keep sensitive payment spreadsheets on trusted devices only.</footer>
 <div id="reprintDialog" class="modal" hidden>
  <div class="modal-card" role="dialog" aria-labelledby="reprintTitle">
   <h3 id="reprintTitle">These cheques were already printed</h3>
@@ -796,6 +797,18 @@ $('sWords').addEventListener('input',()=>{sWordsManual=!!$('sWords').value.trim(
 $('sClear').onclick=()=>{['sPayee','sAmount','sWords','sCheque'].forEach(id=>$(id).value='');sWordsManual=false;$('sDate').value=$('defaultDate').value;syncSingle();$('sPayee').focus()};
 $('sPrint').onclick=()=>$('printBtn').click();
 $('sDate').value=new Date().toISOString().slice(0,10);
+
+/* Subscription badge (only inside the desktop app, where the licence gate is active) */
+(async()=>{
+ try{
+  if(!window.checkPrintAPI||!window.checkPrintAPI.licenseInfo)return;
+  const i=await window.checkPrintAPI.licenseInfo();
+  if(!i||!i.ok)return;
+  const b=$('licBadge');b.hidden=false;b.textContent=(i.plan?i.plan[0].toUpperCase()+i.plan.slice(1)+' plan \u00b7 ':'')+i.daysLeft+(i.daysLeft===1?' day left':' days left');
+  b.classList.toggle('soon',i.daysLeft<=7);
+  $('licManage').hidden=false;$('licManage').onclick=()=>window.checkPrintAPI.manageLicense();
+ }catch(e){}
+})();
 boot().then(()=>setMode('single',true));
 </script>
 <script src="./node_modules/xlsx/dist/xlsx.full.min.js"></script>

@@ -11,5 +11,8 @@ contextBridge.exposeInMainWorld('checkPrintAPI',Object.freeze({
   saveTemplates:overrides=>ipcRenderer.invoke('templates:save',overrides),
   getPrints:()=>ipcRenderer.invoke('prints:list'),
   commitPrints:(records,extra)=>ipcRenderer.invoke('prints:commit',records,extra),
-  printDialog:()=>ipcRenderer.invoke('print:dialog')
+  printDialog:()=>ipcRenderer.invoke('print:dialog'),
+  licenseInfo:()=>ipcRenderer.invoke('license:info'),
+  manageLicense:()=>ipcRenderer.invoke('license:manage'),
+  signOut:()=>ipcRenderer.invoke('license:signout')
 }));

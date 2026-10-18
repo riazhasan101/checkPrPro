@@ -9,3 +9,8 @@ coverage/
 *.xls
 *.csv
 !examples/*.csv
+build-app/
+licence-private.pem
+license-private.pem
+server/node_modules/
+server/.env
