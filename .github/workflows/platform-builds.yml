@@ -42,19 +42,19 @@ jobs:
         include:
           - os: windows-latest
             platform: Windows
-            ui: npm run test:ui
+            ui: npm run test:ui && npm run test:print
             command: npm run build:protected -- --config.win.signAndEditExecutable=false
             files: dist/win/*.exe
           - os: ubuntu-22.04
             platform: Linux
-            ui: xvfb-run -a npm run test:ui
+            ui: xvfb-run -a npm run test:ui && xvfb-run -a npm run test:print
             command: npm run build:linux:protected
             files: |
               dist/linux/*.AppImage
               dist/linux/*.deb
           - os: macos-14
             platform: macOS-Intel-and-Apple-Silicon
-            ui: npm run test:ui
+            ui: npm run test:ui && npm run test:print
             command: npm run build:mac:protected
             files: |
               dist/mac/*.dmg

@@ -159,9 +159,12 @@ footer{max-width:1680px;margin:0 auto;padding:6px 26px 24px;color:#71808d;font-s
 @media(max-width:700px){:root{--nav-rail:68px;--nav-open:min(248px,calc(100vw - 100px))}.side-nav nav{padding-left:8px;padding-right:8px}.side-brand{padding-left:14px}.side-footer{padding-left:22px}.dashboard-view{padding:22px 16px}.dash-grid{grid-template-columns:1fr}.payee-grid{grid-template-columns:1fr}header{padding:0 16px}.brand small{display:none}.panel-head{flex-wrap:wrap}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 @media print{
- body{background:#fff;display:block}.app-frame{container-type:normal}.no-print,header,main,footer{display:none!important}
- #printRoot{display:block!important}
- .print-page{width:190.5mm;height:88.9mm;page-break-after:always;break-after:page;position:relative;overflow:hidden}
+ html,body{margin:0!important;padding:0!important;min-height:0!important;height:auto!important;overflow:visible!important;background:#fff;display:block}
+ body>*:not(#printRoot){display:none!important}
+ .no-print,header,main,footer{display:none!important}
+ #printRoot{display:block!important;margin:0!important;padding:0!important;min-height:0!important;container-type:normal}
+ .print-page{width:190.5mm;height:88.9mm;margin:0;padding:0;page-break-inside:avoid;break-inside:avoid;page-break-after:auto;break-after:auto;position:relative;overflow:hidden}
+ .print-page+.print-page{page-break-before:always;break-before:page}
  .print-cheque{position:relative;width:190.5mm;height:88.9mm;background:#fff;color:#000;font-family:Arial,sans-serif}
  .print-cheque .p{position:absolute;white-space:nowrap;overflow:hidden;line-height:1}
  .print-cheque .digit{position:absolute;text-align:center;font-family:Arial,sans-serif;font-weight:400;line-height:1;white-space:nowrap}
@@ -292,7 +295,7 @@ body.adjusting .cheque .date,body.adjusting .cheque .payee,body.adjusting .chequ
  </section>
 </main>
 
-<footer class="no-print">CheckPrint · version 1.3.1 · Layout adjustments and the print record stay on this computer. Keep sensitive payment spreadsheets on trusted devices only.</footer>
+<footer class="no-print">CheckPrint · version 1.3.2 · Layout adjustments and the print record stay on this computer. Keep sensitive payment spreadsheets on trusted devices only.</footer>
 </div>
 </div>
 <aside id="setupDrawer" class="setup-drawer no-print" aria-labelledby="setupTitle" hidden>
