@@ -22,6 +22,7 @@ app.whenReady().then(async()=>{
    if(expanded&&(width===1440||width===480))fs.writeFileSync(path.join(shots,'setup-'+width+'.png'),(await win.webContents.capturePage()).toPNG());
    await run(`setSetup(false);$('avatarBtn').click();$('editProfileBtn').click()`);
    const modal=await run(`(()=>{const d=$('profileDialog'),r=d.querySelector('.modal-card').getBoundingClientRect();return {root:d.parentElement===document.body,top:r.top,bottom:r.bottom,right:r.right,cover:document.elementFromPoint(5,5)===d}})()`);
+   await run(`new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))`);
    if(expanded&&width===1440)fs.writeFileSync(path.join(shots,'profile-1440.png'),(await win.webContents.capturePage()).toPNG());
    assert(modal.root&&modal.cover,'Modal must cover sidebar/header');assert(await run(`document.querySelector('.side-nav').inert&&document.querySelector('.app-frame').inert`),'Background must be inert during dialogs');assert(modal.top>=0&&modal.bottom<=640&&modal.right<=width,'Profile outside viewport');
    await run(`document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}));$('avatarBtn').click();$('historyBtn').click()`);
