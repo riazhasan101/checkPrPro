@@ -1,6 +1,8 @@
 name: CheckPrint platform installers
 on:
   workflow_dispatch:
+  push:
+    branches: [codex/cross-platform-1.3.0]
   pull_request:
     paths: ['src/**', 'index.html', 'license.html', 'package*.json', 'scripts/**', 'build/**', '.github/workflows/platform-builds.yml']
 permissions:
