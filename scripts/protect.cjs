@@ -23,7 +23,7 @@ fs.rmSync(out,{recursive:true,force:true});fs.mkdirSync(out,{recursive:true});
 fs.cpSync(path.join(root,'src'),path.join(out,'src'),{recursive:true});
 for(const f of ['index.html','license.html'])fs.copyFileSync(path.join(root,f),path.join(out,f));
 const pkg=require('../package.json');
-fs.writeFileSync(path.join(out,'package.json'),JSON.stringify({name:pkg.name,version:pkg.version,description:pkg.description,main:pkg.main,author:pkg.author||'CheckPrint',dependencies:pkg.dependencies},null,2));
+fs.writeFileSync(path.join(out,'package.json'),JSON.stringify({name:pkg.name,version:pkg.version,description:pkg.description,main:pkg.main,author:pkg.author||'CheckPrint',homepage:pkg.homepage,dependencies:pkg.dependencies},null,2));
 
 const opts={
   target:'node',compact:true,simplify:true,renameGlobals:false,identifierNamesGenerator:'hexadecimal',

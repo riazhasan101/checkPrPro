@@ -4,9 +4,9 @@
 <title>CheckPrint licence</title>
 <style>
 :root{--ink:#0f2238;--paper:#f3f5f4;--card:#fff;--line:#dde4e7;--text:#16212c;--muted:#5d6d7b;--accent:#0e7a6b;--accent-d:#0a5f53;--red:#b42318;--amber:#8a5a00}
-*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--text);font:14px/1.5 "Segoe UI Variable Text","Segoe UI",system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:var(--paper);color:var(--text);font:14px/1.5 "Segoe UI Variable Text","Segoe UI",system-ui,sans-serif}
 header{background:linear-gradient(135deg,#0f2238,#17314e);color:#fff;padding:20px 26px}header h1{margin:0;font-size:20px}header p{margin:4px 0 0;color:#9fb4c9;font-size:13px}
-main{padding:22px 26px 40px;max-width:540px;margin:0 auto}
+main{padding:28px;max-width:1180px;margin:0 auto}.auth-grid{display:grid;grid-template-columns:minmax(360px,1fr) minmax(300px,.82fr);gap:22px;align-items:start}.payment-side{position:sticky;top:20px;background:linear-gradient(150deg,#f8fffd,#e2f3ef);border:1px solid #a7d9ce;border-radius:14px;padding:22px}.payment-side h2{color:var(--accent-d)}.payment-side .box{background:#fff;border-style:solid}.payment-side ul{margin:10px 0;padding-left:20px}.payment-side li{margin:7px 0}@media(max-width:760px){main{padding:16px}.auth-grid{grid-template-columns:1fr}.payment-side{position:static}}
 .tabs{display:flex;gap:4px;margin-bottom:16px}.tabs button{flex:1;border-radius:8px 8px 0 0;border:1px solid var(--line);border-bottom:0;background:#e9eef0;color:var(--muted)}.tabs button.on{background:#fff;color:var(--accent-d)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:16px}
 h2{margin:0 0 6px;font-size:17px}.sub{color:var(--muted);font-size:13px;margin-bottom:14px}
@@ -24,15 +24,16 @@ table{width:100%;border-collapse:collapse;font-size:13px}td{padding:7px 4px;bord
 </style></head><body>
 <header><h1>CheckPrint</h1><p id="tag">Sign in to activate this computer</p></header>
 <main>
- <div id="vAuth">
-  <div class="tabs"><button id="tSign" class="on">Sign in</button><button id="tReg">Create account</button></div>
+ <div id="vAuth" class="auth-grid">
+  <div><div class="tabs"><button id="tSign" class="on">Sign in</button><button id="tReg">Create account</button></div>
   <div class="card">
    <div id="regOnly" hidden><label for="name">Your name</label><input id="name" autocomplete="name"><label for="company">Company (optional)</label><input id="company" autocomplete="organization"><label for="phone">Phone (optional)</label><input id="phone" autocomplete="tel"></div>
    <label for="email">Email</label><input id="email" type="email" autocomplete="username">
    <label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password"><div class="sub" id="pwHint" hidden style="margin:4px 0 0">At least 10 characters.</div>
    <button class="primary" id="go">Sign in</button><div class="msg" id="authMsg"></div>
   </div>
-  <div class="sub">One subscription lets you use CheckPrint on the computers included in your plan. This computer will be linked to your account.</div>
+  <div class="sub">One subscription lets you use CheckPrint on the computers included in your plan. This computer will be linked to your account.</div></div>
+  <aside class="payment-side"><h2>Plans & payment</h2><div class="sub">Create an account or sign in first. Then choose a plan and either ask for approval or send payment details.</div><div id="authPaySummary" class="box">Loading current plan and payment options…</div><ul><li><b>Basic</b> — 1 computer</li><li><b>Pro</b> — 3 computers</li><li><b>Business</b> — 5 computers</li></ul><div class="small">After payment or approval, return to the app and press <b>Check now</b>. Support: <span id="authSupport">Loading…</span></div></aside>
  </div>
 
  <div id="vPay" hidden>
@@ -54,8 +55,8 @@ table{width:100%;border-collapse:collapse;font-size:13px}td{padding:7px 4px;bord
    <label for="payer">Number or account you paid from</label><input id="payer" autocomplete="off" maxlength="20">
    <button class="primary" id="submitPay">Send payment details</button><div class="msg" id="payMsg"></div>
    <h2 style="margin-top:18px">Your payments</h2><table id="payList"></table>
+   </div>
   </div>
- </div>
 
  <div id="vDev" hidden>
   <div class="top"><span id="who2"></span><button class="link" id="out2">Sign out</button></div>
@@ -74,6 +75,7 @@ const say=(id,t,kind)=>{const e=$(id);e.textContent=t||'';e.className='msg'+(kin
 const el=(tag,props,...kids)=>{const e=document.createElement(tag);Object.assign(e,props||{});kids.flat().forEach(k=>e.append(k));return e};
 let cfg=null,plan='pro',period='monthly',reg=false,lastCode='';
 const taka=n=>'Tk '+Number(n).toLocaleString('en-BD');
+async function loadAuthPaymentSummary(){try{cfg=await api.config();const pay=cfg.pay||{},items=[['bKash',pay.bkash],['Nagad',pay.nagad],['Bank',pay.bank]].filter(([,v])=>v);$('authPaySummary').innerHTML=items.length?items.map(([k,v])=>`<div><b>${k}:</b> ${String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}</div>`).join('')+'<div class="sub" style="margin:8px 0 0">Payment details stay visible here before you submit a plan request.</div>':'Payment details will appear after the administrator configures them.';$('authSupport').textContent=cfg.supportContact||'Contact your CheckPrint administrator';}catch{$('authPaySummary').textContent='Could not load payment details. Check your internet connection.';$('authSupport').textContent='Contact your CheckPrint administrator'}}
 function setReg(on){reg=on;$('tSign').className=on?'':'on';$('tReg').className=on?'on':'';$('regOnly').hidden=!on;$('pwHint').hidden=!on;$('go').textContent=on?'Create account':'Sign in';$('pw').autocomplete=on?'new-password':'current-password';say('authMsg','')}
 $('tSign').onclick=()=>setReg(false);$('tReg').onclick=()=>setReg(true);
 $('pw').addEventListener('keydown',e=>{if(e.key==='Enter')$('go').click()});
@@ -158,6 +160,7 @@ $('retry').onclick=()=>busy($('retry'),async()=>{const r=await api.refresh();if(
 $('stopRetry').onclick=()=>busy($('stopRetry'),async()=>{const r=await api.refresh();if(!r.ok)route(r)});
 for(const id of ['out1','out2','out3'])$(id).onclick=()=>{api.signOut();show('vAuth')};
 (async()=>{
+  loadAuthPaymentSummary();
   const s=await api.status();
   if(s.manage&&s.signedIn){                       // opened from the app's Subscription button
     $('tag').textContent='Your subscription';$('closeManage').hidden=false;$('closeManage').onclick=()=>api.close();

@@ -33,5 +33,52 @@ jobs:
           npm run build:protected:signed
       - uses: softprops/action-gh-release@v2
         with:
-          files: dist/*.exe
+          files: dist/win/*.exe
           generate_release_notes: true
+
+  linux-release:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build:linux:protected
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/linux/*.AppImage
+            dist/linux/*.deb
+  mac-release:
+    runs-on: macos-14
+    env:
+      CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
+      CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
+      APPLE_ID: ${{ secrets.APPLE_ID }}
+      APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      CHECKPRINT_ASAR_INTEGRITY: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Require Apple signing and notarization credentials
+        run: |
+          for name in CSC_LINK CSC_KEY_PASSWORD APPLE_ID APPLE_APP_SPECIFIC_PASSWORD APPLE_TEAM_ID; do
+            if [ -z "${!name}" ]; then echo "Missing Apple release credential: $name"; exit 1; fi
+          done
+      - run: npm ci --no-audit --no-fund
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build:mac:protected -- --config.forceCodeSigning=true --config.mac.notarize=true
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/mac/*.dmg
+            dist/mac/*.zip

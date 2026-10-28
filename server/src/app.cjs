@@ -159,6 +159,13 @@ function createApp({pool,privateKey,env=process.env}){
     const reqs=(await pool.query('SELECT id,plan_id,period,status,reason,created_at FROM sub_requests WHERE user_id=$1 ORDER BY created_at DESC LIMIT 5',[d.user_id])).rows;
     return {status:200,body:{user:{email:d.email,name:d.user_name},subscription:sub,payments:pay.rows,requests:reqs,devices:dev.rows.map(x=>({...x,current:x.id===d.id})),blocked:d.blocked}};
   });
+  route('PUT','/api/me',async(req,body)=>{
+    const d=await deviceAuth(req),name=str(body.name,80),phone=str(body.phone,20);
+    if(!name)throw fail(400,'BAD_NAME','Enter your name or company name.');
+    await pool.query('UPDATE users SET name=$2,phone=$3 WHERE id=$1',[d.user_id,name,phone]);
+    audit(d.email,'profile-edit');
+    return {status:200,body:{ok:true,user:{email:d.email,name,phone}}};
+  });
   route('POST','/api/payments',async(req,body)=>{
     const d=await deviceAuth(req);
     if(limited('pay:'+d.user_id,10,3600000))throw fail(429,'RATE_LIMITED','Too many payment submissions. Wait a little.');

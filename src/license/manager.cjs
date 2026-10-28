@@ -78,6 +78,7 @@ class LicenseManager{
     }catch(e){return {ok:false,code:e.code||'NETWORK',message:e.message,offline:true}}
   }
   async me(){const r=await this._call('GET','/api/me',null,true);if(r.status===401){this.state={lastSeen:this.state.lastSeen};this.save()}return r.status<400?{ok:true,...r.body}:{ok:false,code:r.body.code,message:r.body.message}}
+  async updateMe(data){const r=await this._call('PUT','/api/me',{name:String(data&&data.name||''),phone:String(data&&data.phone||'')},true);return r.status<400?{ok:true,...r.body}:{ok:false,code:r.body.code,message:r.body.message}}
   async config(){const r=await this._call('GET','/api/config');return r.body}
   async register(data){const r=await this._call('POST','/api/auth/register',data);return r.status<400?{ok:true}:{ok:false,code:r.body.code,message:r.body.message}}
   async requestSubscription(data){const r=await this._call('POST','/api/subscription/request',data,true);return r.status<400?{ok:true}:{ok:false,code:r.body.code,message:r.body.message}}

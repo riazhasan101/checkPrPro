@@ -1,20 +1,24 @@
 {
   "name": "checkprint",
-  "version": "1.0.0",
+  "version": "1.3.0",
   "private": true,
-  "description": "Offline-first bank cheque printing desktop application",
+  "description": "Offline-first cross-platform bank cheque printing desktop application",
   "main": "src/main.cjs",
   "scripts": {
     "start": "electron .",
     "test": "node --test tests/*.test.cjs",
-    "lint": "node --check src/main.cjs && node --check src/preload.cjs && node --check src/core/validation.cjs && node --check src/core/store.cjs && node --check src/core/words.cjs && node --check src/core/cheque.cjs && node --check src/core/printlog.cjs && node --check scripts/require-signing.cjs && node --check scripts/set-license-url.cjs && node --check src/preload-license.cjs && node --check src/license/manager.cjs && node --check src/license/evaluate.cjs && node --check src/license/fingerprint.cjs && node --check src/license/token.cjs && node --check src/license/config.cjs && node --check src/license/pubkey.cjs && node --check scripts/protect.cjs && node --check scripts/fuses.cjs && node --check server/src/boot.cjs && node --check server/src/seal-admin.cjs && node --check server/src/verify-keys.cjs && node --check server/src/index.cjs && node --check server/src/app.cjs",
+    "lint": "node --check src/main.cjs && node --check src/preload.cjs && node --check src/core/validation.cjs && node --check src/core/store.cjs && node --check src/core/words.cjs && node --check src/core/cheque.cjs && node --check src/core/printlog.cjs && node --check src/core/client-certificate.cjs && node --check scripts/require-signing.cjs && node --check scripts/set-license-url.cjs && node --check src/preload-license.cjs && node --check src/license/manager.cjs && node --check src/license/evaluate.cjs && node --check src/license/fingerprint.cjs && node --check src/license/token.cjs && node --check src/license/config.cjs && node --check src/license/pubkey.cjs && node --check scripts/protect.cjs && node --check scripts/fuses.cjs && node --check server/src/boot.cjs && node --check server/src/seal-admin.cjs && node --check server/src/verify-keys.cjs && node --check server/src/index.cjs && node --check server/src/app.cjs",
     "license:domain": "node scripts/set-license-url.cjs",
-    "build:win": "electron-builder --win nsis --x64 --publish never",
-    "build:win:signed": "node scripts/require-signing.cjs && electron-builder --win nsis --x64 --publish never",
+    "build:win": "electron-builder --win nsis --x64 --publish never --config.win.signAndEditExecutable=false",
+    "build:win:signed": "node scripts/require-signing.cjs && electron-builder --win nsis --x64 --publish never --config.win.signAndEditExecutable=true",
     "build:dir": "electron-builder --win dir --x64",
     "protect": "node scripts/protect.cjs",
     "build:protected": "node scripts/protect.cjs && electron-builder --win nsis --x64 --publish never -c.directories.app=build-app",
-    "build:protected:signed": "node scripts/require-signing.cjs && npm run build:protected"
+    "build:protected:signed": "node scripts/require-signing.cjs && npm run build:protected",
+    "build:linux": "electron-builder --linux AppImage deb --x64 --publish never",
+    "build:mac": "electron-builder --mac dmg zip --x64 --arm64 --publish never",
+    "build:linux:protected": "node scripts/protect.cjs && electron-builder --linux AppImage deb --x64 --publish never -c.directories.app=build-app",
+    "build:mac:protected": "node scripts/protect.cjs && electron-builder --mac dmg zip --x64 --arm64 --publish never -c.directories.app=build-app"
   },
   "dependencies": {
     "xlsx": "^0.18.5"
@@ -30,7 +34,7 @@
     "productName": "CheckPrint",
     "asar": true,
     "directories": {
-      "output": "dist"
+      "output": "dist/${os}"
     },
     "files": [
       "src/**/*",
@@ -55,9 +59,60 @@
       "allowToChangeInstallationDirectory": true
     },
     "afterPack": "scripts/fuses.cjs",
-    "asarUnpack": []
+    "asarUnpack": [],
+    "mac": {
+      "category": "public.app-category.finance",
+      "artifactName": "CheckPrint-${version}-macOS-${arch}.${ext}",
+      "hardenedRuntime": true,
+      "notarize": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
+    },
+    "linux": {
+      "executableName": "checkprint",
+      "category": "Office",
+      "maintainer": "CheckPrint",
+      "artifactName": "CheckPrint-${version}-Linux-${arch}.${ext}",
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "desktop": {
+        "Name": "CheckPrint",
+        "Comment": "Prepare and print bank cheques",
+        "StartupWMClass": "checkprint"
+      }
+    }
   },
   "engines": {
     "node": ">=20"
-  }
+  },
+  "author": "CheckPrint",
+  "homepage": "https://license.rizotic.com/download"
 }

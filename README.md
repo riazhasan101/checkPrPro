@@ -1,6 +1,14 @@
-# CheckPrint — Windows Cheque Printing
+# CheckPrint — Windows, Linux and macOS Cheque Printing
 
 Offline-first Electron desktop app for Excel-driven bank cheque preparation and printing.
+
+## Version 1.3.0
+
+Separate native packages and build workflows for Windows, Linux and macOS Intel/Apple Silicon. See [cross-platform guide](docs/CROSS-PLATFORM.md).
+
+## Version 1.2.0
+
+Beneficiary directory and backup support are included. See [release and installation notes](docs/RELEASE-1.2.0.md).
 
 ## Status
 
