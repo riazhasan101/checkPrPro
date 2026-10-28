@@ -2,6 +2,10 @@
 
 Offline-first Electron desktop app for Excel-driven bank cheque preparation and printing.
 
+## Version 1.3.1
+
+Setup/menu overlap fixes and Electron UI regression coverage. See [release notes](docs/RELEASE-1.3.1.md).
+
 ## Version 1.3.0
 
 Separate native packages and build workflows for Windows, Linux and macOS Intel/Apple Silicon. See [cross-platform guide](docs/CROSS-PLATFORM.md).

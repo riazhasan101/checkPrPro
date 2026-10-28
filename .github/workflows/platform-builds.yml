@@ -42,16 +42,19 @@ jobs:
         include:
           - os: windows-latest
             platform: Windows
+            ui: npm run test:ui
             command: npm run build:protected -- --config.win.signAndEditExecutable=false
             files: dist/win/*.exe
           - os: ubuntu-22.04
             platform: Linux
+            ui: xvfb-run -a npm run test:ui
             command: npm run build:linux:protected
             files: |
               dist/linux/*.AppImage
               dist/linux/*.deb
           - os: macos-14
             platform: macOS-Intel-and-Apple-Silicon
+            ui: npm run test:ui
             command: npm run build:mac:protected
             files: |
               dist/mac/*.dmg
@@ -66,6 +69,7 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci --no-audit --no-fund
+      - run: ${{ matrix.ui }}
       - run: ${{ matrix.command }}
       - uses: actions/upload-artifact@v4
         with:
